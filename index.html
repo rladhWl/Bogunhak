@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>보건학 암기앱 최종판</title>
+  <title>보건학 암기앱 안정판</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -12,26 +12,19 @@
       background: #f3f6fb;
       color: #1f2937;
     }
-    .container {
-      max-width: 1180px;
+    .wrap {
+      max-width: 1100px;
       margin: 0 auto;
       padding: 20px;
     }
-    h1 {
-      margin: 0 0 10px;
-      font-size: 30px;
-    }
-    .subtitle {
-      color: #6b7280;
-      margin-bottom: 20px;
-      line-height: 1.65;
-    }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    .sub { color: #6b7280; line-height: 1.6; margin-bottom: 18px; }
     .card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
-      margin-bottom: 18px;
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
     }
     .grid {
       display: grid;
@@ -54,8 +47,8 @@
     }
     textarea {
       min-height: 150px;
-      resize: vertical;
       line-height: 1.7;
+      resize: vertical;
     }
     .btns {
       display: flex;
@@ -72,13 +65,13 @@
       cursor: pointer;
       font-family: inherit;
     }
-    .primary { background: #2563eb; color: #fff; }
+    .primary { background: #2563eb; color: white; }
     .secondary { background: #e5e7eb; color: #111827; }
-    .good { background: #16a34a; color: #fff; }
-    .warn { background: #f59e0b; color: #fff; }
-    .danger { background: #dc2626; color: #fff; }
-    .purple { background: #7c3aed; color: #fff; }
-    .teal { background: #0f766e; color: #fff; }
+    .good { background: #16a34a; color: white; }
+    .warn { background: #f59e0b; color: white; }
+    .danger { background: #dc2626; color: white; }
+    .purple { background: #7c3aed; color: white; }
+    .teal { background: #0f766e; color: white; }
 
     .badges {
       display: flex;
@@ -94,29 +87,23 @@
       font-size: 13px;
       font-weight: 700;
     }
-    .question {
-      font-size: 22px;
+    .q {
+      font-size: 21px;
       font-weight: 800;
       line-height: 1.7;
-      margin: 14px 0;
-    }
-    .desc {
-      color: #6b7280;
-      font-size: 14px;
-      margin-bottom: 10px;
-      line-height: 1.6;
+      margin: 12px 0 16px;
     }
     .choices {
       display: grid;
       gap: 10px;
-      margin: 16px 0;
+      margin: 12px 0;
     }
     .choice {
       width: 100%;
       text-align: left;
       background: #f3f4f6;
-      color: #111827;
       border: 1px solid #d1d5db;
+      color: #111827;
     }
     .choice.correct {
       background: #dcfce7;
@@ -128,33 +115,29 @@
       border-color: #dc2626;
       color: #991b1b;
     }
-    .answer {
+    .answer, .compare, .wrong-note, .exam-box {
       display: none;
-      white-space: pre-line;
-      line-height: 1.8;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 10px;
-    }
-    .short-area {
-      display: none;
-      margin-top: 14px;
-      padding: 14px;
-      background: #f8fafc;
-      border: 1px solid #dbeafe;
-      border-radius: 12px;
-    }
-    .compare-box {
-      display: none;
-      margin-top: 12px;
-      padding: 14px;
-      background: #eff6ff;
-      border: 1px solid #93c5fd;
-      border-radius: 12px;
       white-space: pre-line;
       line-height: 1.75;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .answer {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    .compare {
+      background: #eff6ff;
+      border: 1px solid #93c5fd;
+    }
+    .wrong-note {
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+    }
+    .exam-box {
+      background: #f8fafc;
+      border: 1px solid #dbeafe;
     }
     .stats {
       display: grid;
@@ -163,46 +146,21 @@
     }
     .stat {
       background: white;
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 16px;
       text-align: center;
       box-shadow: 0 8px 20px rgba(0,0,0,0.06);
     }
     .stat .num {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 800;
       color: #2563eb;
     }
-    .exam-box {
-      display: none;
-      margin-top: 16px;
-      padding: 14px;
-      background: #f8fafc;
-      border: 1px solid #dbeafe;
-      border-radius: 12px;
-      line-height: 1.7;
-    }
-    .wrong-note {
-      margin-top: 12px;
-      padding: 14px;
-      background: #fff7ed;
-      border: 1px solid #fdba74;
-      border-radius: 12px;
-      white-space: pre-line;
-      line-height: 1.8;
-    }
-    .section-title {
-      margin: 0 0 10px;
-      font-size: 18px;
-      font-weight: 800;
-    }
-    .small {
-      color: #6b7280;
-      font-size: 13px;
-    }
-    @media (max-width: 960px) {
+    .small { font-size: 13px; color: #6b7280; }
+    #shortArea { display: none; margin-top: 14px; }
+    #examControlBtns { display: none; }
+    @media (max-width: 900px) {
       .grid, .stats { grid-template-columns: 1fr 1fr; }
-      .question { font-size: 19px; }
     }
     @media (max-width: 560px) {
       .grid, .stats { grid-template-columns: 1fr; }
@@ -212,11 +170,10 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>보건학 암기앱 최종판</h1>
-    <div class="subtitle">
-      범위: 1강 건강·질병·공중보건학, 11강 보건행정, 12강 사회보장 및 건강보험, 보건복지부 조직도 레포트<br>
-      기준: PPT/레포트 문구 중심 · 영어 고유명은 유지 · 필요한 경우 영어+한글 병기
+  <div class="wrap">
+    <h1>보건학 암기앱 안정판</h1>
+    <div class="sub">
+      범위: 1강 건강·질병·공중보건학, 11강 보건행정, 12강 사회보장 및 건강보험, 보건복지부 조직도 레포트
     </div>
 
     <div class="card">
@@ -246,34 +203,32 @@
           <label for="filter">필터</label>
           <select id="filter">
             <option value="all">전체 문제</option>
-            <option value="hard">어려움 표시 문제만</option>
-            <option value="unseen">아직 안 본 문제만</option>
+            <option value="hard">어려움만</option>
+            <option value="unseen">안 본 문제만</option>
           </select>
         </div>
         <div>
           <label for="search">검색</label>
-          <input id="search" type="text" placeholder="예: 보건소, POSDCORB, 건강보험" />
+          <input id="search" type="text" placeholder="예: 보건소, POSDCORB">
         </div>
       </div>
 
       <div class="btns">
         <button class="primary" id="newBtn">새 문제</button>
-        <button class="secondary" id="showAnswerBtn">정답 보기</button>
+        <button class="secondary" id="showBtn">정답 보기</button>
         <button class="good" id="knownBtn">외웠음</button>
         <button class="warn" id="hardBtn">어려움</button>
-        <button class="purple" id="startMcqExamBtn">객관식 20문제</button>
-        <button class="teal" id="startShortExamBtn">서술형 10문제</button>
-        <button class="secondary" id="wrongNoteBtn">오답노트 보기</button>
-        <button class="danger" id="resetBtn">기록 초기화</button>
+        <button class="purple" id="mcqExamBtn">객관식 20문제 시험</button>
+        <button class="teal" id="shortExamBtn">서술형 10문제 시험</button>
+        <button class="secondary" id="wrongBtn">오답노트</button>
+        <button class="danger" id="resetBtn">초기화</button>
       </div>
 
-      <div class="exam-box" id="examBox">
-        <div><strong>시험 모드</strong></div>
-        <div id="examStatus">시험 준비 중...</div>
-        <div class="btns" style="margin-top:10px;">
-          <button class="primary" id="nextExamBtn">다음 문제</button>
-          <button class="secondary" id="finishExamBtn">시험 종료</button>
-        </div>
+      <div class="exam-box" id="examBox"></div>
+
+      <div class="btns" id="examControlBtns">
+        <button class="primary" id="nextExamBtn">다음 문제</button>
+        <button class="secondary" id="finishExamBtn">시험 종료</button>
       </div>
     </div>
 
@@ -283,57 +238,37 @@
         <span class="badge" id="badgeMode">모드</span>
         <span class="badge" id="badgeCount">문제 수</span>
       </div>
-      <div class="desc" id="metaText">문제를 불러오는 중...</div>
-      <div class="question" id="questionBox">문제가 여기에 표시됩니다.</div>
 
+      <div class="small" id="metaText">문제를 불러오는 중...</div>
+      <div class="q" id="questionBox">문제가 여기에 표시됩니다.</div>
       <div class="choices" id="choicesBox"></div>
 
-      <div class="short-area" id="shortAnswerArea">
-        <label for="userAnswerInput">내 답안 작성</label>
-        <textarea id="userAnswerInput" placeholder="여기에 직접 서술형 답을 써봐"></textarea>
+      <div id="shortArea">
+        <label for="userAnswer">내 답안 작성</label>
+        <textarea id="userAnswer" placeholder="여기에 직접 서술형 답을 써봐"></textarea>
         <div class="btns">
-          <button class="secondary" id="saveUserAnswerBtn">내 답 저장</button>
-          <button class="primary" id="compareAnswerBtn">모범답안과 비교</button>
+          <button class="secondary" id="saveShortBtn">내 답 저장</button>
+          <button class="primary" id="compareBtn">모범답안과 비교</button>
         </div>
-        <div class="compare-box" id="compareBox"></div>
       </div>
 
+      <div class="compare" id="compareBox"></div>
       <div class="answer" id="answerBox"></div>
-      <div id="wrongNoteArea"></div>
+      <div class="wrong-note" id="wrongBox"></div>
     </div>
 
     <div class="stats">
-      <div class="stat">
-        <div class="num" id="totalStat">0</div>
-        <div>전체 문제</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="seenStat">0</div>
-        <div>학습한 문제</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="hardStat">0</div>
-        <div>어려운 문제</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="knownStat">0</div>
-        <div>외운 문제</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="accStat">0%</div>
-        <div>객관식/OX 정답률</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="shortSavedStat">0</div>
-        <div>서술 저장 수</div>
-      </div>
+      <div class="stat"><div class="num" id="totalStat">0</div><div>전체 문제</div></div>
+      <div class="stat"><div class="num" id="seenStat">0</div><div>학습한 문제</div></div>
+      <div class="stat"><div class="num" id="hardStat">0</div><div>어려운 문제</div></div>
+      <div class="stat"><div class="num" id="knownStat">0</div><div>외운 문제</div></div>
+      <div class="stat"><div class="num" id="accStat">0%</div><div>객관식/OX 정답률</div></div>
+      <div class="stat"><div class="num" id="savedStat">0</div><div>서술 저장 수</div></div>
     </div>
   </div>
 
   <script>
-    // ===== 1. 문제 데이터: PPT/레포트 기준 =====
     const items = [
-      // 건강개념 1~16
       {id:1, part:"건강개념", question:"건강의 정의를 설명하시오.", answer:"WHO(1948)는 건강을 '단순히 질병이나 허약이 없는 상태가 아니라 신체적, 정신적, 사회적으로 완전한 안녕 상태'라고 정의하였다."},
       {id:2, part:"건강개념", question:"WHO의 건강 정의를 설명하시오.", answer:"WHO(1948)는 건강을 '단순히 질병이나 허약이 없는 상태가 아니라 신체적, 정신적, 사회적으로 완전한 안녕 상태'라고 정의하였다."},
       {id:3, part:"건강개념", question:"사회적 건강의 의미를 설명하시오.", answer:"Parson에 따르면 건강은 각 개인이 사회적 역할과 임무를 효과적으로 수행할 수 있는 최적의 상태이며, 사회적 건강은 이와 관련된다."},
@@ -347,11 +282,10 @@
       {id:11, part:"건강개념", question:"전인적 모형을 설명하시오.", answer:"전인적 모형은 유전적 요인, 환경적 요인, 생활양식, 보건의료조직 등을 함께 고려하는 모형이다."},
       {id:12, part:"건강개념", question:"건강개념의 변천을 설명하시오.", answer:"건강개념은 단순히 질병이 없는 상태에서 벗어나 적응, 사회적 역할 수행, 전인적 안녕을 포함하는 방향으로 확대되었다."},
       {id:13, part:"건강개념", question:"건강과 질병의 결정요인을 설명하시오.", answer:"건강과 질병은 인간의 생물학적 요인, 유전, 생활양식, 사회·경제·문화적 환경, 정치적 환경, 보건의료체계 등 다양한 요인에 의해 결정된다."},
-      {id:14, part:"건강문제를 전체적 입장에서 이해해야 하는 이유를 설명하시오.", answer:"건강문제는 하나의 원인만이 아니라 여러 요인이 복합적으로 작용하므로 전체적인 입장에서 이해해야 한다."},
-      {id:15, part:"건강증진의 의미를 설명하시오.", answer:"건강증진은 적극적인 건강 향상과 건강수준 증대를 위한 과정과 노력을 의미한다."},
-      {id:16, part:"건강을 사회적 역할 수행과 연결하여 설명한 학자는 누구인가?", answer:"Parson이다."},
+      {id:14, part:"건강개념", question:"건강문제를 전체적 입장에서 이해해야 하는 이유를 설명하시오.", answer:"건강문제는 하나의 원인만이 아니라 여러 요인이 복합적으로 작용하므로 전체적인 입장에서 이해해야 한다."},
+      {id:15, part:"건강개념", question:"건강증진의 의미를 설명하시오.", answer:"건강증진은 적극적인 건강 향상과 건강수준 증대를 위한 과정과 노력을 의미한다."},
+      {id:16, part:"건강개념", question:"건강을 사회적 역할 수행과 연결하여 설명한 학자는 누구인가?", answer:"Parson이다."},
 
-      // 질병과 예방 17~32
       {id:17, part:"질병과 예방", question:"질병의 개념을 설명하시오.", answer:"질병은 신체적·정신적·사회적 기능이 정상 범위를 벗어나 생활에 지장을 주는 상태를 말한다."},
       {id:18, part:"질병과 예방", question:"질병 발생의 3요소를 설명하시오.", answer:"질병 발생의 3요소는 숙주(Host), 환경(Environment), 병인(Agent)이다."},
       {id:19, part:"질병과 예방", question:"숙주(Host)를 설명하시오.", answer:"숙주(Host)는 질병에 걸리는 인간 또는 생물체를 말하며 연령, 성별, 유전, 면역상태 등이 영향을 미친다."},
@@ -369,7 +303,6 @@
       {id:31, part:"질병과 예방", question:"3차적 예방을 설명하시오.", answer:"3차적 예방은 재활 및 사회복귀단계로 의학적 재활, 직업적 재활 등을 통해 기능회복과 사회복귀를 돕는다."},
       {id:32, part:"질병과 예방", question:"전염성 질환과 비전염성 질환의 2차적 예방 차이를 간단히 설명하시오.", answer:"전염성 질환은 전염기회를 최소화하여 질병전파를 막고 치료기간을 최소화하며, 비전염성 질환은 조기발견을 통해 치료기간 단축과 생존율 증가를 도모한다."},
 
-      // 공중보건학 33~45
       {id:33, part:"공중보건학", question:"공중보건학의 정의를 설명하시오.", answer:"공중보건학은 조직화된 지역사회의 노력을 통하여 질병을 예방하고 수명을 연장하며 건강과 능률을 증진시키는 과학이자 기술이다."},
       {id:34, part:"공중보건학", question:"Winslow의 공중보건학 정의를 설명하시오.", answer:"Winslow는 공중보건학을 조직화된 지역사회의 노력을 통하여 질병을 예방하고 수명을 연장하며 건강과 능률을 증진시키는 과학이자 기술이라고 하였다."},
       {id:35, part:"공중보건학", question:"공중보건학의 목적을 설명하시오.", answer:"공중보건학의 목적은 질병예방, 수명연장, 건강증진을 통하여 지역사회 주민의 건강수준을 향상시키는 데 있다."},
@@ -384,7 +317,6 @@
       {id:44, part:"공중보건학", question:"Ottawa 회의의 의의를 설명하시오.", answer:"Ottawa 회의는 건강증진(Health Promotion)의 개념과 전략을 확산시켰다."},
       {id:45, part:"공중보건학", question:"공중보건학에서 조직화된 지역사회 노력이 중요한 이유를 설명하시오.", answer:"건강문제는 지역사회 차원의 환경과 제도, 조직적 노력이 함께 작용해야 해결할 수 있기 때문이다."},
 
-      // 보건행정 46~58
       {id:46, part:"보건행정", question:"보건행정의 정의를 설명하시오.", answer:"보건행정이란 공중보건의 목적을 달성하기 위하여 공중보건의 원리를 적용하여 행정조직을 통하여 행하는 일련의 과정이다."},
       {id:47, part:"보건행정", question:"W. G. Smillie의 보건행정 정의를 설명하시오.", answer:"W. G. Smillie(1930)는 보건행정을 공적(official) 또는 사적(unofficial) 기관이 사회복지를 위하여 공중보건의 원리와 기법을 응용하는 것이라고 하였다."},
       {id:48, part:"보건행정", question:"보건행정의 특성을 설명하시오.", answer:"보건행정의 특성은 공공성 및 사회성, 조장성 및 교육성, 봉사성, 과학성이다."},
@@ -399,7 +331,6 @@
       {id:57, part:"보건행정", question:"Directing(지휘)을 설명하시오.", answer:"Directing(지휘)은 조직구성원이 목표를 향해 행동하도록 지도하고 감독하는 것이다."},
       {id:58, part:"보건행정", question:"의사결정 과정을 설명하시오.", answer:"의사결정은 문제의 인식, 정보수집, 대안설정, 대안비교, 최종선택, 집행 및 평가의 과정을 거친다."},
 
-      // 보건소와 조직 59~70
       {id:59, part:"보건소와 조직", question:"보건소의 역할을 설명하시오.", answer:"보건소는 지역주민의 건강을 보호하고 증진하기 위한 지역보건기관으로서 국민건강증진, 보건교육, 구강건강 및 영양개선사업, 감염병 예방 및 관리, 모자보건, 노인보건, 정신보건, 방문보건, 만성질환 관리 등을 수행한다."},
       {id:60, part:"보건소와 조직", question:"보건소의 감염병 예방 기능을 설명하시오.", answer:"보건소는 감염병 예방 및 관리, 예방접종, 보건교육, 지역사회 대응 등의 기능을 수행한다."},
       {id:61, part:"보건소와 조직", question:"보건소의 모자보건 기능을 설명하시오.", answer:"보건소는 모자보건 및 가족계획사업을 수행한다."},
@@ -413,7 +344,6 @@
       {id:69, part:"보건소와 조직", question:"장관 직속 조직의 예를 쓰시오.", answer:"장관 직속 조직에는 대변인, 감사관, 장관정책보좌관이 있다."},
       {id:70, part:"보건소와 조직", question:"제1차관과 제2차관의 관할 분야를 비교하시오.", answer:"제1차관은 복지·인구 분야를, 제2차관은 보건·의료 분야를 담당한다."},
 
-      // 사회보장과 건강보험 71~77
       {id:71, part:"사회보장과 건강보험", question:"사회보장의 개념을 설명하시오.", answer:"사회보장은 질병, 장애, 노령, 실업, 사망 등의 사회적 위험으로부터 국민을 보호하고 생활의 질을 향상시키기 위한 제도이다."},
       {id:72, part:"사회보장과 건강보험", question:"사회보장의 체계를 설명하시오.", answer:"사회보장의 체계는 사회보험, 공적부조, 사회복지서비스 및 관련 복지제도로 구성된다."},
       {id:73, part:"사회보장과 건강보험", question:"사회보험과 공적부조의 차이를 설명하시오.", answer:"사회보험은 보험원리에 따라 운영되는 제도이고, 공적부조는 생활이 어려운 사람에게 국가가 최저생활을 보장하는 제도이다."},
@@ -422,926 +352,120 @@
       {id:76, part:"사회보장과 건강보험", question:"건강보험과 의료급여의 차이를 설명하시오.", answer:"건강보험은 사회보험이고, 의료급여는 생활이 어려운 국민에게 국가가 의료비를 지원하는 제도이다."},
       {id:77, part:"사회보장과 건강보험", question:"의료보장의 기능을 설명하시오.", answer:"의료보장의 기능은 최저생활 보장, 위험분산, 국민연대, 소득재분배, 의료이용 보장이다."},
 
-      // 국제보건 78~80
       {id:78, part:"국제보건", question:"WHO의 목적을 설명하시오.", answer:"WHO의 목적은 모든 인류가 가능한 최고 수준의 건강에 도달하도록 하는 데 있다."},
       {id:79, part:"국제보건", question:"국제보건의 필요성을 설명하시오.", answer:"국제보건은 감염병, 재난, 영양문제 등 국경을 넘는 건강문제를 공동으로 해결하기 위해 필요하다."},
       {id:80, part:"국제보건", question:"WHO의 역할을 설명하시오.", answer:"WHO는 국제적 보건정책 조정, 건강기준 제시, 감염병 대응, 기술 지원 등의 역할을 수행한다."}
     ];
 
-    // ===== 2. 객관식 선지: 문항별 직접 설계 =====
-    const mcqMap = {
-      1: {
-        q: "WHO(1948)의 건강 정의로 가장 옳은 것은?",
-        choices: [
-          "단순히 질병이나 허약이 없는 상태가 아니라 신체적, 정신적, 사회적으로 완전한 안녕 상태",
-          "질병이 없고 신체 기능이 정상인 상태",
-          "사회생활에 적응하고 경제적으로 안정된 상태",
-          "의학적 치료가 필요하지 않은 상태"
-        ],
-        answer: 0
-      },
-      2: {
-        q: "WHO 건강 정의에 포함되지 않는 것은?",
-        choices: ["신체적 안녕", "정신적 안녕", "사회적 안녕", "경제적 안녕"],
-        answer: 3
-      },
-      3: {
-        q: "사회적 건강과 가장 관련이 깊은 설명은?",
-        choices: [
-          "사회적 역할과 임무를 효과적으로 수행할 수 있는 상태",
-          "내부환경이 항상 일정하게 유지되는 상태",
-          "외부환경에 부단히 적응해 나가는 상태",
-          "질병이나 허약이 전혀 없는 상태"
-        ],
-        answer: 0
-      },
-      4: {
-        q: "Claude Bernard의 건강관으로 옳은 것은?",
-        choices: [
-          "외부환경이 변하여도 내부환경이 일정하게 유지되는 상태",
-          "사회적 역할을 최적으로 수행하는 상태",
-          "외부환경 조건에 부단히 적응하는 상태",
-          "신체적, 정신적, 사회적으로 완전한 안녕 상태"
-        ],
-        answer: 0
-      },
-      5: {
-        q: "Wylie의 건강관으로 옳은 것은?",
-        choices: [
-          "유기체가 외부환경의 조건에 부단히 잘 적응해 나가는 상태",
-          "외부환경 변화에도 내부환경이 일정한 상태",
-          "사회적 역할과 임무를 수행하는 최적 상태",
-          "숙주와 병인 간의 균형 상태"
-        ],
-        answer: 0
-      },
-      6: {
-        q: "Parson의 건강관으로 옳은 것은?",
-        choices: [
-          "각 개인이 사회적 역할과 임무를 효과적으로 수행할 수 있는 최적의 상태",
-          "유기체가 외부환경에 적응하는 상태",
-          "질병발생 억제단계에 있는 상태",
-          "질병이나 허약이 없는 신체적 상태"
-        ],
-        answer: 0
-      },
-      7: {
-        q: "건강개념 변천의 4가지 모형으로 옳은 것은?",
-        choices: [
-          "생태학적 모형, 사회생태학적 모형, WHO 모형, 전인적 모형",
-          "질병모형, 치료모형, WHO 모형, 경제모형",
-          "생태학적 모형, 의료모형, 전염모형, WHO 모형",
-          "사회모형, 병인모형, 치료모형, 전인적 모형"
-        ],
-        answer: 0
-      },
-      8: {
-        q: "생태학적 모형에 대한 설명으로 옳은 것은?",
-        choices: [
-          "숙주, 환경, 병인 간의 균형과 상호관계로 건강을 설명한다.",
-          "사회적 역할 수행만으로 건강을 설명한다.",
-          "경제적 안정만으로 건강을 설명한다.",
-          "의료서비스 이용 여부로 건강을 설명한다."
-        ],
-        answer: 0
-      },
-      9: {
-        q: "사회생태학적 모형의 특징으로 가장 적절한 것은?",
-        choices: [
-          "생물학적 요인뿐 아니라 사회적 환경과 구조까지 포함한다.",
-          "질병이 없으면 건강이라고 본다.",
-          "내부환경의 항상성만을 강조한다.",
-          "예방접종만으로 건강을 설명한다."
-        ],
-        answer: 0
-      },
-      10: {
-        q: "WHO 모형에 대한 설명으로 옳은 것은?",
-        choices: [
-          "건강을 신체적, 정신적, 사회적으로 완전한 안녕 상태로 본다.",
-          "건강을 외부환경 적응 능력으로만 본다.",
-          "건강을 사회적 역할 수행만으로 본다.",
-          "건강을 유전적 요인으로만 설명한다."
-        ],
-        answer: 0
-      },
-      11: {
-        q: "전인적 모형에 포함되는 요소로 옳은 것은?",
-        choices: [
-          "유전적 요인, 환경적 요인, 생활양식, 보건의료조직",
-          "질병 유무와 약물치료만",
-          "경제수준과 직업만",
-          "심리적 요인 하나만"
-        ],
-        answer: 0
-      },
-      12: {
-        q: "건강개념의 변천에 대한 설명으로 옳은 것은?",
-        choices: [
-          "건강개념은 질병이 없는 상태에서 전인적 안녕까지 확대되었다.",
-          "건강개념은 점차 신체적 의미로 축소되었다.",
-          "건강개념은 WHO 이후 사회적 의미를 제외하였다.",
-          "건강개념은 질병치료 중심으로만 발전하였다."
-        ],
-        answer: 0
-      },
-      13: {
-        q: "건강과 질병의 결정요인으로 가장 적절하지 않은 것은?",
-        choices: [
-          "생물학적 요인",
-          "생활양식",
-          "사회·경제·문화적 환경",
-          "시험 운"
-        ],
-        answer: 3
-      },
-      14: {
-        q: "건강문제를 전체적 입장에서 이해해야 하는 이유로 옳은 것은?",
-        choices: [
-          "여러 요인이 복합적으로 작용하기 때문이다.",
-          "질병은 항상 한 가지 원인만 있기 때문이다.",
-          "건강문제는 개인 노력만으로 해결되기 때문이다.",
-          "환경은 건강과 관계없기 때문이다."
-        ],
-        answer: 0
-      },
-      15: {
-        q: "건강증진에 대한 설명으로 옳은 것은?",
-        choices: [
-          "건강수준 향상을 위한 적극적 과정과 노력이다.",
-          "질병 진단 후 수술만을 의미한다.",
-          "입원치료 이후 재활만을 의미한다.",
-          "사회보장 급여를 지급하는 제도이다."
-        ],
-        answer: 0
-      },
-      16: {
-        q: "건강을 사회적 역할 수행과 연결하여 설명한 학자는?",
-        choices: ["Parson", "Wylie", "Claude Bernard", "Winslow"],
-        answer: 0
-      }
-    };
-
-    // 여기부터 17번 이후 mcqMap/oxMap/함수는 2/2에서 이어짐
-      17: {
-        q: "질병 발생의 3요소로 옳은 것은?",
-        choices: [
-          "숙주(Host), 환경(Environment), 병인(Agent)",
-          "숙주(Host), 치료(Treatment), 재활(Rehabilitation)",
-          "환경(Environment), 예방(Prevention), 간호(Nursing)",
-          "병인(Agent), 입원(Hospitalization), 진단(Diagnosis)"
-        ],
-        answer: 0
-      },
-      18: {
-        q: "질병 발생의 3요소에 대한 설명으로 옳은 것은?",
-        choices: [
-          "숙주, 환경, 병인이 상호작용하여 질병이 발생한다.",
-          "질병은 병인 하나만으로 결정된다.",
-          "환경은 질병 발생과 관련이 없다.",
-          "숙주는 오직 연령만을 의미한다."
-        ],
-        answer: 0
-      },
-      19: {
-        q: "숙주(Host)에 해당하는 요인으로 옳은 것은?",
-        choices: [
-          "연령, 성별, 유전, 면역상태",
-          "기후, 수질, 대기오염",
-          "세균, 바이러스, 화학물질",
-          "의료보험과 사회보장"
-        ],
-        answer: 0
-      },
-      20: {
-        q: "환경(Environment)에 대한 설명으로 옳은 것은?",
-        choices: [
-          "물리적, 화학적, 생물학적, 사회적 환경을 포함한다.",
-          "질병의 직접 원인만을 의미한다.",
-          "개인의 면역상태만을 의미한다.",
-          "의료기관 조직체계만을 의미한다."
-        ],
-        answer: 0
-      },
-      21: {
-        q: "병인(Agent)의 예로 가장 적절한 것은?",
-        choices: [
-          "세균, 바이러스, 화학물질, 물리적 자극",
-          "연령, 성별, 유전",
-          "사회적 역할, 교육수준",
-          "예산, 조직, 인사"
-        ],
-        answer: 0
-      },
-      22: {
-        q: "결함(Impairment)의 의미로 옳은 것은?",
-        choices: [
-          "심리적, 생리적, 해부학적 구조나 기능의 상실 또는 이상",
-          "정상적 활동 수행능력의 제한",
-          "사회적 역할 수행의 불이익",
-          "재활 후 사회복귀 상태"
-        ],
-        answer: 0
-      },
-      23: {
-        q: "장애(Disability)의 의미로 옳은 것은?",
-        choices: [
-          "결함 때문에 정상적인 활동을 수행하는 능력이 제한되거나 결여된 상태",
-          "구조적 손상 그 자체",
-          "사회적 역할의 상실만을 의미하는 상태",
-          "경제적 손실만을 의미하는 상태"
-        ],
-        answer: 0
-      },
-      24: {
-        q: "불구(Handicap)의 의미로 옳은 것은?",
-        choices: [
-          "결함이나 장애로 인해 사회적 역할 수행에 불이익을 받는 상태",
-          "심리적, 생리적 기능의 상실",
-          "정상적 활동 능력의 제한",
-          "예방접종 후 면역이 형성된 상태"
-        ],
-        answer: 0
-      },
-      25: {
-        q: "결함, 장애, 불구의 관계로 옳은 것은?",
-        choices: [
-          "결함은 기능·구조 손상, 장애는 활동능력 제한, 불구는 사회적 불이익이다.",
-          "결함은 사회적 불이익, 장애는 구조 손상, 불구는 활동 제한이다.",
-          "결함과 장애와 불구는 같은 의미이다.",
-          "결함은 치료, 장애는 예방, 불구는 재활을 의미한다."
-        ],
-        answer: 0
-      },
-      26: {
-        q: "질병의 자연사에 대한 설명으로 옳은 것은?",
-        choices: [
-          "질병 발생 이전부터 회복 또는 사망까지 질병의 진행 전 과정을 의미한다.",
-          "질병이 발생한 후 치료과정만을 말한다.",
-          "예방접종 후 면역형성과정을 말한다.",
-          "건강보험 급여체계를 말한다."
-        ],
-        answer: 0
-      },
-      27: {
-        q: "질병의 자연사를 예방적 관점에서 본 설명으로 옳은 것은?",
-        choices: [
-          "질병발생 전 단계, 질병발생 단계, 회복·후유증 단계에 따라 예방 수준이 달라진다.",
-          "질병의 자연사는 예방과 무관하다.",
-          "질병의 자연사는 오직 치료단계만 포함한다.",
-          "질병의 자연사는 전염병에만 적용된다."
-        ],
-        answer: 0
-      },
-      28: {
-        q: "질병예방의 3단계로 옳은 것은?",
-        choices: [
-          "1차적 예방, 2차적 예방, 3차적 예방",
-          "진단, 치료, 재활",
-          "예방, 입원, 퇴원",
-          "검사, 수술, 보험"
-        ],
-        answer: 0
-      },
-      29: {
-        q: "1차적 예방에 해당하는 것은?",
-        choices: [
-          "예방접종, 환경개선, 영양섭취, 생활조건 개선",
-          "조기발견, 조기치료",
-          "의학적 재활, 직업적 재활",
-          "사회복귀와 재취업 지원만"
-        ],
-        answer: 0
-      },
-      30: {
-        q: "2차적 예방에 대한 설명으로 옳은 것은?",
-        choices: [
-          "조기발견과 조기치료를 통해 질병의 진행을 막고 예후를 좋게 한다.",
-          "질병발생 자체를 억제하는 단계이다.",
-          "후유증 환자의 사회복귀를 돕는 단계이다.",
-          "예방접종과 환경개선만을 의미한다."
-        ],
-        answer: 0
-      },
-      31: {
-        q: "3차적 예방에 해당하는 것은?",
-        choices: [
-          "의학적 재활과 직업적 재활",
-          "예방접종과 보건교육",
-          "선별검사와 조기발견",
-          "환경위생 개선"
-        ],
-        answer: 0
-      },
-      32: {
-        q: "비전염성 질환의 2차적 예방 효과로 가장 적절한 것은?",
-        choices: [
-          "조기발견을 통한 치료기간 단축과 생존율 증가",
-          "전염기회 최소화와 질병전파 방지",
-          "예방접종률 증가",
-          "감염원 제거"
-        ],
-        answer: 0
-      },
-      33: {
-        q: "공중보건학의 정의로 가장 옳은 것은?",
-        choices: [
-          "조직화된 지역사회의 노력을 통해 질병을 예방하고 수명을 연장하며 건강과 능률을 증진시키는 과학이자 기술",
-          "개인 환자의 치료기술을 연구하는 의학 분야",
-          "병원경영과 의료행정을 다루는 학문",
-          "사회보험 급여기준을 정하는 행정학"
-        ],
-        answer: 0
-      },
-      34: {
-        q: "Winslow가 제시한 공중보건학의 정의와 가장 관련이 깊은 것은?",
-        choices: [
-          "organized community effort",
-          "individual treatment only",
-          "hospital finance system",
-          "private nursing technique"
-        ],
-        answer: 0
-      },
-      35: {
-        q: "공중보건학의 목적에 해당하는 것은?",
-        choices: [
-          "질병예방, 수명연장, 건강증진",
-          "개별 환자의 수술 성공률 향상",
-          "병원의 수익구조 개선",
-          "보험료 징수 확대"
-        ],
-        answer: 0
-      },
-      36: {
-        q: "공중보건학과 예방의학의 차이로 옳은 것은?",
-        choices: [
-          "예방의학은 개인·가족, 공중보건학은 지역사회 주민 전체를 대상으로 한다.",
-          "공중보건학은 개인, 예방의학은 지역사회를 대상으로 한다.",
-          "둘 다 병원 입원환자만 대상으로 한다.",
-          "둘 다 같은 개념으로 구분되지 않는다."
-        ],
-        answer: 0
-      },
-      37: {
-        q: "공중보건학의 범위에 포함되는 것은?",
-        choices: [
-          "보건관리, 환경관련 분야, 질병관리 분야",
-          "수술기법, 마취관리, 병실배정",
-          "재무회계, 광고마케팅, 건물관리",
-          "사보험 영업전략, 세무조정, 투자분석"
-        ],
-        answer: 0
-      },
-      38: {
-        q: "공중보건학이 지역사회 중심 학문인 이유는?",
-        choices: [
-          "개인이 아니라 지역사회 주민 전체의 건강문제를 다루기 때문이다.",
-          "개인치료만을 중시하기 때문이다.",
-          "병원 내 행정만 다루기 때문이다.",
-          "보험재정만을 다루기 때문이다."
-        ],
-        answer: 0
-      },
-      39: {
-        q: "공중보건학의 발전과정으로 옳은 것은?",
-        choices: [
-          "고대기, 중세기, 여명기, 확립기, 발전기",
-          "고대기, 산업기, 입원기, 수술기, 보험기",
-          "초기기, 중기, 후기의 3단계만 있다.",
-          "감염기, 치료기, 보장기의 3단계만 있다."
-        ],
-        answer: 0
-      },
-      40: {
-        q: "Jenner의 업적으로 옳은 것은?",
-        choices: [
-          "종두법 개발",
-          "콜레라 역학조사",
-          "위생개혁 주도",
-          "사회보험 도입"
-        ],
-        answer: 0
-      },
-      41: {
-        q: "Chadwick의 업적으로 옳은 것은?",
-        choices: [
-          "영국의 위생개혁과 공중보건법 제정에 기여",
-          "종두법 개발",
-          "콜레라 원인 규명",
-          "WHO 설립"
-        ],
-        answer: 0
-      },
-      42: {
-        q: "John Snow의 업적으로 옳은 것은?",
-        choices: [
-          "콜레라의 원인을 역학적으로 조사하였다.",
-          "종두법을 개발하였다.",
-          "공중보건법을 제정하였다.",
-          "일차보건의료를 처음 제시하였다."
-        ],
-        answer: 0
-      },
-      43: {
-        q: "Alma-Ata 회의와 가장 관련 깊은 개념은?",
-        choices: [
-          "일차보건의료(Primary Health Care)",
-          "행위별수가제",
-          "총액계약제",
-          "환경영향평가"
-        ],
-        answer: 0
-      },
-      44: {
-        q: "Ottawa 회의의 의의로 옳은 것은?",
-        choices: [
-          "건강증진(Health Promotion) 개념과 전략 확산",
-          "사회보험 재정 확대",
-          "병원조직 개편",
-          "감염병 신고체계 단순화"
-        ],
-        answer: 0
-      },
-      45: {
-        q: "공중보건학에서 조직화된 지역사회 노력이 중요한 이유는?",
-        choices: [
-          "건강문제는 환경·제도·사회적 조건이 함께 작용하기 때문이다.",
-          "질병은 개인의 의지로만 해결되기 때문이다.",
-          "건강은 의료기술 하나로만 결정되기 때문이다.",
-          "공중보건학은 병원 내부문제만 다루기 때문이다."
-        ],
-        answer: 0
-      },
-      46: {
-        q: "보건행정의 정의로 옳은 것은?",
-        choices: [
-          "공중보건의 목적을 달성하기 위하여 공중보건의 원리를 적용하여 행정조직을 통하여 행하는 일련의 과정",
-          "병원 수익 증대를 위한 운영기술",
-          "개인 환자 진료를 위한 임상적 절차",
-          "의료보험 급여 청구만을 의미하는 행정"
-        ],
-        answer: 0
-      },
-      47: {
-        q: "W. G. Smillie의 보건행정 정의로 옳은 것은?",
-        choices: [
-          "공적 또는 사적 기관이 사회복지를 위하여 공중보건의 원리와 기법을 응용하는 것",
-          "공중보건을 병원경영에만 적용하는 것",
-          "민간보험을 통하여 질병을 보장하는 것",
-          "의학적 치료를 행정적으로 감독하는 것"
-        ],
-        answer: 0
-      },
-      48: {
-        q: "보건행정의 특성으로 옳은 것은?",
-        choices: [
-          "공공성 및 사회성, 조장성 및 교육성, 봉사성, 과학성",
-          "영리성, 폐쇄성, 경쟁성, 사적성",
-          "수익성, 독점성, 강제성, 자율성",
-          "민간성, 시장성, 비공공성, 비과학성"
-        ],
-        answer: 0
-      },
-      49: {
-        q: "공공성 및 사회성에 대한 설명으로 옳은 것은?",
-        choices: [
-          "공공복지와 집단의 건강을 증진하는 공공이익을 위한 특성",
-          "개인의 경제적 이익을 위한 특성",
-          "병원조직 내부의 수익성 확보를 위한 특성",
-          "의료기술만을 강조하는 특성"
-        ],
-        answer: 0
-      },
-      50: {
-        q: "조장성 및 교육성에 대한 설명으로 옳은 것은?",
-        choices: [
-          "지역사회 주민을 교육 또는 조장하여 목적을 달성하며 교육을 주된 수단으로 한다.",
-          "행정기관 내부 문서정리만을 의미한다.",
-          "예산 배정만을 의미한다.",
-          "질병 치료 이후 재활만을 뜻한다."
-        ],
-        answer: 0
-      },
-      51: {
-        q: "봉사성에 대한 설명으로 옳은 것은?",
-        choices: [
-          "현대국가 행정의 특징인 적극적인 서비스를 하는 특성",
-          "민간영역의 이윤추구 특성",
-          "병원 건물 유지관리 특성",
-          "보험료 징수 특성"
-        ],
-        answer: 0
-      },
-      52: {
-        q: "과학성에 대한 설명으로 옳은 것은?",
-        choices: [
-          "발전된 과학과 기술의 확고한 기초 위에 수립된 행정적 특성",
-          "경험과 직감만에 의존하는 특성",
-          "공문서 보관만을 강조하는 특성",
-          "질병 분류체계만을 의미하는 특성"
-        ],
-        answer: 0
-      },
-      53: {
-        q: "POSDCORB의 올바른 구성은?",
-        choices: [
-          "Planning(기획), Organizing(조직), Staffing(인사), Directing(지휘), Coordinating(조정), Reporting(보고), Budgeting(예산)",
-          "Prevention, Observation, Service, Diagnosis, Care, Operation, Rehabilitation, Budget",
-          "Planning, Operation, Surgery, Diagnosis, Control, Organization, Reporting, Budgeting",
-          "Population, Order, Safety, Duty, Control, Office, Record, Balance"
-        ],
-        answer: 0
-      },
-      54: {
-        q: "Planning(기획)에 대한 설명으로 옳은 것은?",
-        choices: [
-          "목표와 그 목표를 달성하기 위한 방법·절차를 미리 결정하는 것",
-          "조직 내 인력을 배치하는 것",
-          "구성원을 감독하고 지도하는 것",
-          "업무수행 결과를 보고하는 것"
-        ],
-        answer: 0
-      },
-      55: {
-        q: "Organizing(조직)에 대한 설명으로 옳은 것은?",
-        choices: [
-          "업무를 분담하고 권한과 책임을 배분하는 것",
-          "예산을 편성하는 것",
-          "대안을 비교하는 것",
-          "질병을 조기발견하는 것"
-        ],
-        answer: 0
-      },
-      56: {
-        q: "Staffing(인사)에 대한 설명으로 옳은 것은?",
-        choices: [
-          "필요한 인력을 확보하고 배치하며 교육·훈련하는 것",
-          "목표를 설정하는 것",
-          "업무 조정을 하는 것",
-          "예산 집행 결과를 보고하는 것"
-        ],
-        answer: 0
-      },
-      57: {
-        q: "Directing(지휘)에 대한 설명으로 옳은 것은?",
-        choices: [
-          "조직구성원이 목표를 향해 행동하도록 지도하고 감독하는 것",
-          "업무를 부서별로 분담하는 것",
-          "재원을 배정하는 것",
-          "정책 대안을 수집하는 것"
-        ],
-        answer: 0
-      },
-      58: {
-        q: "의사결정 과정의 순서로 가장 적절한 것은?",
-        choices: [
-          "문제의 인식 → 정보수집 → 대안설정 → 대안비교 → 최종선택 → 집행 및 평가",
-          "집행 → 평가 → 문제인식 → 대안설정 → 정보수집 → 선택",
-          "정보수집 → 최종선택 → 문제인식 → 대안비교 → 집행 → 평가",
-          "문제인식 → 수술 → 재활 → 평가 → 선택 → 집행"
-        ],
-        answer: 0
-      },
-      59: {
-        q: "보건소의 역할로 가장 적절한 것은?",
-        choices: [
-          "지역주민의 건강을 보호하고 증진하기 위한 지역보건기관으로서 다양한 보건사업을 수행한다.",
-          "중앙정부의 법률 제정만을 담당한다.",
-          "오직 응급수술만을 수행한다.",
-          "민간보험상품만 판매한다."
-        ],
-        answer: 0
-      },
-      60: {
-        q: "보건소의 감염병 예방 기능에 해당하는 것은?",
-        choices: [
-          "감염병 예방 및 관리, 예방접종, 보건교육",
-          "건강보험료 징수",
-          "대학입시 상담",
-          "의료기기 제조 허가"
-        ],
-        answer: 0
-      },
-      61: {
-        q: "보건소의 모자보건 기능으로 옳은 것은?",
-        choices: [
-          "모자보건 및 가족계획사업",
-          "산업재해보상보험 운영",
-          "국제보건기준 제정",
-          "공중보건법 입법"
-        ],
-        answer: 0
-      },
-      62: {
-        q: "보건소의 노인보건 기능으로 옳은 것은?",
-        choices: [
-          "노인보건사업 수행",
-          "영유아 보육정책 수립",
-          "민간병원 인허가",
-          "국민연금 재정운영"
-        ],
-        answer: 0
-      },
-      63: {
-        q: "보건소의 정신보건 기능으로 옳은 것은?",
-        choices: [
-          "정신보건사업 수행",
-          "식품 수입통관 업무",
-          "병원 건축설계",
-          "대학 교과과정 편성"
-        ],
-        answer: 0
-      },
-      64: {
-        q: "보건소의 방문보건 기능으로 옳은 것은?",
-        choices: [
-          "지역주민에게 방문보건사업을 수행한다.",
-          "입원환자 수술만 수행한다.",
-          "보험료를 부과한다.",
-          "국제협정을 체결한다."
-        ],
-        answer: 0
-      },
-      65: {
-        q: "중앙보건행정조직과 지방보건행정조직의 관계로 옳은 것은?",
-        choices: [
-          "중앙은 정책을 수립·총괄하고, 지방은 지역사회에서 보건사업을 집행한다.",
-          "지방은 정책을 수립하고 중앙은 방문보건만 담당한다.",
-          "둘은 서로 독립적이어서 연관이 없다.",
-          "둘 다 병원 입원업무만 담당한다."
-        ],
-        answer: 0
-      },
-      66: {
-        q: "보건복지부의 역할로 옳은 것은?",
-        choices: [
-          "보건·의료·복지·인구 분야 정책을 수립·집행하는 중앙행정기관",
-          "지역보건소의 하위 민간단체",
-          "국제기구의 지부",
-          "개별 병원의 재무부서"
-        ],
-        answer: 0
-      },
-      67: {
-        q: "보건복지부 조직체계에 대한 설명으로 옳은 것은?",
-        choices: [
-          "장관 아래 복수차관제를 두며 제1차관은 복지·인구, 제2차관은 보건·의료를 담당한다.",
-          "장관 아래 단일차관제만 운영한다.",
-          "모든 분야를 한 명의 차관이 담당한다.",
-          "차관 없이 실장만으로 운영된다."
-        ],
-        answer: 0
-      },
-      68: {
-        q: "보건복지부의 복수차관제에 대한 설명으로 옳은 것은?",
-        choices: [
-          "제1차관(복지·인구 분야), 제2차관(보건·의료 분야)",
-          "제1차관(보건·의료), 제2차관(복지·인구)",
-          "제1차관과 제2차관 모두 동일 분야 담당",
-          "차관 없이 국장만 존재"
-        ],
-        answer: 0
-      },
-      69: {
-        q: "장관 직속 조직으로 옳은 것은?",
-        choices: [
-          "대변인, 감사관, 장관정책보좌관",
-          "건강보험정책국, 건강정책국, 보건산업정책국",
-          "사회복지정책실, 보건의료정책실, 질병관리청",
-          "보건소, 보건지소, 보건진료소"
-        ],
-        answer: 0
-      },
-      70: {
-        q: "제1차관과 제2차관의 관할 분야를 바르게 짝지은 것은?",
-        choices: [
-          "제1차관-복지·인구 / 제2차관-보건·의료",
-          "제1차관-보건·의료 / 제2차관-복지·인구",
-          "제1차관-건강보험 / 제2차관-노동",
-          "제1차관-교육 / 제2차관-국방"
-        ],
-        answer: 0
-      },
-      71: {
-        q: "사회보장의 개념으로 옳은 것은?",
-        choices: [
-          "질병, 장애, 노령, 실업, 사망 등의 사회적 위험으로부터 국민을 보호하고 생활의 질을 향상시키기 위한 제도",
-          "민간보험 판매를 확대하기 위한 제도",
-          "병원의 수익성 향상을 위한 제도",
-          "오직 의료서비스만을 제공하는 제도"
-        ],
-        answer: 0
-      },
-      72: {
-        q: "사회보장의 체계로 옳은 것은?",
-        choices: [
-          "사회보험, 공적부조, 사회복지서비스 및 관련 복지제도",
-          "건강보험, 생명보험, 자동차보험, 화재보험",
-          "예방, 치료, 재활, 간호",
-          "기획, 조직, 인사, 지휘"
-        ],
-        answer: 0
-      },
-      73: {
-        q: "사회보험과 공적부조의 차이로 옳은 것은?",
-        choices: [
-          "사회보험은 보험원리, 공적부조는 국가의 최저생활 보장 원리에 기초한다.",
-          "사회보험은 저소득층만, 공적부조는 전 국민 강제가입이다.",
-          "사회보험은 무료서비스, 공적부조는 민간보험이다.",
-          "사회보험과 공적부조는 동일한 제도이다."
-        ],
-        answer: 0
-      },
-      74: {
-        q: "사회복지서비스에 대한 설명으로 가장 적절한 것은?",
-        choices: [
-          "도움이 필요한 사람에게 상담·보호·재활 등의 서비스를 제공하는 제도",
-          "보험료 납부를 전제로 하는 강제가입 제도",
-          "질병의 자연사를 설명하는 개념",
-          "행정조직의 보고 체계"
-        ],
-        answer: 0
-      },
-      75: {
-        q: "건강보험의 원리로 옳은 것은?",
-        choices: [
-          "다수의 국민이 보험료를 부담하고 질병 발생 시 보험급여를 받는 사회보험 방식",
-          "생활이 어려운 사람에게만 무상 의료비를 주는 방식",
-          "오직 민간보험 회사가 운영하는 방식",
-          "입원환자만 보호하는 방식"
-        ],
-        answer: 0
-      },
-      76: {
-        q: "건강보험과 의료급여의 차이로 옳은 것은?",
-        choices: [
-          "건강보험은 사회보험, 의료급여는 생활이 어려운 국민을 위한 국가 지원 제도",
-          "건강보험은 공적부조, 의료급여는 사회보험",
-          "둘 다 완전히 같은 제도",
-          "둘 다 민간보험이다."
-        ],
-        answer: 0
-      },
-      77: {
-        q: "의료보장의 기능에 해당하는 것은?",
-        choices: [
-          "최저생활 보장, 위험분산, 국민연대, 소득재분배, 의료이용 보장",
-          "보험료 인상, 병원 민영화, 입원일수 증가",
-          "예방접종, 수술, 입원, 퇴원",
-          "기획, 조직, 인사, 보고"
-        ],
-        answer: 0
-      },
-      78: {
-        q: "WHO의 목적에 대한 설명으로 옳은 것은?",
-        choices: [
-          "모든 인류가 가능한 최고 수준의 건강에 도달하도록 하는 것",
-          "특정 국가의 병원 수익을 높이는 것",
-          "민간보험 확대를 추진하는 것",
-          "군사적 위생관리만 담당하는 것"
-        ],
-        answer: 0
-      },
-      79: {
-        q: "국제보건이 필요한 이유로 가장 적절한 것은?",
-        choices: [
-          "감염병, 재난, 영양문제 등 국경을 넘는 건강문제를 공동으로 해결하기 위해서",
-          "국가별 의료비를 경쟁시키기 위해서",
-          "지역 보건소를 폐지하기 위해서",
-          "개인병원 운영전략을 공유하기 위해서"
-        ],
-        answer: 0
-      },
-      80: {
-        q: "WHO의 역할로 옳은 것은?",
-        choices: [
-          "국제적 보건정책 조정, 건강기준 제시, 감염병 대응, 기술 지원",
-          "지방보건소 운영만 담당",
-          "국민연금 급여 지급만 담당",
-          "민간보험 상품 개발만 담당"
-        ],
-        answer: 0
-      }
-    };
-
-    // ===== 3. OX 거짓문장 직접 설계 =====
     const oxFalseMap = {
-      1: "WHO는 건강을 단순히 질병이 없는 상태라고만 정의하였다.",
-      2: "WHO 건강 정의에는 사회적 안녕이 포함되지 않는다.",
-      3: "사회적 건강은 경제적 안정만을 의미한다.",
-      4: "Claude Bernard는 건강을 사회적 역할 수행의 최적 상태로 보았다.",
-      5: "Wylie는 건강을 내부환경 항상성으로만 설명하였다.",
-      6: "Parson은 건강을 숙주와 병인의 균형 상태라고 하였다.",
-      7: "건강개념 변천의 4가지 모형은 생태학적 모형, 치료모형, 경제모형, WHO 모형이다.",
-      8: "생태학적 모형은 사회적 역할만으로 건강을 설명한다.",
-      9: "사회생태학적 모형은 사회적 환경을 고려하지 않는다.",
-      10: "WHO 모형은 정신적 안녕을 제외한다.",
-      11: "전인적 모형은 유전적 요인을 고려하지 않는다.",
-      12: "건강개념은 점점 더 소극적 의미로 축소되었다.",
-      13: "건강과 질병은 생물학적 요인 하나만으로 결정된다.",
-      14: "건강문제는 전체적 관점에서 이해할 필요가 없다.",
-      15: "건강증진은 질병 치료만을 의미한다.",
-      16: "건강을 사회적 역할 수행과 연결한 학자는 Wylie이다.",
-      17: "질병은 사회적 기능과는 관련이 없다.",
-      18: "질병 발생의 3요소는 숙주, 치료, 재활이다.",
-      19: "숙주(Host)는 환경오염 자체를 의미한다.",
-      20: "환경(Environment)은 개인의 면역상태만을 의미한다.",
-      21: "병인(Agent)은 사회복지서비스를 의미한다.",
-      22: "결함(Impairment)은 사회적 역할 불이익 상태이다.",
-      23: "장애(Disability)는 구조 손상 그 자체를 의미한다.",
-      24: "불구(Handicap)는 기능손상만을 의미한다.",
-      25: "결함은 사회적 불이익, 장애는 구조 손상, 불구는 활동 제한이다.",
-      26: "질병의 자연사는 질병이 생긴 후 치료과정만 말한다.",
-      27: "질병의 자연사는 예방과 관계가 없다.",
-      28: "질병예방 3단계는 진단, 수술, 입원이다.",
-      29: "1차적 예방은 조기발견과 조기치료단계이다.",
-      30: "2차적 예방은 재활 및 사회복귀단계이다.",
-      31: "3차적 예방은 예방접종과 환경개선을 의미한다.",
-      32: "비전염성 질환의 2차적 예방은 전염기회 최소화를 의미한다.",
-      33: "공중보건학은 개인치료만을 위한 기술이다.",
-      34: "Winslow는 공중보건학을 병원행정이라고 정의하였다.",
-      35: "공중보건학의 목적은 병원 수익 향상이다.",
-      36: "예방의학은 지역사회 전체를, 공중보건학은 개인을 대상으로 한다.",
-      37: "공중보건학의 범위에는 보건관리가 포함되지 않는다.",
-      38: "공중보건학은 지역사회와 관련이 없다.",
-      39: "공중보건학의 발전과정에는 발전기가 없다.",
-      40: "Jenner는 콜레라 원인을 역학적으로 조사하였다.",
-      41: "Chadwick은 종두법을 개발하였다.",
-      42: "John Snow는 사회보험 제도를 도입하였다.",
-      43: "Alma-Ata 회의는 건강보험 급여만을 다루었다.",
-      44: "Ottawa 회의는 건강증진과 무관하다.",
-      45: "공중보건학은 조직화된 지역사회 노력이 필요 없다.",
-      46: "보건행정은 병원 수익 관리만을 의미한다.",
-      47: "Smillie는 보건행정을 개인진료 기술이라고 정의하였다.",
-      48: "보건행정의 특성에는 봉사성이 포함되지 않는다.",
-      49: "공공성 및 사회성은 보건행정과 무관하다.",
-      50: "조장성 및 교육성은 보건행정의 특징이 아니다.",
-      51: "봉사성은 현대국가 행정과 관계없다.",
-      52: "과학성은 보건행정에서 중요하지 않다.",
-      53: "POSDCORB는 예방, 간호, 처치, 재활을 뜻한다.",
-      54: "Planning(기획)은 사업 결과 보고만 의미한다.",
-      55: "Organizing(조직)은 예산 편성만 의미한다.",
-      56: "Staffing(인사)은 감염병 신고만 의미한다.",
-      57: "Directing(지휘)은 문서 보관을 의미한다.",
-      58: "의사결정은 정보수집 없이 이루어진다.",
-      59: "보건소는 중앙행정기관으로서 정책만 수립한다.",
-      60: "보건소의 감염병 예방 기능에는 예방접종이 포함되지 않는다.",
-      61: "보건소의 모자보건 기능은 노인 대상 사업이다.",
-      62: "보건소의 노인보건 기능은 영유아 예방접종만을 의미한다.",
-      63: "보건소의 정신보건 기능은 식품위생 관리만을 의미한다.",
-      64: "보건소의 방문보건 기능은 입원환자만 대상이다.",
-      65: "중앙보건행정조직은 방문보건만 담당한다.",
-      66: "보건복지부는 지방보건소의 하위기관이다.",
-      67: "보건복지부는 단일차관제만 운영한다.",
-      68: "제1차관은 보건·의료, 제2차관은 복지·인구를 담당한다.",
-      69: "장관 직속 조직에는 건강보험정책국만 있다.",
-      70: "제1차관과 제2차관은 같은 분야를 맡는다.",
-      71: "사회보장은 오직 의료서비스만을 의미한다.",
-      72: "사회보장의 체계에는 사회보험이 포함되지 않는다.",
-      73: "공적부조는 보험료 납부를 전제로 한다.",
-      74: "사회복지서비스는 강제가입 보험제도이다.",
-      75: "건강보험은 공적부조 방식만으로 운영된다.",
-      76: "의료급여는 모든 국민이 보험료를 내는 사회보험이다.",
-      77: "의료보장의 기능에는 위험분산이 포함되지 않는다.",
-      78: "WHO의 목적은 특정 국가의 보건만 향상시키는 것이다.",
-      79: "국제보건은 국경을 넘는 건강문제와 관련이 없다.",
-      80: "WHO의 역할에는 국제적 보건정책 조정이 포함되지 않는다."
+      1:"WHO는 건강을 단순히 질병이 없는 상태라고만 정의하였다.",
+      2:"WHO 건강 정의에는 사회적 안녕이 포함되지 않는다.",
+      3:"사회적 건강은 경제적 안정만을 의미한다.",
+      4:"Claude Bernard는 건강을 사회적 역할 수행의 최적 상태로 보았다.",
+      5:"Wylie는 건강을 내부환경 항상성으로만 설명하였다.",
+      6:"Parson은 건강을 숙주와 병인의 균형 상태라고 하였다.",
+      7:"건강개념 변천의 4가지 모형은 생태학적 모형, 치료모형, 경제모형, WHO 모형이다.",
+      8:"생태학적 모형은 사회적 역할만으로 건강을 설명한다.",
+      9:"사회생태학적 모형은 사회적 환경을 고려하지 않는다.",
+      10:"WHO 모형은 정신적 안녕을 제외한다.",
+      11:"전인적 모형은 유전적 요인을 고려하지 않는다.",
+      12:"건강개념은 점점 더 소극적 의미로 축소되었다.",
+      13:"건강과 질병은 생물학적 요인 하나만으로 결정된다.",
+      14:"건강문제는 전체적 관점에서 이해할 필요가 없다.",
+      15:"건강증진은 질병 치료만을 의미한다.",
+      16:"건강을 사회적 역할 수행과 연결한 학자는 Wylie이다.",
+      17:"질병은 사회적 기능과는 관련이 없다.",
+      18:"질병 발생의 3요소는 숙주, 치료, 재활이다.",
+      19:"숙주(Host)는 환경오염 자체를 의미한다.",
+      20:"환경(Environment)은 개인의 면역상태만을 의미한다.",
+      21:"병인(Agent)은 사회복지서비스를 의미한다.",
+      22:"결함(Impairment)은 사회적 역할 불이익 상태이다.",
+      23:"장애(Disability)는 구조 손상 그 자체를 의미한다.",
+      24:"불구(Handicap)는 기능손상만을 의미한다.",
+      25:"결함은 사회적 불이익, 장애는 구조 손상, 불구는 활동 제한이다.",
+      26:"질병의 자연사는 질병이 생긴 후 치료과정만 말한다.",
+      27:"질병의 자연사는 예방과 관계가 없다.",
+      28:"질병예방 3단계는 진단, 수술, 입원이다.",
+      29:"1차적 예방은 조기발견과 조기치료단계이다.",
+      30:"2차적 예방은 재활 및 사회복귀단계이다.",
+      31:"3차적 예방은 예방접종과 환경개선을 의미한다.",
+      32:"비전염성 질환의 2차적 예방은 전염기회 최소화를 의미한다.",
+      33:"공중보건학은 개인치료만을 위한 기술이다.",
+      34:"Winslow는 공중보건학을 병원행정이라고 정의하였다.",
+      35:"공중보건학의 목적은 병원 수익 향상이다.",
+      36:"예방의학은 지역사회 전체를, 공중보건학은 개인을 대상으로 한다.",
+      37:"공중보건학의 범위에는 보건관리가 포함되지 않는다.",
+      38:"공중보건학은 지역사회와 관련이 없다.",
+      39:"공중보건학의 발전과정에는 발전기가 없다.",
+      40:"Jenner는 콜레라 원인을 역학적으로 조사하였다.",
+      41:"Chadwick은 종두법을 개발하였다.",
+      42:"John Snow는 사회보험 제도를 도입하였다.",
+      43:"Alma-Ata 회의는 건강보험 급여만을 다루었다.",
+      44:"Ottawa 회의는 건강증진과 무관하다.",
+      45:"공중보건학은 조직화된 지역사회 노력이 필요 없다.",
+      46:"보건행정은 병원 수익 관리만을 의미한다.",
+      47:"Smillie는 보건행정을 개인진료 기술이라고 정의하였다.",
+      48:"보건행정의 특성에는 봉사성이 포함되지 않는다.",
+      49:"공공성 및 사회성은 보건행정과 무관하다.",
+      50:"조장성 및 교육성은 보건행정의 특징이 아니다.",
+      51:"봉사성은 현대국가 행정과 관계없다.",
+      52:"과학성은 보건행정에서 중요하지 않다.",
+      53:"POSDCORB는 예방, 간호, 처치, 재활을 뜻한다.",
+      54:"Planning(기획)은 사업 결과 보고만 의미한다.",
+      55:"Organizing(조직)은 예산 편성만 의미한다.",
+      56:"Staffing(인사)은 감염병 신고만 의미한다.",
+      57:"Directing(지휘)은 문서 보관을 의미한다.",
+      58:"의사결정은 정보수집 없이 이루어진다.",
+      59:"보건소는 중앙행정기관으로서 정책만 수립한다.",
+      60:"보건소의 감염병 예방 기능에는 예방접종이 포함되지 않는다.",
+      61:"보건소의 모자보건 기능은 노인 대상 사업이다.",
+      62:"보건소의 노인보건 기능은 영유아 예방접종만을 의미한다.",
+      63:"보건소의 정신보건 기능은 식품위생 관리만을 의미한다.",
+      64:"보건소의 방문보건 기능은 입원환자만 대상이다.",
+      65:"중앙보건행정조직은 방문보건만 담당한다.",
+      66:"보건복지부는 지방보건소의 하위기관이다.",
+      67:"보건복지부는 단일차관제만 운영한다.",
+      68:"제1차관은 보건·의료, 제2차관은 복지·인구를 담당한다.",
+      69:"장관 직속 조직에는 건강보험정책국만 있다.",
+      70:"제1차관과 제2차관은 같은 분야를 맡는다.",
+      71:"사회보장은 오직 의료서비스만을 의미한다.",
+      72:"사회보장의 체계에는 사회보험이 포함되지 않는다.",
+      73:"공적부조는 보험료 납부를 전제로 한다.",
+      74:"사회복지서비스는 강제가입 보험제도이다.",
+      75:"건강보험은 공적부조 방식만으로 운영된다.",
+      76:"의료급여는 모든 국민이 보험료를 내는 사회보험이다.",
+      77:"의료보장의 기능에는 위험분산이 포함되지 않는다.",
+      78:"WHO의 목적은 특정 국가의 보건만 향상시키는 것이다.",
+      79:"국제보건은 국경을 넘는 건강문제와 관련이 없다.",
+      80:"WHO의 역할에는 국제적 보건정책 조정이 포함되지 않는다."
     };
 
-    // ===== 4. 상태 =====
     let current = null;
-    let pool = [];
+    let currentPool = [];
     let examMode = false;
-    let examType = ""; // mcq / short
+    let examType = "";
     let examQuestions = [];
     let examIndex = 0;
     let examScore = 0;
     let examAnswered = false;
 
-    let stats = JSON.parse(localStorage.getItem("public_health_stats_final_3") || "{}");
-    let wrongNotes = JSON.parse(localStorage.getItem("public_health_wrong_notes_final_3") || "[]");
-    let userShortAnswers = JSON.parse(localStorage.getItem("public_health_user_short_answers_final_3") || "{}");
+    let stats = JSON.parse(localStorage.getItem("ph_stats_fast") || "{}");
+    let wrongNotes = JSON.parse(localStorage.getItem("ph_wrong_fast") || "[]");
+    let userShortAnswers = JSON.parse(localStorage.getItem("ph_short_fast") || "{}");
+
+    function saveAll() {
+      localStorage.setItem("ph_stats_fast", JSON.stringify(stats));
+      localStorage.setItem("ph_wrong_fast", JSON.stringify(wrongNotes));
+      localStorage.setItem("ph_short_fast", JSON.stringify(userShortAnswers));
+    }
 
     function initStats() {
       items.forEach(item => {
         if (!stats[item.id]) {
-          stats[item.id] = {
-            seen: false,
-            hard: false,
-            known: false,
-            correct: 0,
-            wrong: 0
-          };
+          stats[item.id] = { seen:false, hard:false, known:false, correct:0, wrong:0 };
         }
       });
       saveAll();
-    }
-
-    function saveAll() {
-      localStorage.setItem("public_health_stats_final_3", JSON.stringify(stats));
-      localStorage.setItem("public_health_wrong_notes_final_3", JSON.stringify(wrongNotes));
-      localStorage.setItem("public_health_user_short_answers_final_3", JSON.stringify(userShortAnswers));
     }
 
     function shuffle(arr) {
@@ -1353,19 +477,29 @@
       return a;
     }
 
-    function pick(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
+    function clearBoxes() {
+      document.getElementById("choicesBox").innerHTML = "";
+      document.getElementById("answerBox").style.display = "none";
+      document.getElementById("answerBox").textContent = "";
+      document.getElementById("compareBox").style.display = "none";
+      document.getElementById("compareBox").textContent = "";
+      document.getElementById("wrongBox").style.display = "none";
+      document.getElementById("wrongBox").textContent = "";
     }
 
-    function normalizeText(text) {
-      return text.replace(/\s+/g, " ").trim();
-    }
+    function updateStats() {
+      document.getElementById("totalStat").textContent = items.length;
+      document.getElementById("seenStat").textContent = items.filter(x => stats[x.id].seen).length;
+      document.getElementById("hardStat").textContent = items.filter(x => stats[x.id].hard).length;
+      document.getElementById("knownStat").textContent = items.filter(x => stats[x.id].known).length;
+      document.getElementById("savedStat").textContent = Object.keys(userShortAnswers).length;
 
-    function getModeLabel(mode) {
-      if (mode === "short") return "서술형";
-      if (mode === "mcq") return "객관식 4지선다";
-      if (mode === "ox") return "OX";
-      return mode;
+      let c = 0, t = 0;
+      items.forEach(x => {
+        c += stats[x.id].correct;
+        t += stats[x.id].correct + stats[x.id].wrong;
+      });
+      document.getElementById("accStat").textContent = (t ? Math.round(c/t*100) : 0) + "%";
     }
 
     function getFiltered() {
@@ -1385,145 +519,90 @@
       });
     }
 
-    function updateStats() {
-      document.getElementById("totalStat").textContent = items.length;
-      document.getElementById("seenStat").textContent = items.filter(x => stats[x.id].seen).length;
-      document.getElementById("hardStat").textContent = items.filter(x => stats[x.id].hard).length;
-      document.getElementById("knownStat").textContent = items.filter(x => stats[x.id].known).length;
-
-      let correct = 0;
-      let total = 0;
-      items.forEach(x => {
-        correct += stats[x.id].correct;
-        total += stats[x.id].correct + stats[x.id].wrong;
-      });
-
-      const acc = total ? Math.round((correct / total) * 100) : 0;
-      document.getElementById("accStat").textContent = acc + "%";
-      document.getElementById("shortSavedStat").textContent = Object.keys(userShortAnswers).length;
+    function renderShort(item) {
+      document.getElementById("shortArea").style.display = "block";
+      document.getElementById("questionBox").textContent = item.question;
+      document.getElementById("userAnswer").value = userShortAnswers[item.id] || "";
     }
 
-    function clearDisplay() {
-      document.getElementById("choicesBox").innerHTML = "";
-      document.getElementById("answerBox").style.display = "none";
-      document.getElementById("answerBox").textContent = "";
-      document.getElementById("wrongNoteArea").innerHTML = "";
-      document.getElementById("compareBox").style.display = "none";
-      document.getElementById("compareBox").textContent = "";
+    function getWrongChoices(item) {
+      const samePart = items.filter(x => x.part === item.part && x.id !== item.id).map(x => x.answer);
+      const fallback = items.filter(x => x.id !== item.id).map(x => x.answer);
+      const pool = [...new Set([...samePart, ...fallback])].filter(x => x !== item.answer);
+      return shuffle(pool).slice(0, 3);
     }
 
-    function showShortArea(show) {
-      document.getElementById("shortAnswerArea").style.display = show ? "block" : "none";
-    }
-
-    function loadUserAnswer() {
-      const box = document.getElementById("userAnswerInput");
-      if (!current) {
-        box.value = "";
-        return;
-      }
-      box.value = userShortAnswers[current.id] || "";
-    }
-
-    function saveUserAnswer() {
-      if (!current) return;
-      const val = document.getElementById("userAnswerInput").value;
-      userShortAnswers[current.id] = val;
-      saveAll();
-      updateStats();
-      alert("내 답을 저장했어.");
-      if (examMode && examType === "short") {
-        examAnswered = val.trim().length > 0;
-        updateExamStatus();
-      }
-    }
-
-    function compareAnswer() {
-      if (!current) return;
-      const myAnswer = document.getElementById("userAnswerInput").value.trim();
-      const box = document.getElementById("compareBox");
-      box.style.display = "block";
-      box.textContent = `내 답:\n${myAnswer || "(작성 안 함)"}\n\n모범답안:\n${current.answer}`;
-    }
-
-    function addWrongNote(item, userChoice, correctAnswer, modeLabel) {
-      const note = {
-        time: new Date().toLocaleString(),
-        part: item.part,
-        mode: modeLabel,
-        question: item.question,
-        userChoice: userChoice,
-        correctAnswer: correctAnswer,
-        answer: item.answer
-      };
-      wrongNotes.unshift(note);
-      if (wrongNotes.length > 120) wrongNotes = wrongNotes.slice(0, 120);
-      saveAll();
-    }
-
-    // ===== 5. 렌더링 =====
-    function renderMCQ(item, isExam) {
-      const cBox = document.getElementById("choicesBox");
-      cBox.innerHTML = "";
-
-      const set = mcqMap[item.id];
-      const qText = set ? set.q : item.question;
-      const choices = set ? set.choices : [item.answer];
-      const answerIndex = set ? set.answer : 0;
-
-      document.getElementById("questionBox").textContent = qText;
+    function renderMCQ(item, isExam=false) {
+      document.getElementById("questionBox").textContent = item.question;
+      const choices = shuffle([item.answer, ...getWrongChoices(item)]);
+      const correctAnswer = item.answer;
+      const box = document.getElementById("choicesBox");
+      box.innerHTML = "";
 
       choices.forEach((choice, idx) => {
         const btn = document.createElement("button");
         btn.className = "choice";
-        btn.textContent = `${idx + 1}. ${choice}`;
+        btn.textContent = `${idx+1}. ${choice}`;
         btn.onclick = () => {
           const all = Array.from(document.querySelectorAll(".choice"));
           all.forEach(b => b.disabled = true);
 
-          if (idx === answerIndex) {
+          if (choice === correctAnswer) {
             btn.classList.add("correct");
             stats[item.id].correct += 1;
             if (isExam) examScore++;
           } else {
             btn.classList.add("wrong");
-            all[answerIndex].classList.add("correct");
+            all.forEach(b => {
+              const txt = b.textContent.replace(/^\d+\.\s*/, "");
+              if (txt === correctAnswer) b.classList.add("correct");
+            });
             stats[item.id].wrong += 1;
-            addWrongNote(item, choice, choices[answerIndex], isExam ? "모의고사 객관식" : "객관식");
+            wrongNotes.unshift({
+              time: new Date().toLocaleString(),
+              part: item.part,
+              mode: isExam ? "모의고사 객관식" : "객관식",
+              question: item.question,
+              userChoice: choice,
+              correctAnswer: correctAnswer,
+              answer: item.answer
+            });
+            if (wrongNotes.length > 120) wrongNotes = wrongNotes.slice(0,120);
           }
 
           saveAll();
-          const aBox = document.getElementById("answerBox");
-          aBox.style.display = "block";
-          aBox.textContent = `정답: ${choices[answerIndex]}\n\n모범답안:\n${item.answer}`;
           updateStats();
+
+          const ans = document.getElementById("answerBox");
+          ans.style.display = "block";
+          ans.textContent = `정답: ${correctAnswer}\n\n모범답안:\n${item.answer}`;
 
           if (isExam) {
             examAnswered = true;
             updateExamStatus();
           }
         };
-        cBox.appendChild(btn);
+        box.appendChild(btn);
       });
     }
 
-    function renderOX(item, isExam) {
-      const cBox = document.getElementById("choicesBox");
-      cBox.innerHTML = "";
-
+    function renderOX(item, isExam=false) {
+      document.getElementById("questionBox").textContent = item.question;
       const isTrue = Math.random() < 0.5;
       const statement = isTrue ? item.answer : oxFalseMap[item.id];
+      const box = document.getElementById("choicesBox");
+      box.innerHTML = "";
 
-      const box = document.createElement("div");
-      box.style.padding = "12px";
-      box.style.border = "1px solid #e5e7eb";
-      box.style.borderRadius = "12px";
-      box.style.background = "#f9fafb";
-      box.style.lineHeight = "1.75";
-      box.innerHTML = `<strong>판단 문장</strong><br>${statement}`;
-      cBox.appendChild(box);
+      const statementDiv = document.createElement("div");
+      statementDiv.style.padding = "12px";
+      statementDiv.style.background = "#f9fafb";
+      statementDiv.style.border = "1px solid #e5e7eb";
+      statementDiv.style.borderRadius = "12px";
+      statementDiv.style.lineHeight = "1.7";
+      statementDiv.innerHTML = `<strong>판단 문장</strong><br>${statement}`;
+      box.appendChild(statementDiv);
 
-      ["O", "X"].forEach(mark => {
+      ["O","X"].forEach(mark => {
         const btn = document.createElement("button");
         btn.className = "choice";
         btn.textContent = mark;
@@ -1540,68 +619,66 @@
           } else {
             btn.classList.add("wrong");
             stats[item.id].wrong += 1;
-            addWrongNote(item, mark, isTrue ? "O" : "X", isExam ? "모의고사 OX" : "OX");
+            wrongNotes.unshift({
+              time: new Date().toLocaleString(),
+              part: item.part,
+              mode: isExam ? "모의고사 OX" : "OX",
+              question: item.question,
+              userChoice: mark,
+              correctAnswer: isTrue ? "O" : "X",
+              answer: item.answer
+            });
+            if (wrongNotes.length > 120) wrongNotes = wrongNotes.slice(0,120);
           }
 
           saveAll();
-          const aBox = document.getElementById("answerBox");
-          aBox.style.display = "block";
-          aBox.textContent = `정답: ${isTrue ? "O" : "X"}\n\n모범답안:\n${item.answer}`;
           updateStats();
+
+          const ans = document.getElementById("answerBox");
+          ans.style.display = "block";
+          ans.textContent = `정답: ${isTrue ? "O" : "X"}\n\n모범답안:\n${item.answer}`;
 
           if (isExam) {
             examAnswered = true;
             updateExamStatus();
           }
         };
-        cBox.appendChild(btn);
+        box.appendChild(btn);
       });
     }
 
-    function renderShort(item) {
-      document.getElementById("questionBox").textContent = item.question;
-      showShortArea(true);
-      loadUserAnswer();
-    }
-
-    function render() {
+    function renderNormal() {
       if (examMode) return;
 
+      clearBoxes();
+      currentPool = getFiltered();
       const mode = document.getElementById("mode").value;
-      pool = getFiltered();
-      clearDisplay();
 
-      document.getElementById("badgeMode").textContent = getModeLabel(mode);
-      document.getElementById("badgeCount").textContent = `현재 조건 ${pool.length}문제`;
+      document.getElementById("badgeMode").textContent = mode === "short" ? "서술형" : mode === "mcq" ? "객관식 4지선다" : "OX";
+      document.getElementById("badgeCount").textContent = `현재 조건 ${currentPool.length}문제`;
 
-      if (pool.length === 0) {
-        current = null;
-        document.getElementById("questionBox").textContent = "조건에 맞는 문제가 없습니다.";
-        document.getElementById("badgePart").textContent = "없음";
-        document.getElementById("metaText").textContent = "필터나 검색 조건을 바꿔보세요.";
-        showShortArea(false);
-        updateStats();
+      if (currentPool.length === 0) {
+        document.getElementById("metaText").textContent = "조건에 맞는 문제가 없습니다.";
+        document.getElementById("questionBox").textContent = "필터나 검색 조건을 바꿔보세요.";
+        document.getElementById("shortArea").style.display = "none";
         return;
       }
 
-      current = pick(pool);
+      current = currentPool[Math.floor(Math.random() * currentPool.length)];
       stats[current.id].seen = true;
       saveAll();
+      updateStats();
 
       document.getElementById("badgePart").textContent = current.part;
       document.getElementById("metaText").textContent = `파트: ${current.part}`;
-      document.getElementById("answerBox").textContent = current.answer;
 
       if (mode === "short") {
         renderShort(current);
       } else {
-        showShortArea(false);
-        document.getElementById("questionBox").textContent = current.question;
+        document.getElementById("shortArea").style.display = "none";
         if (mode === "mcq") renderMCQ(current, false);
         if (mode === "ox") renderOX(current, false);
       }
-
-      updateStats();
     }
 
     function showAnswer() {
@@ -1611,10 +688,32 @@
       if (mode === "short") {
         compareAnswer();
       } else {
-        const aBox = document.getElementById("answerBox");
-        aBox.style.display = "block";
-        aBox.textContent = current.answer;
+        const ans = document.getElementById("answerBox");
+        ans.style.display = "block";
+        ans.textContent = current.answer;
       }
+    }
+
+    function saveShort() {
+      if (!current) return;
+      const val = document.getElementById("userAnswer").value;
+      userShortAnswers[current.id] = val;
+      saveAll();
+      updateStats();
+      alert("내 답을 저장했어.");
+
+      if (examMode && examType === "short") {
+        examAnswered = val.trim().length > 0;
+        updateExamStatus();
+      }
+    }
+
+    function compareAnswer() {
+      if (!current) return;
+      const mine = document.getElementById("userAnswer").value.trim();
+      const box = document.getElementById("compareBox");
+      box.style.display = "block";
+      box.textContent = `내 답:\n${mine || "(작성 안 함)"}\n\n모범답안:\n${current.answer}`;
     }
 
     function markKnown() {
@@ -1634,68 +733,43 @@
       alert("어려움 문제로 표시했어.");
     }
 
-    function renderWrongNotes() {
-      const area = document.getElementById("wrongNoteArea");
+    function showWrongNotes() {
+      const box = document.getElementById("wrongBox");
       if (wrongNotes.length === 0) {
-        area.innerHTML = `<div class="wrong-note"><strong>오답노트</strong>\n아직 기록된 오답이 없어.</div>`;
+        box.style.display = "block";
+        box.textContent = "아직 기록된 오답이 없어.";
         return;
       }
-
-      let html = `<div class="wrong-note"><div class="section-title">오답노트</div>`;
+      let text = "오답노트\n\n";
       wrongNotes.slice(0, 25).forEach((n, i) => {
-        html += `${i + 1}. [${n.part}] ${n.question}
-- 내가 고른 답: ${n.userChoice}
-- 정답: ${n.correctAnswer}
-- 모범답안: ${n.answer}
-- 기록 시각: ${n.time}
-
-`;
+        text += `${i+1}. [${n.part}] ${n.question}\n- 내가 고른 답: ${n.userChoice}\n- 정답: ${n.correctAnswer}\n- 모범답안: ${n.answer}\n- 기록 시각: ${n.time}\n\n`;
       });
-      html += `</div>`;
-      area.innerHTML = html;
-    }
-
-    // ===== 6. 시험 모드 =====
-    function startMcqExam() {
-      examMode = true;
-      examType = "mcq";
-      examIndex = 0;
-      examScore = 0;
-      examAnswered = false;
-      clearDisplay();
-      showShortArea(false);
-
-      examQuestions = shuffle(items).slice(0, 20);
-      document.getElementById("examBox").style.display = "block";
-      renderExamQuestion();
-    }
-
-    function startShortExam() {
-      examMode = true;
-      examType = "short";
-      examIndex = 0;
-      examScore = 0;
-      examAnswered = false;
-      clearDisplay();
-
-      examQuestions = shuffle(items).slice(0, 10);
-      document.getElementById("examBox").style.display = "block";
-      renderExamQuestion();
+      box.style.display = "block";
+      box.textContent = text;
     }
 
     function updateExamStatus() {
-      const total = examQuestions.length || 0;
-      const typeText = examType === "mcq" ? "객관식 20문제" : "서술형 10문제";
-      const extra = examType === "mcq"
-        ? `현재 점수 ${examScore}점`
-        : `작성 여부 ${examAnswered ? "완료" : "미완료"}`;
+      const box = document.getElementById("examBox");
+      const btns = document.getElementById("examControlBtns");
 
-      document.getElementById("examStatus").textContent =
-        `${typeText} | 문항 ${examIndex + 1} / ${total} | ${extra}`;
+      if (!examMode) {
+        box.style.display = "none";
+        btns.style.display = "none";
+        return;
+      }
+
+      box.style.display = "block";
+      btns.style.display = "flex";
+
+      if (examType === "mcq") {
+        box.textContent = `객관식 20문제 시험 | 문항 ${examIndex+1}/${examQuestions.length} | 현재 점수 ${examScore}점 | ${examAnswered ? "답안 선택 완료" : "답안 선택 전"}`;
+      } else {
+        box.textContent = `서술형 10문제 시험 | 문항 ${examIndex+1}/${examQuestions.length} | ${examAnswered ? "작성 완료" : "작성 미완료"}`;
+      }
     }
 
     function renderExamQuestion() {
-      clearDisplay();
+      clearBoxes();
 
       if (examIndex >= examQuestions.length) {
         finishExam();
@@ -1705,27 +779,43 @@
       current = examQuestions[examIndex];
       stats[current.id].seen = true;
       saveAll();
+      updateStats();
 
       document.getElementById("badgePart").textContent = current.part;
       document.getElementById("badgeMode").textContent = examType === "mcq" ? "객관식 시험" : "서술형 시험";
-      document.getElementById("badgeCount").textContent = `시험 ${examIndex + 1}/${examQuestions.length}`;
+      document.getElementById("badgeCount").textContent = `시험 ${examIndex+1}/${examQuestions.length}`;
       document.getElementById("metaText").textContent = "시험 모드 진행 중";
-      document.getElementById("answerBox").textContent = current.answer;
 
       if (examType === "mcq") {
-        showShortArea(false);
-        document.getElementById("questionBox").textContent = current.question;
-        examAnswered = false;
+        document.getElementById("shortArea").style.display = "none";
         renderMCQ(current, true);
+        examAnswered = false;
       } else {
+        document.getElementById("shortArea").style.display = "block";
         document.getElementById("questionBox").textContent = current.question;
-        showShortArea(true);
-        loadUserAnswer();
+        document.getElementById("userAnswer").value = userShortAnswers[current.id] || "";
         examAnswered = (userShortAnswers[current.id] || "").trim().length > 0;
       }
 
       updateExamStatus();
-      updateStats();
+    }
+
+    function startMcqExam() {
+      examMode = true;
+      examType = "mcq";
+      examIndex = 0;
+      examScore = 0;
+      examQuestions = shuffle(items).slice(0,20);
+      renderExamQuestion();
+    }
+
+    function startShortExam() {
+      examMode = true;
+      examType = "short";
+      examIndex = 0;
+      examScore = 0;
+      examQuestions = shuffle(items).slice(0,10);
+      renderExamQuestion();
     }
 
     function nextExamQuestion() {
@@ -1737,7 +827,7 @@
       }
 
       if (examType === "short") {
-        const val = document.getElementById("userAnswerInput").value.trim();
+        const val = document.getElementById("userAnswer").value.trim();
         userShortAnswers[current.id] = val;
         saveAll();
         examAnswered = val.length > 0;
@@ -1748,32 +838,23 @@
     }
 
     function finishExam() {
-      if (!examMode) return;
+      clearBoxes();
+      document.getElementById("shortArea").style.display = "none";
 
-      clearDisplay();
-      showShortArea(false);
-
-      let resultText = "";
       if (examType === "mcq") {
-        resultText = `객관식 시험 종료! 총점: ${examScore} / ${examQuestions.length}`;
+        document.getElementById("questionBox").textContent = `객관식 시험 종료! 총점: ${examScore} / ${examQuestions.length}`;
       } else {
-        const answeredCount = examQuestions.filter(q => (userShortAnswers[q.id] || "").trim().length > 0).length;
-        resultText = `서술형 시험 종료! 작성한 문항 수: ${answeredCount} / ${examQuestions.length}`;
+        const answered = examQuestions.filter(q => (userShortAnswers[q.id] || "").trim().length > 0).length;
+        document.getElementById("questionBox").textContent = `서술형 시험 종료! 작성한 문항 수: ${answered} / ${examQuestions.length}`;
       }
 
-      document.getElementById("questionBox").textContent = resultText;
-      document.getElementById("metaText").textContent = "오답노트 보기 또는 서술형 비교 기능으로 복습해봐.";
-      document.getElementById("badgePart").textContent = "시험 종료";
-      document.getElementById("badgeMode").textContent = "결과";
-      document.getElementById("badgeCount").textContent = examType === "mcq" ? `점수 ${examScore}/${examQuestions.length}` : `서술 ${examQuestions.length}문항`;
+      document.getElementById("metaText").textContent = "오답노트 보기나 서술형 비교 기능으로 복습해봐.";
       document.getElementById("examBox").style.display = "none";
-
+      document.getElementById("examControlBtns").style.display = "none";
       examMode = false;
       examType = "";
-      updateStats();
     }
 
-    // ===== 7. 초기화 =====
     function resetAll() {
       if (!confirm("학습 기록, 오답노트, 서술형 답안을 모두 초기화할까요?")) return;
       stats = {};
@@ -1785,34 +866,35 @@
       examIndex = 0;
       examScore = 0;
       examAnswered = false;
-      document.getElementById("examBox").style.display = "none";
       initStats();
-      render();
       updateStats();
+      clearBoxes();
+      document.getElementById("examBox").style.display = "none";
+      document.getElementById("examControlBtns").style.display = "none";
+      renderNormal();
     }
 
-    // ===== 8. 이벤트 =====
-    document.getElementById("newBtn").addEventListener("click", render);
-    document.getElementById("showAnswerBtn").addEventListener("click", showAnswer);
+    document.getElementById("newBtn").addEventListener("click", renderNormal);
+    document.getElementById("showBtn").addEventListener("click", showAnswer);
     document.getElementById("knownBtn").addEventListener("click", markKnown);
     document.getElementById("hardBtn").addEventListener("click", markHard);
-    document.getElementById("wrongNoteBtn").addEventListener("click", renderWrongNotes);
+    document.getElementById("wrongBtn").addEventListener("click", showWrongNotes);
     document.getElementById("resetBtn").addEventListener("click", resetAll);
-    document.getElementById("startMcqExamBtn").addEventListener("click", startMcqExam);
-    document.getElementById("startShortExamBtn").addEventListener("click", startShortExam);
+    document.getElementById("mcqExamBtn").addEventListener("click", startMcqExam);
+    document.getElementById("shortExamBtn").addEventListener("click", startShortExam);
+    document.getElementById("saveShortBtn").addEventListener("click", saveShort);
+    document.getElementById("compareBtn").addEventListener("click", compareAnswer);
     document.getElementById("nextExamBtn").addEventListener("click", nextExamQuestion);
     document.getElementById("finishExamBtn").addEventListener("click", finishExam);
-    document.getElementById("saveUserAnswerBtn").addEventListener("click", saveUserAnswer);
-    document.getElementById("compareAnswerBtn").addEventListener("click", compareAnswer);
 
-    document.getElementById("mode").addEventListener("change", () => { if (!examMode) render(); });
-    document.getElementById("part").addEventListener("change", () => { if (!examMode) render(); });
-    document.getElementById("filter").addEventListener("change", () => { if (!examMode) render(); });
-    document.getElementById("search").addEventListener("input", () => { if (!examMode) render(); });
+    document.getElementById("mode").addEventListener("change", () => { if (!examMode) renderNormal(); });
+    document.getElementById("part").addEventListener("change", () => { if (!examMode) renderNormal(); });
+    document.getElementById("filter").addEventListener("change", () => { if (!examMode) renderNormal(); });
+    document.getElementById("search").addEventListener("input", () => { if (!examMode) renderNormal(); });
 
     initStats();
     updateStats();
-    render();
+    renderNormal();
   </script>
 </body>
 </html>
