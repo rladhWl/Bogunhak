@@ -3,48 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공중보건학 암기 어플</title>
+  <title>보건학 암기앱 확장판</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      background: #f4f7fb;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      background: #f3f6fb;
       color: #1f2937;
     }
-    .wrap {
-      max-width: 1000px;
+    .container {
+      max-width: 1100px;
       margin: 0 auto;
       padding: 20px;
     }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
-    .sub {
-      margin-bottom: 20px;
+    h1 { margin: 0 0 10px; font-size: 30px; }
+    .subtitle {
       color: #6b7280;
+      margin-bottom: 20px;
+      line-height: 1.6;
     }
-    .panel {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      margin-bottom: 16px;
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
     }
-    .controls {
+    .grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0,1fr));
       gap: 12px;
     }
-    .controls > div {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
     label {
+      display: block;
       font-size: 14px;
       font-weight: 700;
+      margin-bottom: 6px;
     }
     select, input[type="text"] {
       width: 100%;
@@ -53,7 +48,7 @@
       border-radius: 10px;
       font-size: 14px;
     }
-    .btn-row {
+    .btns {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
@@ -67,106 +62,131 @@
       font-weight: 700;
       cursor: pointer;
     }
-    .primary { background: #2563eb; color: white; }
+    .primary { background: #2563eb; color: #fff; }
     .secondary { background: #e5e7eb; color: #111827; }
-    .good { background: #16a34a; color: white; }
-    .bad { background: #dc2626; color: white; }
-    .warn { background: #f59e0b; color: white; }
-    .card-title {
+    .good { background: #16a34a; color: #fff; }
+    .warn { background: #f59e0b; color: #fff; }
+    .danger { background: #dc2626; color: #fff; }
+    .purple { background: #7c3aed; color: #fff; }
+
+    .badges {
       display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 12px;
       flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
     }
     .badge {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
       background: #dbeafe;
       color: #1d4ed8;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 700;
     }
-    .q {
+    .question {
       font-size: 22px;
-      line-height: 1.6;
       font-weight: 800;
-      margin: 12px 0 16px;
+      line-height: 1.6;
+      margin: 14px 0;
     }
-    .answer {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 14px;
-      white-space: pre-line;
-      line-height: 1.7;
-      display: none;
+    .desc {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 10px;
+      line-height: 1.6;
     }
     .choices {
       display: grid;
       gap: 10px;
       margin: 16px 0;
     }
-    .choice-btn {
+    .choice {
       width: 100%;
       text-align: left;
       background: #f3f4f6;
       color: #111827;
       border: 1px solid #d1d5db;
     }
-    .choice-btn.correct {
+    .choice.correct {
       background: #dcfce7;
       border-color: #16a34a;
       color: #166534;
     }
-    .choice-btn.wrong {
+    .choice.wrong {
       background: #fee2e2;
       border-color: #dc2626;
       color: #991b1b;
     }
+    .answer {
+      display: none;
+      white-space: pre-line;
+      line-height: 1.75;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 10px;
+    }
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
+      grid-template-columns: repeat(5, minmax(0,1fr));
       gap: 12px;
     }
     .stat {
       background: white;
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
       text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
     }
     .stat .num {
       font-size: 28px;
       font-weight: 800;
       color: #2563eb;
     }
-    .muted { color: #6b7280; }
-    .small { font-size: 13px; }
-    @media (max-width: 800px) {
-      .controls, .stats {
-        grid-template-columns: 1fr 1fr;
-      }
-      .q { font-size: 19px; }
+    .exam-box {
+      display: none;
+      margin-top: 16px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      line-height: 1.7;
+    }
+    .wrong-note {
+      margin-top: 12px;
+      padding: 14px;
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      border-radius: 12px;
+      white-space: pre-line;
+      line-height: 1.7;
+    }
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    @media (max-width: 840px) {
+      .grid, .stats { grid-template-columns: 1fr 1fr; }
+      .question { font-size: 19px; }
     }
     @media (max-width: 520px) {
-      .controls, .stats {
-        grid-template-columns: 1fr;
-      }
+      .grid, .stats { grid-template-columns: 1fr; }
+      .btns { flex-direction: column; }
       button { width: 100%; }
-      .btn-row { flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>공중보건학 암기 어플</h1>
-    <div class="sub">서술형 · 4지선다 · OX로 1강 / 11강 / 12강 필수 암기 문제를 연습할 수 있어.</div>
+  <div class="container">
+    <h1>보건학 암기앱 확장판</h1>
+    <div class="subtitle">
+      보건학 주요 범위: 건강 개념, 질병과 예방, 공중보건학, 보건행정, 보건소, 보건복지부, 사회보장, 건강보험, WHO 등
+    </div>
 
-    <div class="panel">
-      <div class="controls">
+    <div class="card">
+      <div class="grid">
         <div>
           <label for="mode">학습 모드</label>
           <select id="mode">
@@ -176,49 +196,63 @@
           </select>
         </div>
         <div>
-          <label for="part">파트 선택</label>
+          <label for="part">파트</label>
           <select id="part">
             <option value="all">전체</option>
-            <option value="1강">1강</option>
-            <option value="11강">11강</option>
-            <option value="12강">12강</option>
+            <option value="건강개념">건강개념</option>
+            <option value="질병과 예방">질병과 예방</option>
+            <option value="공중보건학">공중보건학</option>
+            <option value="보건행정">보건행정</option>
+            <option value="보건소와 조직">보건소와 조직</option>
+            <option value="사회보장과 건강보험">사회보장과 건강보험</option>
+            <option value="국제보건">국제보건</option>
           </select>
         </div>
         <div>
-          <label for="filter">문제 필터</label>
+          <label for="filter">필터</label>
           <select id="filter">
             <option value="all">전체 문제</option>
-            <option value="wrong">어려움 표시 문제만</option>
+            <option value="hard">어려움 표시 문제만</option>
             <option value="unseen">아직 안 본 문제만</option>
           </select>
         </div>
         <div>
           <label for="search">검색</label>
-          <input type="text" id="search" placeholder="예: 보건소, 질병의 자연사" />
+          <input id="search" type="text" placeholder="예: 보건소, POSDCORB, 건강보험" />
         </div>
       </div>
 
-      <div class="btn-row">
+      <div class="btns">
         <button class="primary" id="newBtn">새 문제</button>
         <button class="secondary" id="showAnswerBtn">정답 보기</button>
-        <button class="good" id="markKnownBtn">외웠음</button>
-        <button class="warn" id="markHardBtn">어려움</button>
-        <button class="secondary" id="resetBtn">기록 초기화</button>
+        <button class="good" id="knownBtn">외웠음</button>
+        <button class="warn" id="hardBtn">어려움</button>
+        <button class="purple" id="startExamBtn">20문제 모의고사 시작</button>
+        <button class="secondary" id="wrongNoteBtn">오답노트 보기</button>
+        <button class="danger" id="resetBtn">기록 초기화</button>
+      </div>
+
+      <div class="exam-box" id="examBox">
+        <div><strong>모의고사 모드</strong></div>
+        <div id="examStatus">모의고사 준비 중...</div>
+        <div class="btns" style="margin-top:10px;">
+          <button class="primary" id="nextExamBtn">다음 문제</button>
+          <button class="secondary" id="finishExamBtn">모의고사 종료</button>
+        </div>
       </div>
     </div>
 
-    <div class="panel">
-      <div class="card-title">
-        <div>
-          <span class="badge" id="partBadge">파트</span>
-          <span class="badge" id="modeBadge">모드</span>
-        </div>
-        <div class="muted small" id="progressText">문제를 불러오는 중...</div>
+    <div class="card">
+      <div class="badges">
+        <span class="badge" id="badgePart">파트</span>
+        <span class="badge" id="badgeMode">모드</span>
+        <span class="badge" id="badgeCount">문제 수</span>
       </div>
-
-      <div class="q" id="questionBox">문제가 여기에 표시됩니다.</div>
+      <div class="desc" id="metaText">문제를 불러오는 중...</div>
+      <div class="question" id="questionBox">문제가 여기에 표시됩니다.</div>
       <div class="choices" id="choicesBox"></div>
       <div class="answer" id="answerBox"></div>
+      <div id="wrongNoteArea"></div>
     </div>
 
     <div class="stats">
@@ -235,6 +269,10 @@
         <div>어려운 문제</div>
       </div>
       <div class="stat">
+        <div class="num" id="knownStat">0</div>
+        <div>외운 문제</div>
+      </div>
+      <div class="stat">
         <div class="num" id="accStat">0%</div>
         <div>객관식/OX 정답률</div>
       </div>
@@ -242,262 +280,131 @@
   </div>
 
   <script>
-    const data = [
-      // 1강
-      {
-        id: 1,
-        part: "1강",
-        question: "건강의 정의를 서술하시오.",
-        answer: "건강이란 단순히 질병이나 허약이 없는 상태가 아니라 신체적, 정신적, 사회적으로 완전한 안녕 상태를 의미한다."
-      },
-      {
-        id: 2,
-        part: "1강",
-        question: "사회적 건강의 의미를 설명하시오.",
-        answer: "사회적 건강이란 개인이 사회 속에서 원만한 인간관계를 유지하고 사회적 역할과 책임을 효과적으로 수행하며 사회생활에 잘 적응하는 상태를 의미한다."
-      },
-      {
-        id: 3,
-        part: "1강",
-        question: "건강개념의 변천에서 제시된 4가지 모형을 쓰시오.",
-        answer: "생태학적 모형, 사회생태학적 모형, WHO 모형, 전인적 모형이다."
-      },
-      {
-        id: 4,
-        part: "1강",
-        question: "Claude Bernard의 건강관을 설명하시오.",
-        answer: "Claude Bernard는 건강을 외부환경이 변해도 내부환경의 항상성이 유지되는 상태로 보았다."
-      },
-      {
-        id: 5,
-        part: "1강",
-        question: "Wylie의 건강관을 설명하시오.",
-        answer: "Wylie는 건강을 유기체가 외부환경의 조건에 부단히 잘 적응해 나가는 상태로 설명하였다."
-      },
-      {
-        id: 6,
-        part: "1강",
-        question: "Parson의 건강관을 설명하시오.",
-        answer: "Parson은 건강을 각 개인이 사회적 역할과 임무를 효과적으로 수행할 수 있는 최적의 상태로 보았다."
-      },
-      {
-        id: 7,
-        part: "1강",
-        question: "결함, 장애, 불구의 개념을 비교하여 설명하시오.",
-        answer: "결함은 심리적, 생리적, 해부학적 구조나 기능의 상실 또는 이상이다. 장애는 결함으로 인해 정상적인 활동 수행 능력이 제한되거나 결여된 상태이다. 불구는 결함이나 장애로 인해 사회적 역할 수행에 제한을 받는 사회적 불이익 상태이다."
-      },
-      {
-        id: 8,
-        part: "1강",
-        question: "질병의 자연사를 예방적 관점에서 설명하시오.",
-        answer: "질병의 자연사는 질병 발생 전부터 회복 또는 사망에 이르기까지의 전 과정을 말한다. 예방적 관점에서는 1차 예방은 질병발생 전 건강증진과 특수예방, 2차 예방은 조기발견과 조기치료, 3차 예방은 재활과 후유증 최소화를 의미한다."
-      },
-      {
-        id: 9,
-        part: "1강",
-        question: "1차 예방을 설명하시오.",
-        answer: "1차 예방은 질병발생 이전 단계에서 실시하는 예방으로 건강증진과 특수예방을 통해 질병발생 자체를 막는 것이다."
-      },
-      {
-        id: 10,
-        part: "1강",
-        question: "2차 예방을 설명하시오.",
-        answer: "2차 예방은 질병을 조기에 발견하고 조기에 치료하여 질병의 진행을 막고 예후를 좋게 하는 것이다."
-      },
-      {
-        id: 11,
-        part: "1강",
-        question: "3차 예방을 설명하시오.",
-        answer: "3차 예방은 질병으로 인한 후유증과 장애를 최소화하고 재활과 사회복귀를 돕는 것이다."
-      },
-      {
-        id: 12,
-        part: "1강",
-        question: "공중보건학의 정의를 서술하시오.",
-        answer: "공중보건학은 조직화된 지역사회의 노력을 통해 질병을 예방하고 수명을 연장하며 건강과 능률을 증진시키는 과학이자 기술이다."
-      },
-      {
-        id: 13,
-        part: "1강",
-        question: "공중보건학과 예방의학을 비교하시오.",
-        answer: "예방의학은 개인과 가족을 대상으로 질병예방과 건강증진을 다루는 학문이고, 공중보건학은 지역사회 주민 전체를 대상으로 집단건강 향상을 도모하는 학문이다."
-      },
-      {
-        id: 14,
-        part: "1강",
-        question: "건강과 질병의 결정요인을 설명하시오.",
-        answer: "건강과 질병은 생물학적 요인, 유전적 요인, 생활양식, 사회경제적 환경, 문화적 요인, 정치적 요인, 보건의료체계 등 복합적 요인에 의해 결정된다."
-      },
-      {
-        id: 15,
-        part: "1강",
-        question: "공중보건학의 발전과정을 시대별로 설명하시오.",
-        answer: "공중보건학의 발전과정은 고대기, 중세기, 여명기, 확립기, 발전기로 구분할 수 있다."
-      },
+    const items = [
+      // 건강개념
+      {id:1, part:"건강개념", question:"건강의 정의를 설명하시오.", answer:"건강이란 단순히 질병이나 허약이 없는 상태가 아니라 신체적, 정신적, 사회적으로 완전한 안녕 상태를 의미한다."},
+      {id:2, part:"건강개념", question:"WHO의 건강 정의를 설명하시오.", answer:"WHO는 건강을 단순히 질병이나 허약이 없는 상태가 아니라 신체적, 정신적, 사회적으로 완전한 안녕 상태라고 정의하였다."},
+      {id:3, part:"건강개념", question:"사회적 건강의 의미를 설명하시오.", answer:"사회적 건강이란 개인이 사회 속에서 원만한 인간관계를 유지하고 사회적 역할과 책임을 효과적으로 수행하며 사회생활에 잘 적응하는 상태를 의미한다."},
+      {id:4, part:"건강개념", question:"Claude Bernard의 건강관을 설명하시오.", answer:"Claude Bernard는 건강을 외부환경의 변화에도 내부환경의 항상성이 유지되는 상태로 보았다."},
+      {id:5, part:"건강개념", question:"Wylie의 건강관을 설명하시오.", answer:"Wylie는 건강을 유기체가 외부환경의 조건에 부단히 잘 적응해 나가는 상태로 설명하였다."},
+      {id:6, part:"건강개념", question:"Parson의 건강관을 설명하시오.", answer:"Parson은 건강을 각 개인이 사회적 역할과 임무를 효과적으로 수행할 수 있는 최적의 상태로 보았다."},
+      {id:7, part:"건강개념", question:"건강개념 변천의 4가지 모형을 쓰시오.", answer:"생태학적 모형, 사회생태학적 모형, WHO 모형, 전인적 모형이다."},
+      {id:8, part:"건강개념", question:"생태학적 모형을 설명하시오.", answer:"생태학적 모형은 건강이 인간, 환경, 병원체 간의 균형에 의해 결정된다고 보는 모형이다."},
+      {id:9, part:"건강개념", question:"사회생태학적 모형을 설명하시오.", answer:"사회생태학적 모형은 인간요소와 외부 환경요소의 상호작용을 강조하며 사회적 환경의 영향을 포함하는 모형이다."},
+      {id:10, part:"건강개념", question:"WHO 모형을 설명하시오.", answer:"WHO 모형은 건강을 신체적, 정신적, 사회적으로 완전한 안녕 상태로 보는 모형이다."},
+      {id:11, part:"건강개념", question:"전인적 모형을 설명하시오.", answer:"전인적 모형은 유전, 환경, 생활양식, 보건의료서비스 등을 종합적으로 고려하여 건강을 이해하는 모형이다."},
+      {id:12, part:"건강개념", question:"건강개념이 소극적 개념에서 적극적 개념으로 변화한 의미를 설명하시오.", answer:"건강개념은 단순히 질병이 없는 상태에서 벗어나 환경 적응, 사회적 역할 수행, 삶의 질 향상까지 포함하는 적극적 개념으로 발전하였다."},
+      {id:13, part:"건강개념", question:"건강결정요인을 설명하시오.", answer:"건강은 생물학적 요인, 유전, 생활양식, 사회경제적 환경, 문화, 정치, 보건의료체계 등 다양한 요인에 의해 결정된다."},
+      {id:14, part:"건강개념", question:"환경요인이 건강에 미치는 영향을 설명하시오.", answer:"환경요인은 물리적, 화학적, 생물학적 조건을 통해 질병 발생과 건강상태에 직접 또는 간접적으로 영향을 준다."},
+      {id:15, part:"건강개념", question:"건강증진의 의미를 설명하시오.", answer:"건강증진은 개인과 지역사회가 스스로 건강을 통제하고 향상시킬 수 있도록 역량을 강화하는 과정이다."},
 
-      // 11강
-      {
-        id: 16,
-        part: "11강",
-        question: "보건행정의 정의를 서술하시오.",
-        answer: "보건행정은 국민의 건강을 보호하고 증진하기 위하여 보건조직과 인적·물적 자원을 합리적으로 관리하고 운영하는 과정이다."
-      },
-      {
-        id: 17,
-        part: "11강",
-        question: "보건행정의 특성을 서술하시오.",
-        answer: "보건행정의 특성은 공공성 및 사회성, 조장성 및 교육성, 봉사성, 과학성이다."
-      },
-      {
-        id: 18,
-        part: "11강",
-        question: "POSDCORB를 설명하시오.",
-        answer: "POSDCORB는 기획, 조직, 인사, 지휘, 조정, 보고, 예산을 의미하는 관리과정이다."
-      },
-      {
-        id: 19,
-        part: "11강",
-        question: "의사결정의 과정을 설명하시오.",
-        answer: "의사결정은 문제의 인식, 정보수집, 대안설정, 대안비교, 최종선택, 집행 및 평가의 과정으로 이루어진다."
-      },
-      {
-        id: 20,
-        part: "11강",
-        question: "보건소의 역할을 서술하시오.",
-        answer: "보건소는 지역주민의 건강을 보호하고 증진하기 위한 지역보건기관으로서 건강증진사업, 보건교육, 감염병 예방과 관리, 모자보건, 노인보건, 정신보건, 방문보건, 만성질환 관리, 구강보건, 영양개선, 건강검진, 장애인 재활사업 등을 수행한다."
-      },
-      {
-        id: 21,
-        part: "11강",
-        question: "보건복지부의 조직체계를 설명하시오.",
-        answer: "보건복지부는 국민의 건강, 복지, 인구 문제를 담당하는 중앙행정기관이며 복수차관제를 채택하고 있다. 제1차관은 복지·인구 분야를, 제2차관은 보건·의료 분야를 담당한다."
-      },
-      {
-        id: 22,
-        part: "11강",
-        question: "보건복지부의 복수차관제를 설명하시오.",
-        answer: "보건복지부는 업무의 전문성과 효율성을 높이기 위해 복수차관제를 운영하며 제1차관은 복지·인구 분야, 제2차관은 보건·의료 분야를 담당한다."
-      },
-      {
-        id: 23,
-        part: "11강",
-        question: "중앙보건행정조직과 지방보건행정조직을 설명하시오.",
-        answer: "중앙보건행정조직은 보건복지부와 같은 국가기관으로 정책을 수립·총괄하며, 지방보건행정조직은 보건소 등 지역기관으로 정책을 집행하고 주민에게 서비스를 제공한다."
-      },
-      {
-        id: 24,
-        part: "11강",
-        question: "WHO의 설립 목적을 설명하시오.",
-        answer: "WHO의 목적은 모든 인류가 가능한 최고의 건강수준에 도달하도록 하는 데 있다."
-      },
-      {
-        id: 25,
-        part: "11강",
-        question: "국제보건이 필요한 이유를 설명하시오.",
-        answer: "국제보건은 감염병, 재난, 빈곤, 영양문제 등 국가 간 경계를 넘는 건강문제를 공동으로 해결하기 위해 필요하다."
-      },
-      {
-        id: 26,
-        part: "11강",
-        question: "고전적 조직원칙을 설명하시오.",
-        answer: "고전적 조직원칙에는 업무의 분화, 조정, 명령통일, 권한과 책임의 명확화, 계선과 참모의 구분, 통솔범위의 제한 등이 있다."
-      },
-      {
-        id: 27,
-        part: "11강",
-        question: "보건행정이 교육을 주된 수단으로 하는 이유를 설명하시오.",
-        answer: "보건행정은 주민 스스로 건강행위를 실천하도록 유도해야 하므로 교육과 계몽이 중요한 수단이 된다."
-      },
+      // 질병과 예방
+      {id:16, part:"질병과 예방", question:"질병의 개념을 설명하시오.", answer:"질병은 신체적, 정신적, 사회적 기능에 이상이 발생하여 정상적인 상태를 벗어난 것을 의미한다."},
+      {id:17, part:"질병과 예방", question:"질병 발생의 3요소를 설명하시오.", answer:"질병 발생의 3요소는 숙주, 환경, 병인이다."},
+      {id:18, part:"질병과 예방", question:"숙주 요인을 설명하시오.", answer:"숙주 요인은 연령, 성별, 유전, 면역상태, 생활습관 등 질병 발생에 영향을 주는 개인적 특성이다."},
+      {id:19, part:"질병과 예방", question:"환경 요인을 설명하시오.", answer:"환경 요인은 물리적, 화학적, 생물학적, 사회적 환경으로서 질병 발생과 건강상태에 영향을 준다."},
+      {id:20, part:"질병과 예방", question:"병인 요인을 설명하시오.", answer:"병인 요인은 세균, 바이러스, 화학물질, 물리적 자극 등 질병을 직접 일으키는 원인이다."},
+      {id:21, part:"질병과 예방", question:"결함의 개념을 설명하시오.", answer:"결함은 심리적, 생리적, 해부학적 구조나 기능의 상실 또는 이상을 의미한다."},
+      {id:22, part:"질병과 예방", question:"장애의 개념을 설명하시오.", answer:"장애는 결함으로 인해 정상적인 활동을 수행하는 능력이 제한되거나 결여된 상태를 의미한다."},
+      {id:23, part:"질병과 예방", question:"불구의 개념을 설명하시오.", answer:"불구는 결함이나 장애로 인해 사회적 역할 수행에 제한을 받는 사회적 불이익 상태를 의미한다."},
+      {id:24, part:"질병과 예방", question:"결함, 장애, 불구를 비교하여 설명하시오.", answer:"결함은 기능이나 구조의 손상이고, 장애는 활동능력의 제한이며, 불구는 사회적 역할 수행의 제한이다."},
+      {id:25, part:"질병과 예방", question:"질병의 자연사를 설명하시오.", answer:"질병의 자연사는 질병 발생 이전 단계부터 질병의 진행, 회복 또는 사망에 이르기까지의 전 과정을 의미한다."},
+      {id:26, part:"질병과 예방", question:"질병의 자연사를 예방적 관점에서 설명하시오.", answer:"질병의 자연사는 질병발생 전부터 회복 또는 사망에 이르기까지의 과정이며, 이에 따라 1차 예방, 2차 예방, 3차 예방이 적용된다."},
+      {id:27, part:"질병과 예방", question:"질병예방의 3단계를 설명하시오.", answer:"1차 예방은 질병발생 이전의 건강증진과 특수예방, 2차 예방은 조기발견과 조기치료, 3차 예방은 재활과 후유증 최소화를 의미한다."},
+      {id:28, part:"질병과 예방", question:"1차 예방을 설명하시오.", answer:"1차 예방은 질병발생 이전 단계에서 건강증진과 특수예방을 통해 질병발생 자체를 막는 것이다."},
+      {id:29, part:"질병과 예방", question:"2차 예방을 설명하시오.", answer:"2차 예방은 질병을 조기에 발견하고 조기에 치료하여 질병의 진행을 막고 예후를 좋게 하는 것이다."},
+      {id:30, part:"질병과 예방", question:"3차 예방을 설명하시오.", answer:"3차 예방은 질병으로 인한 후유증과 장애를 최소화하고 재활과 사회복귀를 돕는 것이다."},
+      {id:31, part:"질병과 예방", question:"건강증진과 특수예방을 설명하시오.", answer:"건강증진은 영양개선, 생활환경 개선, 보건교육 등을 통해 건강수준을 높이는 것이고, 특수예방은 예방접종 등 특정 질병을 막기 위한 조치이다."},
+      {id:32, part:"질병과 예방", question:"조기발견과 조기치료의 의미를 설명하시오.", answer:"질병을 초기단계에서 발견하고 신속히 치료하여 중증화와 후유증을 줄이는 것이다."},
+      {id:33, part:"질병과 예방", question:"재활의 의미를 설명하시오.", answer:"재활은 질병이나 장애로 저하된 기능을 회복시켜 일상생활과 사회복귀를 돕는 과정이다."},
 
-      // 12강
-      {
-        id: 28,
-        part: "12강",
-        question: "보건의료체계의 정의를 서술하시오.",
-        answer: "보건의료체계란 국민의 건강을 보호·증진하기 위하여 보건의료서비스를 생산하고 분배하며 이용하도록 조직된 사회적 체계이다."
-      },
-      {
-        id: 29,
-        part: "12강",
-        question: "보건의료체계의 목적을 설명하시오.",
-        answer: "보건의료체계의 목적은 의료서비스의 형평성 확보, 효율성 증대, 질 향상, 국민의료비 억제 등이다."
-      },
-      {
-        id: 30,
-        part: "12강",
-        question: "국가보건체계의 구성요소를 설명하시오.",
-        answer: "국가보건체계의 구성요소는 보건자원의 개발, 보건자원의 조직화, 보건의료서비스의 제공, 재정지원, 관리이다."
-      },
-      {
-        id: 31,
-        part: "12강",
-        question: "의료전달체계의 정의를 설명하시오.",
-        answer: "의료전달체계란 환자가 필요한 수준의 의료기관에서 적절한 시기에 진료를 받을 수 있도록 의료기관의 기능을 분담하고 환자를 연계하는 제도이다."
-      },
-      {
-        id: 32,
-        part: "12강",
-        question: "사회보장의 개념을 설명하시오.",
-        answer: "사회보장은 질병, 장애, 노령, 실업, 사망 등의 사회적 위험으로부터 국민을 보호하고 생활안정을 도모하는 제도이다."
-      },
-      {
-        id: 33,
-        part: "12강",
-        question: "사회보장의 체계를 설명하시오.",
-        answer: "사회보장의 체계는 사회보험, 공적부조, 사회복지서비스 및 관련 복지제도로 구성된다."
-      },
-      {
-        id: 34,
-        part: "12강",
-        question: "사회보험, 공적부조, 사회복지서비스의 차이를 설명하시오.",
-        answer: "사회보험은 보험원리에 따라 운영되며 법에 의한 강제가입을 특징으로 한다. 공적부조는 생활이 어려운 사람에게 국가가 최저생활을 보장하는 제도이다. 사회복지서비스는 도움이 필요한 사람에게 상담, 재활, 보호 등의 서비스를 제공하는 제도이다."
-      },
-      {
-        id: 35,
-        part: "12강",
-        question: "건강보험의 원리를 설명하시오.",
-        answer: "건강보험은 질병으로 인한 경제적 부담을 분산하기 위해 다수의 국민이 보험료를 부담하고 필요 시 보험급여를 받는 사회보험 방식의 제도이다."
-      },
-      {
-        id: 36,
-        part: "12강",
-        question: "의료보장의 주요 기능을 설명하시오.",
-        answer: "의료보장의 주요 기능은 최저생활 보장, 위험분산, 국민연대, 소득재분배, 의료이용 보장이다."
-      },
-      {
-        id: 37,
-        part: "12강",
-        question: "건강보험과 의료급여의 차이를 설명하시오.",
-        answer: "건강보험은 사회보험 방식으로 운영되며 가입자가 보험료를 부담한다. 의료급여는 생활이 어려운 국민을 대상으로 국가가 의료비를 지원하는 공공부조적 제도이다."
-      },
-      {
-        id: 38,
-        part: "12강",
-        question: "진료보수지불제도의 종류를 설명하시오.",
-        answer: "진료보수지불제도에는 행위별수가제, 인두제, 봉급제, 포괄수가제, 총액계약제 등이 있다."
-      },
-      {
-        id: 39,
-        part: "12강",
-        question: "행위별수가제와 포괄수가제를 비교하시오.",
-        answer: "행위별수가제는 제공한 의료행위 하나하나에 대해 보상하는 방식이고, 포괄수가제는 일정 질병군이나 진료단위별로 미리 정해진 금액을 지불하는 방식이다."
-      },
-      {
-        id: 40,
-        part: "12강",
-        question: "의료급여의 내용을 설명하시오.",
-        answer: "의료급여는 생활유지 능력이 없거나 어려운 국민에게 진찰, 검사, 약제, 처치, 수술, 입원, 간호, 이송 등 필요한 의료서비스를 제공하는 제도이다."
-      }
+      // 공중보건학
+      {id:34, part:"공중보건학", question:"보건학의 개념을 설명하시오.", answer:"보건학은 개인과 지역사회의 건강을 유지·증진하고 질병을 예방하기 위한 과학적 지식과 실천방법을 연구하는 학문이다."},
+      {id:35, part:"공중보건학", question:"공중보건의 개념을 설명하시오.", answer:"공중보건은 조직화된 지역사회의 노력을 통해 질병을 예방하고 수명을 연장하며 건강과 능률을 증진시키는 활동이다."},
+      {id:36, part:"공중보건학", question:"공중보건학의 정의를 설명하시오.", answer:"공중보건학은 지역사회 주민의 건강을 증진하고 질병을 예방하기 위해 필요한 이론과 기술을 다루는 학문이다."},
+      {id:37, part:"공중보건학", question:"Winslow의 공중보건학 정의를 설명하시오.", answer:"공중보건학은 조직화된 지역사회의 노력을 통해 질병을 예방하고 수명을 연장하며 건강과 능률을 증진시키는 과학이자 기술이다."},
+      {id:38, part:"공중보건학", question:"공중보건학의 목적을 설명하시오.", answer:"공중보건학의 목적은 질병예방, 수명연장, 건강증진을 통해 지역사회 주민의 삶의 질을 향상시키는 데 있다."},
+      {id:39, part:"공중보건학", question:"공중보건학과 예방의학의 차이를 설명하시오.", answer:"예방의학은 개인과 가족을 대상으로 질병예방과 건강증진을 다루고, 공중보건학은 지역사회 주민 전체를 대상으로 집단건강 향상을 도모한다."},
+      {id:40, part:"공중보건학", question:"공중보건학의 범위를 설명하시오.", answer:"공중보건학의 범위에는 환경위생, 질병예방, 보건교육, 보건행정, 보건의료제도, 건강증진 등이 포함된다."},
+      {id:41, part:"공중보건학", question:"공중보건학이 지역사회 중심 학문인 이유를 설명하시오.", answer:"개인의 건강문제가 사회적, 환경적 요인과 밀접하게 연결되어 있어 집단 수준에서 접근해야 효과적인 예방과 관리가 가능하기 때문이다."},
+      {id:42, part:"공중보건학", question:"공중보건학 발전과정을 설명하시오.", answer:"공중보건학은 고대기, 중세기, 여명기, 확립기, 발전기를 거치며 환경위생, 감염병 관리, 건강증진 중심으로 발전하였다."},
+      {id:43, part:"공중보건학", question:"Chadwick의 의의를 설명하시오.", answer:"Chadwick은 영국의 위생개혁을 이끌며 환경위생 개선과 공중보건법 제정에 기여하였다."},
+      {id:44, part:"공중보건학", question:"John Snow의 의의를 설명하시오.", answer:"John Snow는 콜레라 역학조사를 통해 감염병 원인 규명과 현대 역학 발전에 기여하였다."},
+      {id:45, part:"공중보건학", question:"Jenner의 의의를 설명하시오.", answer:"Jenner는 종두법을 개발하여 예방접종의 기초를 마련하였다."},
+
+      // 보건행정
+      {id:46, part:"보건행정", question:"보건행정의 개념을 설명하시오.", answer:"보건행정은 국민건강의 보호와 증진을 위해 보건조직과 자원을 계획·조직·운영·평가하는 과정이다."},
+      {id:47, part:"보건행정", question:"보건행정의 목적을 설명하시오.", answer:"보건행정의 목적은 지역사회 주민의 건강을 유지·증진하고 보건사업을 효율적으로 수행하는 데 있다."},
+      {id:48, part:"보건행정", question:"보건행정의 특성을 설명하시오.", answer:"보건행정의 특성은 공공성 및 사회성, 조장성 및 교육성, 봉사성, 과학성이다."},
+      {id:49, part:"보건행정", question:"공공성과 사회성을 설명하시오.", answer:"보건행정은 국민 전체의 건강과 복지를 위한 공공적 성격과 사회 전체를 대상으로 하는 사회적 성격을 가진다."},
+      {id:50, part:"보건행정", question:"조장성과 교육성을 설명하시오.", answer:"보건행정은 주민 스스로 건강행위를 실천하도록 유도하고 교육하는 기능을 중요하게 가진다."},
+      {id:51, part:"보건행정", question:"봉사성을 설명하시오.", answer:"보건행정은 국민에게 필요한 보건서비스를 적극적으로 제공하는 봉사적 성격을 가진다."},
+      {id:52, part:"보건행정", question:"과학성을 설명하시오.", answer:"보건행정은 과학적 자료와 근거를 바탕으로 합리적으로 수행되어야 한다는 특성을 가진다."},
+      {id:53, part:"보건행정", question:"POSDCORB를 설명하시오.", answer:"POSDCORB는 기획, 조직, 인사, 지휘, 조정, 보고, 예산을 의미하는 관리과정이다."},
+      {id:54, part:"보건행정", question:"기획을 설명하시오.", answer:"기획은 목표를 설정하고 이를 달성하기 위한 방법과 절차를 사전에 결정하는 과정이다."},
+      {id:55, part:"보건행정", question:"조직을 설명하시오.", answer:"조직은 목표달성을 위해 업무를 분담하고 권한과 책임을 배분하는 과정이다."},
+      {id:56, part:"보건행정", question:"인사를 설명하시오.", answer:"인사는 조직에 필요한 인력을 확보하고 배치하며 교육·훈련하는 과정이다."},
+      {id:57, part:"보건행정", question:"지휘를 설명하시오.", answer:"지휘는 조직구성원이 목표를 향해 효과적으로 행동하도록 지도하고 감독하는 과정이다."},
+      {id:58, part:"보건행정", question:"조정을 설명하시오.", answer:"조정은 조직 내 여러 부서와 활동이 서로 충돌하지 않고 통일성 있게 진행되도록 맞추는 과정이다."},
+      {id:59, part:"보건행정", question:"보고를 설명하시오.", answer:"보고는 업무수행 결과와 현황을 상급자나 관련 부서에 전달하는 과정이다."},
+      {id:60, part:"보건행정", question:"예산을 설명하시오.", answer:"예산은 보건사업 수행에 필요한 재원을 계획하고 배분·관리하는 과정이다."},
+      {id:61, part:"보건행정", question:"의사결정의 과정을 설명하시오.", answer:"문제 인식, 정보수집, 대안설정, 대안비교, 최종선택, 집행 및 평가의 과정으로 이루어진다."},
+      {id:62, part:"보건행정", question:"고전적 조직원칙을 설명하시오.", answer:"업무의 분화, 조정, 명령통일, 권한과 책임의 명확화, 계선과 참모의 구분, 통솔범위의 제한 등이 있다."},
+
+      // 보건소와 조직
+      {id:63, part:"보건소와 조직", question:"보건소의 역할을 설명하시오.", answer:"보건소는 지역주민의 건강을 보호하고 증진하기 위한 지역보건기관으로서 건강증진, 보건교육, 감염병 예방과 관리, 모자보건, 노인보건, 정신보건, 방문보건, 만성질환 관리 등을 수행한다."},
+      {id:64, part:"보건소와 조직", question:"보건소의 감염병 예방 기능을 설명하시오.", answer:"보건소는 예방접종, 감시, 역학조사 지원, 환자관리, 보건교육 등을 통해 감염병 예방 기능을 수행한다."},
+      {id:65, part:"보건소와 조직", question:"보건소의 모자보건 기능을 설명하시오.", answer:"보건소는 임산부와 영유아의 건강관리, 예방접종, 영양관리, 상담 등을 제공한다."},
+      {id:66, part:"보건소와 조직", question:"보건소의 노인보건 기능을 설명하시오.", answer:"보건소는 노인의 건강관리, 만성질환 관리, 건강증진 프로그램 제공 등을 수행한다."},
+      {id:67, part:"보건소와 조직", question:"보건소의 정신보건 기능을 설명하시오.", answer:"보건소는 정신건강 상담, 교육, 조기발견, 지역사회 정신건강증진사업 등을 수행한다."},
+      {id:68, part:"보건소와 조직", question:"보건소의 방문보건 기능을 설명하시오.", answer:"보건소는 취약계층이나 거동이 불편한 대상자에게 직접 방문하여 건강관리 서비스를 제공한다."},
+      {id:69, part:"보건소와 조직", question:"중앙보건행정조직과 지방보건행정조직을 설명하시오.", answer:"중앙보건행정조직은 국가 차원의 보건정책을 수립·총괄하고, 지방보건행정조직은 지역사회에서 정책을 집행하고 주민에게 서비스를 제공한다."},
+      {id:70, part:"보건소와 조직", question:"보건복지부의 역할을 설명하시오.", answer:"보건복지부는 국민의 건강, 복지, 인구 문제를 담당하는 중앙행정기관으로 보건의료정책, 건강보험, 건강증진, 사회보장정책 등을 총괄한다."},
+      {id:71, part:"보건소와 조직", question:"보건복지부의 조직체계를 설명하시오.", answer:"보건복지부는 복수차관제를 채택하고 있으며, 제1차관은 복지·인구 분야를, 제2차관은 보건·의료 분야를 담당한다."},
+      {id:72, part:"보건소와 조직", question:"보건복지부의 복수차관제를 설명하시오.", answer:"보건복지부는 복수차관제를 운영하며 제1차관은 복지·인구 분야, 제2차관은 보건·의료 분야를 담당한다."},
+      {id:73, part:"보건소와 조직", question:"중앙보건행정조직으로서 보건복지부의 의미를 설명하시오.", answer:"보건복지부는 국가 보건정책을 수립하고 산하기관 및 지방행정조직을 통해 정책이 수행되도록 조정·지원하는 핵심 부처이다."},
+
+      // 사회보장과 건강보험
+      {id:74, part:"사회보장과 건강보험", question:"사회보장의 개념을 설명하시오.", answer:"사회보장은 질병, 장애, 노령, 실업 등의 사회적 위험으로부터 국민을 보호하고 생활안정을 도모하는 제도이다."},
+      {id:75, part:"사회보장과 건강보험", question:"사회보장의 체계를 설명하시오.", answer:"사회보장의 체계는 사회보험, 공적부조, 사회복지서비스 및 관련 복지제도로 구성된다."},
+      {id:76, part:"사회보장과 건강보험", question:"사회보험과 공적부조의 차이를 설명하시오.", answer:"사회보험은 보험원리에 따라 운영되는 강제가입 제도이고, 공적부조는 생활이 어려운 사람에게 국가가 최저생활을 보장하는 제도이다."},
+      {id:77, part:"사회보장과 건강보험", question:"사회보험, 공적부조, 사회복지서비스를 비교하시오.", answer:"사회보험은 보험료를 기반으로 한 강제가입 제도이고, 공적부조는 국가가 저소득층에게 최저생활을 보장하는 제도이며, 사회복지서비스는 도움이 필요한 사람에게 보호와 상담 등의 서비스를 제공하는 제도이다."},
+      {id:78, part:"사회보장과 건강보험", question:"건강보험의 원리를 설명하시오.", answer:"건강보험은 다수의 국민이 보험료를 분담하고 질병 발생 시 보험급여를 제공받는 사회보험 방식의 제도이다."},
+      {id:79, part:"사회보장과 건강보험", question:"건강보험의 기능을 설명하시오.", answer:"건강보험은 의료비 부담 완화, 위험분산, 국민연대, 소득재분배, 의료이용 보장 기능을 수행한다."},
+      {id:80, part:"사회보장과 건강보험", question:"건강보험과 의료급여의 차이를 설명하시오.", answer:"건강보험은 보험료를 기반으로 하는 사회보험이고, 의료급여는 생활이 어려운 사람에게 국가가 의료비를 지원하는 공공부조적 제도이다."},
+      {id:81, part:"사회보장과 건강보험", question:"의료보장의 기능을 설명하시오.", answer:"의료보장의 기능은 최저생활 보장, 위험분산, 국민연대, 소득재분배, 의료이용 보장 등이다."},
+      {id:82, part:"사회보장과 건강보험", question:"보건의료체계의 정의를 설명하시오.", answer:"보건의료체계는 국민의 건강을 보호·증진하기 위해 보건의료서비스를 생산, 분배, 이용하도록 조직한 사회적 체계이다."},
+      {id:83, part:"사회보장과 건강보험", question:"보건의료체계의 목적을 설명하시오.", answer:"보건의료체계의 목적은 형평성 확보, 효율성 증대, 질 향상, 국민의료비 억제이다."},
+      {id:84, part:"사회보장과 건강보험", question:"의료전달체계를 설명하시오.", answer:"의료전달체계는 환자가 필요한 수준의 의료기관에서 적절한 시기에 진료를 받을 수 있도록 의료기관 기능을 분담하고 연계하는 제도이다."},
+      {id:85, part:"사회보장과 건강보험", question:"진료보수지불제도의 종류를 설명하시오.", answer:"진료보수지불제도에는 행위별수가제, 인두제, 봉급제, 포괄수가제, 총액계약제 등이 있다."},
+      {id:86, part:"사회보장과 건강보험", question:"행위별수가제를 설명하시오.", answer:"행위별수가제는 의료인이 제공한 진료행위 하나하나에 대해 각각 보상하는 지불방식이다."},
+      {id:87, part:"사회보장과 건강보험", question:"포괄수가제를 설명하시오.", answer:"포괄수가제는 일정 질병군이나 진료단위별로 미리 정해진 금액을 지급하는 지불방식이다."},
+      {id:88, part:"사회보장과 건강보험", question:"인두제를 설명하시오.", answer:"인두제는 등록된 주민 수를 기준으로 일정 금액을 지급하는 방식이다."},
+      {id:89, part:"사회보장과 건강보험", question:"봉급제를 설명하시오.", answer:"봉급제는 의료인에게 일정한 급여를 지급하는 방식이다."},
+
+      // 국제보건
+      {id:90, part:"국제보건", question:"WHO의 목적을 설명하시오.", answer:"WHO의 목적은 모든 인류가 가능한 최고 수준의 건강에 도달하도록 하는 데 있다."},
+      {id:91, part:"국제보건", question:"국제보건의 필요성을 설명하시오.", answer:"국제보건은 감염병, 재난, 빈곤, 영양문제 등 국경을 넘는 건강문제를 공동으로 해결하기 위해 필요하다."},
+      {id:92, part:"국제보건", question:"국제보건의 의미를 설명하시오.", answer:"국제보건은 국가 간 협력을 통해 전 세계적 건강문제를 예방하고 해결하려는 활동이다."},
+      {id:93, part:"국제보건", question:"WHO의 역할을 설명하시오.", answer:"WHO는 국제적 보건정책 조정, 감염병 대응, 건강기준 제시, 보건기술 지원 등을 수행한다."},
+      {id:94, part:"국제보건", question:"UNICEF의 역할을 설명하시오.", answer:"UNICEF는 아동과 모성의 건강, 영양, 교육, 복지 향상을 위한 국제적 지원을 수행한다."},
+      {id:95, part:"국제보건", question:"국제보건에서 협력이 중요한 이유를 설명하시오.", answer:"감염병과 환경문제는 국경을 초월하므로 한 국가만의 노력으로 해결하기 어렵기 때문이다."}
     ];
 
-    let currentQuestion = null;
-    let currentPool = [];
-    let stats = JSON.parse(localStorage.getItem("ph_stats") || "{}");
+    let current = null;
+    let pool = [];
+    let examMode = false;
+    let examQuestions = [];
+    let examIndex = 0;
+    let examScore = 0;
+    let examAnswered = false;
+    let stats = JSON.parse(localStorage.getItem("public_health_stats_v3") || "{}");
+    let wrongNotes = JSON.parse(localStorage.getItem("public_health_wrong_notes_v3") || "[]");
 
-    function ensureStats() {
-      data.forEach(q => {
-        if (!stats[q.id]) {
-          stats[q.id] = {
+    function initStats() {
+      items.forEach(item => {
+        if (!stats[item.id]) {
+          stats[item.id] = {
             seen: false,
             hard: false,
             known: false,
@@ -510,7 +417,8 @@
     }
 
     function saveStats() {
-      localStorage.setItem("ph_stats", JSON.stringify(stats));
+      localStorage.setItem("public_health_stats_v3", JSON.stringify(stats));
+      localStorage.setItem("public_health_wrong_notes_v3", JSON.stringify(wrongNotes));
     }
 
     function shuffle(arr) {
@@ -522,222 +430,36 @@
       return a;
     }
 
-    function sample(arr) {
+    function pick(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    function filteredData() {
-      const mode = document.getElementById("mode").value;
-      const part = document.getElementById("part").value;
-      const filter = document.getElementById("filter").value;
-      const search = document.getElementById("search").value.trim();
-
-      let list = data.filter(q => {
-        if (part !== "all" && q.part !== part) return false;
-        if (search && !(q.question.includes(search) || q.answer.includes(search))) return false;
-        if (filter === "wrong" && !stats[q.id].hard) return false;
-        if (filter === "unseen" && stats[q.id].seen) return false;
-        return true;
-      });
-
-      if (mode === "mcq" || mode === "ox") {
-        list = list.filter(q => q.answer && q.answer.length > 0);
-      }
-
-      return list;
-    }
-
-    function updateStatsView() {
-      const total = data.length;
-      const seen = data.filter(q => stats[q.id].seen).length;
-      const hard = data.filter(q => stats[q.id].hard).length;
-
-      let totalRight = 0, totalAttempt = 0;
-      data.forEach(q => {
-        totalRight += stats[q.id].correct;
-        totalAttempt += stats[q.id].correct + stats[q.id].wrong;
-      });
-      const acc = totalAttempt ? Math.round((totalRight / totalAttempt) * 100) : 0;
-
-      document.getElementById("totalStat").textContent = total;
-      document.getElementById("seenStat").textContent = seen;
-      document.getElementById("hardStat").textContent = hard;
-      document.getElementById("accStat").textContent = acc + "%";
-    }
-
-    function renderQuestion() {
-      currentPool = filteredData();
-      const qBox = document.getElementById("questionBox");
-      const aBox = document.getElementById("answerBox");
-      const cBox = document.getElementById("choicesBox");
-      const progress = document.getElementById("progressText");
-      const mode = document.getElementById("mode").value;
-
-      aBox.style.display = "none";
-      aBox.textContent = "";
-      cBox.innerHTML = "";
-
-      if (currentPool.length === 0) {
-        currentQuestion = null;
-        qBox.textContent = "조건에 맞는 문제가 없어.";
-        progress.textContent = "0개 문제";
-        document.getElementById("partBadge").textContent = "문제 없음";
-        document.getElementById("modeBadge").textContent = modeLabel(mode);
-        updateStatsView();
-        return;
-      }
-
-      currentQuestion = sample(currentPool);
-      stats[currentQuestion.id].seen = true;
-      saveStats();
-
-      qBox.textContent = currentQuestion.question;
-      aBox.textContent = currentQuestion.answer;
-      document.getElementById("partBadge").textContent = currentQuestion.part;
-      document.getElementById("modeBadge").textContent = modeLabel(mode);
-      progress.textContent = `현재 조건 문제 수: ${currentPool.length}개`;
-
-      if (mode === "mcq") renderMCQ(currentQuestion);
-      if (mode === "ox") renderOX(currentQuestion);
-
-      updateStatsView();
-    }
-
-    function modeLabel(mode) {
+    function getModeLabel(mode) {
       if (mode === "short") return "서술형";
       if (mode === "mcq") return "객관식 4지선다";
       if (mode === "ox") return "OX";
       return mode;
     }
 
-    function renderMCQ(q) {
-      const cBox = document.getElementById("choicesBox");
-      const wrongAnswers = shuffle(
-        data.filter(x => x.id !== q.id && x.part === q.part).map(x => x.answer)
-      ).slice(0, 3);
+    function getFiltered() {
+      const part = document.getElementById("part").value;
+      const filter = document.getElementById("filter").value;
+      const search = document.getElementById("search").value.trim().toLowerCase();
 
-      while (wrongAnswers.length < 3) {
-        const extra = sample(data.filter(x => x.id !== q.id)).answer;
-        if (!wrongAnswers.includes(extra) && extra !== q.answer) wrongAnswers.push(extra);
-      }
-
-      const choices = shuffle([q.answer, ...wrongAnswers]);
-
-      choices.forEach((choice, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.textContent = `${idx + 1}. ${choice}`;
-        btn.onclick = () => {
-          const all = [...document.querySelectorAll(".choice-btn")];
-          all.forEach(b => b.disabled = true);
-          if (choice === q.answer) {
-            btn.classList.add("correct");
-            stats[q.id].correct += 1;
-          } else {
-            btn.classList.add("wrong");
-            all.forEach(b => {
-              if (b.textContent.slice(3) === q.answer) b.classList.add("correct");
-            });
-            stats[q.id].wrong += 1;
-          }
-          saveStats();
-          document.getElementById("answerBox").style.display = "block";
-          updateStatsView();
-        };
-        cBox.appendChild(btn);
+      return items.filter(item => {
+        if (part !== "all" && item.part !== part) return false;
+        if (filter === "hard" && !stats[item.id].hard) return false;
+        if (filter === "unseen" && stats[item.id].seen) return false;
+        if (search) {
+          const text = (item.question + " " + item.answer + " " + item.part).toLowerCase();
+          if (!text.includes(search)) return false;
+        }
+        return true;
       });
     }
 
-    function renderOX(q) {
-      const cBox = document.getElementById("choicesBox");
-      const isTrue = Math.random() < 0.5;
-      let shown = q.answer;
-
-      if (!isTrue) {
-        const candidates = data.filter(x => x.id !== q.id && x.part === q.part);
-        shown = sample(candidates).answer;
-      }
-
-      const stmt = document.createElement("div");
-      stmt.style.padding = "12px";
-      stmt.style.background = "#f9fafb";
-      stmt.style.border = "1px solid #e5e7eb";
-      stmt.style.borderRadius = "12px";
-      stmt.style.lineHeight = "1.7";
-      stmt.innerHTML = `<strong>판단 문장:</strong><br>${shown}`;
-      cBox.appendChild(stmt);
-
-      ["O", "X"].forEach(mark => {
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.textContent = mark;
-        btn.onclick = () => {
-          const correct = (mark === "O" && isTrue) || (mark === "X" && !isTrue);
-          const all = [...document.querySelectorAll(".choice-btn")];
-          all.forEach(b => b.disabled = true);
-          if (correct) {
-            btn.classList.add("correct");
-            stats[q.id].correct += 1;
-          } else {
-            btn.classList.add("wrong");
-            stats[q.id].wrong += 1;
-          }
-          saveStats();
-          document.getElementById("answerBox").style.display = "block";
-          document.getElementById("answerBox").textContent =
-            `정답: ${isTrue ? "O" : "X"}\n\n원래 정답:\n${q.answer}`;
-          updateStatsView();
-        };
-        cBox.appendChild(btn);
-      });
-    }
-
-    function showAnswer() {
-      if (!currentQuestion) return;
-      const aBox = document.getElementById("answerBox");
-      aBox.style.display = "block";
-      aBox.textContent = currentQuestion.answer;
-    }
-
-    function markKnown() {
-      if (!currentQuestion) return;
-      stats[currentQuestion.id].known = true;
-      stats[currentQuestion.id].hard = false;
-      saveStats();
-      updateStatsView();
-      alert("외웠음으로 표시했어.");
-    }
-
-    function markHard() {
-      if (!currentQuestion) return;
-      stats[currentQuestion.id].hard = true;
-      saveStats();
-      updateStatsView();
-      alert("어려움 문제로 표시했어.");
-    }
-
-    function resetAll() {
-      if (!confirm("학습 기록을 모두 초기화할까?")) return;
-      stats = {};
-      ensureStats();
-      renderQuestion();
-      updateStatsView();
-    }
-
-    document.getElementById("newBtn").addEventListener("click", renderQuestion);
-    document.getElementById("showAnswerBtn").addEventListener("click", showAnswer);
-    document.getElementById("markKnownBtn").addEventListener("click", markKnown);
-    document.getElementById("markHardBtn").addEventListener("click", markHard);
-    document.getElementById("resetBtn").addEventListener("click", resetAll);
-
-    document.getElementById("mode").addEventListener("change", renderQuestion);
-    document.getElementById("part").addEventListener("change", renderQuestion);
-    document.getElementById("filter").addEventListener("change", renderQuestion);
-    document.getElementById("search").addEventListener("input", renderQuestion);
-
-    ensureStats();
-    updateStatsView();
-    renderQuestion();
-  </script>
-</body>
-</html>
+    function updateStats() {
+      document.getElementById("totalStat").textContent = items.length;
+      document.getElementById("seenStat").textContent = items.filter(x => stats[x.id].seen).length;
+      document.getElementById("hardStat").textContent = items.filter(x => stats[x.id].hard).length;
+      document.getElementById(
