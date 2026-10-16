@@ -3,898 +3,813 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>보건학 암기앱 안정판</title>
+  <title>일반생물학 파이널 완벽 암기 앱</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
-      background: #f3f6fb;
-      color: #1f2937;
+    :root {
+      --primary: #2563eb;
+      --primary-light: #dbeafe;
+      --accent: #f59e0b;
+      --accent-light: #fef3c7;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
     }
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    h1 { margin: 0 0 8px; font-size: 28px; }
-    .sub { color: #6b7280; line-height: 1.6; margin-bottom: 18px; }
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      margin-bottom: 16px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap: 12px;
-    }
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    select, input[type="text"], textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: inherit;
-    }
-    textarea {
-      min-height: 150px;
-      line-height: 1.7;
-      resize: vertical;
-    }
-    .btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
-    button {
-      border: none;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .primary { background: #2563eb; color: white; }
-    .secondary { background: #e5e7eb; color: #111827; }
-    .good { background: #16a34a; color: white; }
-    .warn { background: #f59e0b; color: white; }
-    .danger { background: #dc2626; color: white; }
-    .purple { background: #7c3aed; color: white; }
-    .teal { background: #0f766e; color: white; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 60px; }
+    header { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 50; }
+    header h1 { font-size: 1.35rem; font-weight: 800; margin-bottom: 4px; }
+    header p { font-size: 0.85rem; opacity: 0.9; }
+    
+    /* Navigation Tabs */
+    .nav-tabs { display: flex; justify-content: center; gap: 6px; background: #fff; padding: 10px 12px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 76px; z-index: 40; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 14px; border: none; border-radius: 20px; background: #f1f5f9; color: var(--muted); font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+    .tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
 
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .badge {
-      background: #dbeafe;
-      color: #1d4ed8;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .q {
-      font-size: 21px;
-      font-weight: 800;
-      line-height: 1.7;
-      margin: 12px 0 16px;
-    }
-    .choices {
-      display: grid;
-      gap: 10px;
-      margin: 12px 0;
-    }
-    .choice {
-      width: 100%;
-      text-align: left;
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
-      color: #111827;
-    }
-    .choice.correct {
-      background: #dcfce7;
-      border-color: #16a34a;
-      color: #166534;
-    }
-    .choice.wrong {
-      background: #fee2e2;
-      border-color: #dc2626;
-      color: #991b1b;
-    }
-    .answer, .compare, .wrong-note, .exam-box {
-      display: none;
-      white-space: pre-line;
-      line-height: 1.75;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 12px;
-    }
-    .answer {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-    }
-    .compare {
-      background: #eff6ff;
-      border: 1px solid #93c5fd;
-    }
-    .wrong-note {
-      background: #fff7ed;
-      border: 1px solid #fdba74;
-    }
-    .exam-box {
-      background: #f8fafc;
-      border: 1px solid #dbeafe;
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0,1fr));
-      gap: 12px;
-    }
-    .stat {
-      background: white;
-      border-radius: 14px;
-      padding: 16px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-    }
-    .stat .num {
-      font-size: 26px;
-      font-weight: 800;
-      color: #2563eb;
-    }
-    .small { font-size: 13px; color: #6b7280; }
-    #shortArea { display: none; margin-top: 14px; }
-    #examControlBtns { display: none; }
-    @media (max-width: 900px) {
-      .grid, .stats { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 560px) {
-      .grid, .stats { grid-template-columns: 1fr; }
-      .btns { flex-direction: column; }
-      button { width: 100%; }
-    }
+    .container { max-width: 760px; margin: 20px auto; padding: 0 16px; }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* Cards */
+    .card { background: var(--card); border-radius: 16px; padding: 22px; box-shadow: 0 4px 16px rgba(15,23,42,0.06); margin-bottom: 18px; border: 1px solid #e2e8f0; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: var(--primary-light); color: var(--primary); margin-bottom: 10px; }
+    .badge.hot { background: #fee2e2; color: #dc2626; margin-left: 6px; }
+    .card-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
+    
+    /* Interactive Clickable Words/Sentences */
+    .interactive-text { font-size: 1.02rem; line-height: 1.85; margin-bottom: 14px; }
+    .why-term { background: var(--accent-light); color: #b45309; font-weight: 700; padding: 2px 6px; border-radius: 6px; border-bottom: 2px dashed var(--accent); cursor: pointer; transition: 0.15s; display: inline; }
+    .why-term:hover { background: #fde68a; }
+    .why-sentence-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 7px 12px; border-radius: 10px; background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    
+    /* Why Box Drawer */
+    .why-box { display: none; margin-top: 14px; padding: 16px; border-radius: 12px; background: #fffbeb; border-left: 5px solid var(--accent); color: #78350f; font-size: 0.94rem; animation: fadeIn 0.25s ease; }
+    .why-box.show { display: block; }
+    .why-box h4 { font-size: 0.95rem; margin-bottom: 6px; color: #b45309; display: flex; align-items: center; gap: 6px; }
+
+    /* Visual Diagram Box */
+    .diagram-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 14px; margin: 14px 0; text-align: center; }
+    .diagram-caption { font-size: 0.8rem; color: var(--muted); margin-top: 6px; font-weight: 600; }
+
+    /* Controls */
+    .controls { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .btn { padding: 10px 16px; border-radius: 10px; border: none; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.15s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-warn { background: var(--accent); color: white; }
+
+    /* Quiz Styling */
+    .quiz-filter { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .choice-btn { display: block; width: 100%; text-align: left; padding: 12px 14px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; font-size: 0.95rem; cursor: pointer; transition: 0.15s; }
+    .choice-btn:hover { background: #f8fafc; border-color: var(--primary); }
+    .choice-btn.correct { background: #dcfce7; border-color: var(--success); color: #065f46; font-weight: 700; }
+    .choice-btn.wrong { background: #fee2e2; border-color: var(--danger); color: #991b1b; }
+
+    .blank-input { padding: 6px 10px; border: 2px solid #94a3b8; border-radius: 8px; font-size: 0.95rem; width: 140px; margin: 0 4px; font-weight: 700; text-align: center; }
+    .essay-input { width: 100%; min-height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; margin: 10px 0; resize: vertical; }
+    .feedback-box { display: none; margin-top: 14px; padding: 15px; border-radius: 12px; background: #f0fdf4; border: 1px solid #86efac; font-size: 0.92rem; }
+    .feedback-box.show { display: block; }
+    .kw-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; margin: 3px; }
+    .kw-hit { background: #dcfce7; color: #15803d; }
+    .kw-miss { background: #fee2e2; color: #b91c1c; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>보건학 암기앱 안정판</h1>
-    <div class="sub">
-      범위: 1강 건강·질병·공중보건학, 11강 보건행정, 12강 사회보장 및 건강보험, 보건복지부 조직도 레포트
+
+<header>
+  <h1>🧬 일반생물학 파이널 완벽 암기 앱</h1>
+  <p>단어/문장을 누르면 「왜 그럴까요?」 원리 해설이 열립니다!</p>
+</header>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('flashcard')">🗂️ 왜 그럴까요? 플래시카드</button>
+  <button class="tab-btn" onclick="switchTab('quiz')">📝 실전 랜덤 문제 (3종)</button>
+  <button class="tab-btn" onclick="switchTab('mnemonic')">⚡ 앞글자 & 아미노산 특훈</button>
+</div>
+
+<div class="container">
+
+  <!-- 1. 플래시카드 섹션 -->
+  <div id="flashcard" class="section active">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+      <div>
+        <button class="btn btn-outline" onclick="filterCards('all')" id="filterAllBtn">전체 보기</button>
+        <button class="btn btn-outline" onclick="filterCards('star')" id="filterStarBtn">⭐ 헷갈리는 카드만</button>
+      </div>
+      <span id="cardCounter" style="font-weight:700; color:var(--muted); font-size:0.9rem;">1 / 12</span>
     </div>
 
-    <div class="card">
-      <div class="grid">
-        <div>
-          <label for="mode">학습 모드</label>
-          <select id="mode">
-            <option value="short">서술형</option>
-            <option value="mcq">객관식 4지선다</option>
-            <option value="ox">OX</option>
-          </select>
-        </div>
-        <div>
-          <label for="part">파트</label>
-          <select id="part">
-            <option value="all">전체</option>
-            <option value="건강개념">건강개념</option>
-            <option value="질병과 예방">질병과 예방</option>
-            <option value="공중보건학">공중보건학</option>
-            <option value="보건행정">보건행정</option>
-            <option value="보건소와 조직">보건소와 조직</option>
-            <option value="사회보장과 건강보험">사회보장과 건강보험</option>
-            <option value="국제보건">국제보건</option>
-          </select>
-        </div>
-        <div>
-          <label for="filter">필터</label>
-          <select id="filter">
-            <option value="all">전체 문제</option>
-            <option value="hard">어려움만</option>
-            <option value="unseen">안 본 문제만</option>
-          </select>
-        </div>
-        <div>
-          <label for="search">검색</label>
-          <input id="search" type="text" placeholder="예: 보건소, POSDCORB">
-        </div>
-      </div>
-
-      <div class="btns">
-        <button class="primary" id="newBtn">새 문제</button>
-        <button class="secondary" id="showBtn">정답 보기</button>
-        <button class="good" id="knownBtn">외웠음</button>
-        <button class="warn" id="hardBtn">어려움</button>
-        <button class="purple" id="mcqExamBtn">객관식 20문제 시험</button>
-        <button class="teal" id="shortExamBtn">서술형 10문제 시험</button>
-        <button class="secondary" id="wrongBtn">오답노트</button>
-        <button class="danger" id="resetBtn">초기화</button>
-      </div>
-
-      <div class="exam-box" id="examBox"></div>
-
-      <div class="btns" id="examControlBtns">
-        <button class="primary" id="nextExamBtn">다음 문제</button>
-        <button class="secondary" id="finishExamBtn">시험 종료</button>
-      </div>
+    <div class="card" id="flashcardContainer">
+      <!-- 동적 렌더링 -->
     </div>
 
-    <div class="card">
-      <div class="badges">
-        <span class="badge" id="badgePart">파트</span>
-        <span class="badge" id="badgeMode">모드</span>
-        <span class="badge" id="badgeCount">문제 수</span>
-      </div>
-
-      <div class="small" id="metaText">문제를 불러오는 중...</div>
-      <div class="q" id="questionBox">문제가 여기에 표시됩니다.</div>
-      <div class="choices" id="choicesBox"></div>
-
-      <div id="shortArea">
-        <label for="userAnswer">내 답안 작성</label>
-        <textarea id="userAnswer" placeholder="여기에 직접 서술형 답을 써봐"></textarea>
-        <div class="btns">
-          <button class="secondary" id="saveShortBtn">내 답 저장</button>
-          <button class="primary" id="compareBtn">모범답안과 비교</button>
-        </div>
-      </div>
-
-      <div class="compare" id="compareBox"></div>
-      <div class="answer" id="answerBox"></div>
-      <div class="wrong-note" id="wrongBox"></div>
-    </div>
-
-    <div class="stats">
-      <div class="stat"><div class="num" id="totalStat">0</div><div>전체 문제</div></div>
-      <div class="stat"><div class="num" id="seenStat">0</div><div>학습한 문제</div></div>
-      <div class="stat"><div class="num" id="hardStat">0</div><div>어려운 문제</div></div>
-      <div class="stat"><div class="num" id="knownStat">0</div><div>외운 문제</div></div>
-      <div class="stat"><div class="num" id="accStat">0%</div><div>객관식/OX 정답률</div></div>
-      <div class="stat"><div class="num" id="savedStat">0</div><div>서술 저장 수</div></div>
+    <div class="controls">
+      <button class="btn btn-outline" onclick="prevCard()">◀ 이전 카드</button>
+      <button class="btn btn-warn" onclick="toggleStar()" id="starBtn">⭐ 헷갈림 표시</button>
+      <button class="btn btn-primary" onclick="nextCard()">다음 카드 ▶</button>
     </div>
   </div>
 
-  <script>
-    const items = [
-      {id:1, part:"건강개념", question:"건강의 정의를 설명하시오.", answer:"WHO(1948)는 건강을 '단순히 질병이나 허약이 없는 상태가 아니라 신체적, 정신적, 사회적으로 완전한 안녕 상태'라고 정의하였다."},
-      {id:2, part:"건강개념", question:"WHO의 건강 정의를 설명하시오.", answer:"WHO(1948)는 건강을 '단순히 질병이나 허약이 없는 상태가 아니라 신체적, 정신적, 사회적으로 완전한 안녕 상태'라고 정의하였다."},
-      {id:3, part:"건강개념", question:"사회적 건강의 의미를 설명하시오.", answer:"Parson에 따르면 건강은 각 개인이 사회적 역할과 임무를 효과적으로 수행할 수 있는 최적의 상태이며, 사회적 건강은 이와 관련된다."},
-      {id:4, part:"건강개념", question:"Claude Bernard의 건강관을 설명하시오.", answer:"Claude Bernard는 외부환경이 변하여도 내부환경은 일정하게 유지되는 상태를 건강으로 보았다."},
-      {id:5, part:"건강개념", question:"Wylie의 건강관을 설명하시오.", answer:"Wylie는 건강을 유기체가 외부환경의 조건에 부단히 잘 적응해 나가는 상태로 보았다."},
-      {id:6, part:"건강개념", question:"Parson의 건강관을 설명하시오.", answer:"Parson은 건강을 각 개인이 사회적 역할과 임무를 효과적으로 수행할 수 있는 최적의 상태라고 하였다."},
-      {id:7, part:"건강개념", question:"건강개념 변천의 4가지 모형을 쓰시오.", answer:"생태학적 모형, 사회생태학적 모형, WHO 모형, 전인적 모형이다."},
-      {id:8, part:"건강개념", question:"생태학적 모형을 설명하시오.", answer:"생태학적 모형은 숙주, 환경, 병인 간의 균형과 상호관계 속에서 건강과 질병을 설명하는 모형이다."},
-      {id:9, part:"건강개념", question:"사회생태학적 모형을 설명하시오.", answer:"사회생태학적 모형은 건강과 질병을 생물학적 요인뿐 아니라 사회적 환경과 구조를 포함하여 설명하는 모형이다."},
-      {id:10, part:"건강개념", question:"WHO 모형을 설명하시오.", answer:"WHO 모형은 건강을 신체적, 정신적, 사회적으로 완전한 안녕 상태로 보는 모형이다."},
-      {id:11, part:"건강개념", question:"전인적 모형을 설명하시오.", answer:"전인적 모형은 유전적 요인, 환경적 요인, 생활양식, 보건의료조직 등을 함께 고려하는 모형이다."},
-      {id:12, part:"건강개념", question:"건강개념의 변천을 설명하시오.", answer:"건강개념은 단순히 질병이 없는 상태에서 벗어나 적응, 사회적 역할 수행, 전인적 안녕을 포함하는 방향으로 확대되었다."},
-      {id:13, part:"건강개념", question:"건강과 질병의 결정요인을 설명하시오.", answer:"건강과 질병은 인간의 생물학적 요인, 유전, 생활양식, 사회·경제·문화적 환경, 정치적 환경, 보건의료체계 등 다양한 요인에 의해 결정된다."},
-      {id:14, part:"건강개념", question:"건강문제를 전체적 입장에서 이해해야 하는 이유를 설명하시오.", answer:"건강문제는 하나의 원인만이 아니라 여러 요인이 복합적으로 작용하므로 전체적인 입장에서 이해해야 한다."},
-      {id:15, part:"건강개념", question:"건강증진의 의미를 설명하시오.", answer:"건강증진은 적극적인 건강 향상과 건강수준 증대를 위한 과정과 노력을 의미한다."},
-      {id:16, part:"건강개념", question:"건강을 사회적 역할 수행과 연결하여 설명한 학자는 누구인가?", answer:"Parson이다."},
+  <!-- 2. 랜덤 문제 섹션 -->
+  <div id="quiz" class="section">
+    <div class="quiz-filter">
+      <button class="btn btn-primary" onclick="setQuizMode('all')" id="qMode-all">🎲 전체 랜덤</button>
+      <button class="btn btn-outline" onclick="setQuizMode('blank')" id="qMode-blank">✏️ 빈칸 채우기</button>
+      <button class="btn btn-outline" onclick="setQuizMode('essay')" id="qMode-essay">🖋️ 비교/서술형</button>
+      <button class="btn btn-outline" onclick="setQuizMode('mcq')" id="qMode-mcq">❌ 옳지 않은 것은?</button>
+    </div>
 
-      {id:17, part:"질병과 예방", question:"질병의 개념을 설명하시오.", answer:"질병은 신체적·정신적·사회적 기능이 정상 범위를 벗어나 생활에 지장을 주는 상태를 말한다."},
-      {id:18, part:"질병과 예방", question:"질병 발생의 3요소를 설명하시오.", answer:"질병 발생의 3요소는 숙주(Host), 환경(Environment), 병인(Agent)이다."},
-      {id:19, part:"질병과 예방", question:"숙주(Host)를 설명하시오.", answer:"숙주(Host)는 질병에 걸리는 인간 또는 생물체를 말하며 연령, 성별, 유전, 면역상태 등이 영향을 미친다."},
-      {id:20, part:"질병과 예방", question:"환경(Environment)을 설명하시오.", answer:"환경(Environment)은 물리적, 화학적, 생물학적, 사회적 환경을 포함하며 질병 발생에 영향을 준다."},
-      {id:21, part:"질병과 예방", question:"병인(Agent)을 설명하시오.", answer:"병인(Agent)은 질병을 일으키는 직접적인 원인으로 생물학적, 화학적, 물리적 요인을 포함한다."},
-      {id:22, part:"질병과 예방", question:"결함(Impairment)의 개념을 설명하시오.", answer:"결함(Impairment)은 심리적, 생리적, 해부학적 구조나 기능의 상실 또는 이상을 의미한다."},
-      {id:23, part:"질병과 예방", question:"장애(Disability)의 개념을 설명하시오.", answer:"장애(Disability)는 결함 때문에 정상적인 활동을 수행하는 능력이 제한되거나 결여된 상태이다."},
-      {id:24, part:"질병과 예방", question:"불구(Handicap)의 개념을 설명하시오.", answer:"불구(Handicap)는 결함이나 장애로 인하여 사회적 역할 수행에 불이익을 받는 상태이다."},
-      {id:25, part:"질병과 예방", question:"결함, 장애, 불구를 비교하시오.", answer:"결함은 기능이나 구조의 손상, 장애는 활동능력의 제한, 불구는 사회적 역할 수행의 제한을 의미한다."},
-      {id:26, part:"질병과 예방", question:"질병의 자연사를 설명하시오.", answer:"질병의 자연사는 질병 발생 이전부터 회복 또는 사망에 이르기까지 질병이 진행하는 전 과정을 말한다."},
-      {id:27, part:"질병과 예방", question:"질병의 자연사를 예방적 관점에서 설명하시오.", answer:"질병의 자연사는 질병발생 전 단계, 질병발생 단계, 회복 또는 후유증 단계로 이어지며 이에 따라 1차적 예방, 2차적 예방, 3차적 예방이 적용된다."},
-      {id:28, part:"질병과 예방", question:"질병예방의 3단계를 설명하시오.", answer:"1차적 예방은 질병발생 억제단계, 2차적 예방은 조기발견과 조기치료단계, 3차적 예방은 재활 및 사회복귀단계이다."},
-      {id:29, part:"질병과 예방", question:"1차적 예방을 설명하시오.", answer:"1차적 예방은 질병발생 억제단계로 예방접종, 환경개선, 영양섭취 등과 생활조건 개선, 체력관리, 보건지식 습득 등을 포함한다."},
-      {id:30, part:"질병과 예방", question:"2차적 예방을 설명하시오.", answer:"2차적 예방은 조기발견과 조기치료단계로 질병을 조기에 발견하여 치료기간을 단축하고 예후를 좋게 하는 것이다."},
-      {id:31, part:"질병과 예방", question:"3차적 예방을 설명하시오.", answer:"3차적 예방은 재활 및 사회복귀단계로 의학적 재활, 직업적 재활 등을 통해 기능회복과 사회복귀를 돕는다."},
-      {id:32, part:"질병과 예방", question:"전염성 질환과 비전염성 질환의 2차적 예방 차이를 간단히 설명하시오.", answer:"전염성 질환은 전염기회를 최소화하여 질병전파를 막고 치료기간을 최소화하며, 비전염성 질환은 조기발견을 통해 치료기간 단축과 생존율 증가를 도모한다."},
+    <div class="card" id="quizContainer">
+      <!-- 동적 렌더링 -->
+    </div>
 
-      {id:33, part:"공중보건학", question:"공중보건학의 정의를 설명하시오.", answer:"공중보건학은 조직화된 지역사회의 노력을 통하여 질병을 예방하고 수명을 연장하며 건강과 능률을 증진시키는 과학이자 기술이다."},
-      {id:34, part:"공중보건학", question:"Winslow의 공중보건학 정의를 설명하시오.", answer:"Winslow는 공중보건학을 조직화된 지역사회의 노력을 통하여 질병을 예방하고 수명을 연장하며 건강과 능률을 증진시키는 과학이자 기술이라고 하였다."},
-      {id:35, part:"공중보건학", question:"공중보건학의 목적을 설명하시오.", answer:"공중보건학의 목적은 질병예방, 수명연장, 건강증진을 통하여 지역사회 주민의 건강수준을 향상시키는 데 있다."},
-      {id:36, part:"공중보건학", question:"공중보건학과 예방의학의 차이를 설명하시오.", answer:"예방의학은 개인과 가족을 대상으로 하고, 공중보건학은 지역사회 주민 전체를 대상으로 한다."},
-      {id:37, part:"공중보건학", question:"공중보건학의 범위를 설명하시오.", answer:"공중보건학의 범위에는 보건관리, 환경관련 분야, 질병관리 분야 등이 포함된다."},
-      {id:38, part:"공중보건학", question:"공중보건학이 지역사회 중심 학문인 이유를 설명하시오.", answer:"공중보건학은 개인이 아니라 지역사회 주민 전체의 건강문제를 다루기 때문이다."},
-      {id:39, part:"공중보건학", question:"공중보건학의 발전과정을 설명하시오.", answer:"공중보건학은 고대기, 중세기, 여명기, 확립기, 발전기를 거치며 발전하였다."},
-      {id:40, part:"공중보건학", question:"Jenner의 업적을 설명하시오.", answer:"Jenner는 종두법을 개발하여 예방의학과 공중보건학 발전에 기여하였다."},
-      {id:41, part:"공중보건학", question:"Chadwick의 업적을 설명하시오.", answer:"Chadwick은 영국의 위생개혁을 이끌고 공중보건법 제정에 기여하였다."},
-      {id:42, part:"공중보건학", question:"John Snow의 업적을 설명하시오.", answer:"John Snow는 콜레라의 원인을 역학적으로 조사하여 현대 역학 발전에 기여하였다."},
-      {id:43, part:"공중보건학", question:"Alma-Ata 회의의 의의를 설명하시오.", answer:"Alma-Ata 회의는 일차보건의료(Primary Health Care)의 중요성을 강조하였다."},
-      {id:44, part:"공중보건학", question:"Ottawa 회의의 의의를 설명하시오.", answer:"Ottawa 회의는 건강증진(Health Promotion)의 개념과 전략을 확산시켰다."},
-      {id:45, part:"공중보건학", question:"공중보건학에서 조직화된 지역사회 노력이 중요한 이유를 설명하시오.", answer:"건강문제는 지역사회 차원의 환경과 제도, 조직적 노력이 함께 작용해야 해결할 수 있기 때문이다."},
+    <div class="controls">
+      <button class="btn btn-outline" onclick="nextQuiz()">🎲 다른 문제 뽑기</button>
+    </div>
+  </div>
 
-      {id:46, part:"보건행정", question:"보건행정의 정의를 설명하시오.", answer:"보건행정이란 공중보건의 목적을 달성하기 위하여 공중보건의 원리를 적용하여 행정조직을 통하여 행하는 일련의 과정이다."},
-      {id:47, part:"보건행정", question:"W. G. Smillie의 보건행정 정의를 설명하시오.", answer:"W. G. Smillie(1930)는 보건행정을 공적(official) 또는 사적(unofficial) 기관이 사회복지를 위하여 공중보건의 원리와 기법을 응용하는 것이라고 하였다."},
-      {id:48, part:"보건행정", question:"보건행정의 특성을 설명하시오.", answer:"보건행정의 특성은 공공성 및 사회성, 조장성 및 교육성, 봉사성, 과학성이다."},
-      {id:49, part:"보건행정", question:"공공성 및 사회성을 설명하시오.", answer:"공공성 및 사회성은 공공복지와 집단의 건강을 증진하는 공공이익을 위한 특성이다."},
-      {id:50, part:"보건행정", question:"조장성 및 교육성을 설명하시오.", answer:"조장성 및 교육성은 지역사회 주민을 교육 또는 조장함으로써 목적을 달성하는 특성이며 보건행정은 교육을 주된 수단으로 한다."},
-      {id:51, part:"보건행정", question:"봉사성을 설명하시오.", answer:"봉사성은 현대국가 행정의 특징인 적극적인 서비스를 하는 특성이다."},
-      {id:52, part:"보건행정", question:"과학성을 설명하시오.", answer:"과학성은 발전된 과학과 기술의 확고한 기초 위에 수립된 행정적 특성이다."},
-      {id:53, part:"보건행정", question:"POSDCORB를 설명하시오.", answer:"POSDCORB는 Planning(기획), Organizing(조직), Staffing(인사), Directing(지휘), Coordinating(조정), Reporting(보고), Budgeting(예산)을 의미한다."},
-      {id:54, part:"보건행정", question:"Planning(기획)을 설명하시오.", answer:"Planning(기획)은 목표를 설정하고 그 목표를 달성하기 위한 방법과 절차를 미리 결정하는 것이다."},
-      {id:55, part:"보건행정", question:"Organizing(조직)을 설명하시오.", answer:"Organizing(조직)은 목표달성을 위해 업무를 분담하고 권한과 책임을 배분하는 것이다."},
-      {id:56, part:"보건행정", question:"Staffing(인사)을 설명하시오.", answer:"Staffing(인사)은 필요한 인력을 확보하고 배치하며 교육·훈련하는 것이다."},
-      {id:57, part:"보건행정", question:"Directing(지휘)을 설명하시오.", answer:"Directing(지휘)은 조직구성원이 목표를 향해 행동하도록 지도하고 감독하는 것이다."},
-      {id:58, part:"보건행정", question:"의사결정 과정을 설명하시오.", answer:"의사결정은 문제의 인식, 정보수집, 대안설정, 대안비교, 최종선택, 집행 및 평가의 과정을 거친다."},
+  <!-- 3. 앞글자 & 아미노산 특훈 섹션 -->
+  <div id="mnemonic" class="section">
+    <div class="card">
+      <span class="badge">🔥 초성 암기 도우미</span>
+      <div class="card-title">터치하면 앞글자 암기 공식이 펼쳐집니다!</div>
+      <div id="mnemonicList"></div>
+    </div>
 
-      {id:59, part:"보건소와 조직", question:"보건소의 역할을 설명하시오.", answer:"보건소는 지역주민의 건강을 보호하고 증진하기 위한 지역보건기관으로서 국민건강증진, 보건교육, 구강건강 및 영양개선사업, 감염병 예방 및 관리, 모자보건, 노인보건, 정신보건, 방문보건, 만성질환 관리 등을 수행한다."},
-      {id:60, part:"보건소와 조직", question:"보건소의 감염병 예방 기능을 설명하시오.", answer:"보건소는 감염병 예방 및 관리, 예방접종, 보건교육, 지역사회 대응 등의 기능을 수행한다."},
-      {id:61, part:"보건소와 조직", question:"보건소의 모자보건 기능을 설명하시오.", answer:"보건소는 모자보건 및 가족계획사업을 수행한다."},
-      {id:62, part:"보건소와 조직", question:"보건소의 노인보건 기능을 설명하시오.", answer:"보건소는 노인보건사업을 수행한다."},
-      {id:63, part:"보건소와 조직", question:"보건소의 정신보건 기능을 설명하시오.", answer:"보건소는 정신보건사업을 수행한다."},
-      {id:64, part:"보건소와 조직", question:"보건소의 방문보건 기능을 설명하시오.", answer:"보건소는 지역주민에게 방문보건사업을 수행한다."},
-      {id:65, part:"보건소와 조직", question:"중앙보건행정조직과 지방보건행정조직을 설명하시오.", answer:"중앙보건행정조직은 국가 차원의 보건정책을 수립·총괄하고, 지방보건행정조직은 지역사회에서 보건사업을 집행한다."},
-      {id:66, part:"보건소와 조직", question:"보건복지부의 역할을 설명하시오.", answer:"보건복지부는 국민의 생활 수준 향상과 사회보장 증진을 위해 보건·의료·복지·인구 분야 정책을 수립·집행하는 중앙행정기관이다."},
-      {id:67, part:"보건소와 조직", question:"보건복지부의 조직체계를 설명하시오.", answer:"보건복지부는 장관 아래 복수차관제를 두며 제1차관은 복지·인구 분야, 제2차관은 보건·의료 분야를 담당한다."},
-      {id:68, part:"보건소와 조직", question:"보건복지부의 복수차관제를 설명하시오.", answer:"보건복지부는 제1차관(복지·인구 분야)과 제2차관(보건·의료 분야)으로 이루어진 복수차관제를 운영한다."},
-      {id:69, part:"보건소와 조직", question:"장관 직속 조직의 예를 쓰시오.", answer:"장관 직속 조직에는 대변인, 감사관, 장관정책보좌관이 있다."},
-      {id:70, part:"보건소와 조직", question:"제1차관과 제2차관의 관할 분야를 비교하시오.", answer:"제1차관은 복지·인구 분야를, 제2차관은 보건·의료 분야를 담당한다."},
+    <div class="card">
+      <span class="badge hot">100% 출제 & 레포트 과제</span>
+      <div class="card-title">🧪 20가지 아미노산 약어 & 성질 스피드 퀴즈</div>
+      <p style="font-size:0.88rem; color:var(--muted); margin-bottom:12px;">교수님 강조 포인트: 알파벳 첫 글자와 1글자 약어가 다른 아미노산(W, F, Y, N, Q, D, E, K, R)과 성질 분류(비극성 9 / 극성 6 / 산성 2 / 염기성 3)를 완벽히 외우세요!</p>
+      <div id="aaQuizBox" style="background:#f8fafc; padding:16px; border-radius:12px; border:1px solid #e2e8f0;"></div>
+    </div>
+  </div>
 
-      {id:71, part:"사회보장과 건강보험", question:"사회보장의 개념을 설명하시오.", answer:"사회보장은 질병, 장애, 노령, 실업, 사망 등의 사회적 위험으로부터 국민을 보호하고 생활의 질을 향상시키기 위한 제도이다."},
-      {id:72, part:"사회보장과 건강보험", question:"사회보장의 체계를 설명하시오.", answer:"사회보장의 체계는 사회보험, 공적부조, 사회복지서비스 및 관련 복지제도로 구성된다."},
-      {id:73, part:"사회보장과 건강보험", question:"사회보험과 공적부조의 차이를 설명하시오.", answer:"사회보험은 보험원리에 따라 운영되는 제도이고, 공적부조는 생활이 어려운 사람에게 국가가 최저생활을 보장하는 제도이다."},
-      {id:74, part:"사회보장과 건강보험", question:"사회보험, 공적부조, 사회복지서비스를 비교하시오.", answer:"사회보험은 보험원리에 따른 제도이고, 공적부조는 국가가 생활보호를 제공하는 제도이며, 사회복지서비스는 도움이 필요한 사람에게 상담·보호·재활 등의 서비스를 제공하는 제도이다."},
-      {id:75, part:"사회보장과 건강보험", question:"건강보험의 원리를 설명하시오.", answer:"건강보험은 다수의 국민이 보험료를 부담하고 질병 발생 시 보험급여를 받는 사회보험 방식의 제도이다."},
-      {id:76, part:"사회보장과 건강보험", question:"건강보험과 의료급여의 차이를 설명하시오.", answer:"건강보험은 사회보험이고, 의료급여는 생활이 어려운 국민에게 국가가 의료비를 지원하는 제도이다."},
-      {id:77, part:"사회보장과 건강보험", question:"의료보장의 기능을 설명하시오.", answer:"의료보장의 기능은 최저생활 보장, 위험분산, 국민연대, 소득재분배, 의료이용 보장이다."},
+</div>
 
-      {id:78, part:"국제보건", question:"WHO의 목적을 설명하시오.", answer:"WHO의 목적은 모든 인류가 가능한 최고 수준의 건강에 도달하도록 하는 데 있다."},
-      {id:79, part:"국제보건", question:"국제보건의 필요성을 설명하시오.", answer:"국제보건은 감염병, 재난, 영양문제 등 국경을 넘는 건강문제를 공동으로 해결하기 위해 필요하다."},
-      {id:80, part:"국제보건", question:"WHO의 역할을 설명하시오.", answer:"WHO는 국제적 보건정책 조정, 건강기준 제시, 감염병 대응, 기술 지원 등의 역할을 수행한다."}
-    ];
+<script>
+// ==================== 1. 플래시카드 데이터 (왜 그럴까요? 포함) ====================
+const flashcards = [
+  {
+    id: 1,
+    chapter: "1장 (7~8p)",
+    tag: "필수 용어",
+    title: "유전자 발현(Gene Expression)과 유전체학·단백질체학",
+    diagram: `<svg width="100%" height="70" viewBox="0 0 420 70">
+      <rect x="10" y="15" width="90" height="40" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+      <text x="55" y="40" text-anchor="middle" font-weight="bold" fill="#1e3a8a" font-size="14">DNA</text>
+      <path d="M105 35 L155 35" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+      <text x="130" y="25" text-anchor="middle" font-size="11" fill="#b45309" font-weight="bold">전사</text>
+      <rect x="160" y="15" width="90" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+      <text x="205" y="40" text-anchor="middle" font-weight="bold" fill="#92400e" font-size="14">mRNA</text>
+      <path d="M255 35 L305 35" stroke="#2563eb" stroke-width="2"/>
+      <text x="280" y="25" text-anchor="middle" font-size="11" fill="#b45309" font-weight="bold">번역</text>
+      <rect x="310" y="15" width="100" height="40" rx="8" fill="#dcfce7" stroke="#10b981" stroke-width="2"/>
+      <text x="360" y="40" text-anchor="middle" font-weight="bold" fill="#065f46" font-size="13">단백질(산물)</text>
+    </svg>`,
+    diagramCaption: "유전자 발현 경로: DNA → (전사) → mRNA → (번역) → 단백질",
+    content: `유전자에 담긴 정보에 따라 세포 산물(단백질)을 만드는 전 과정을 <span class="why-term" onclick="showWhy(0)">유전자 발현</span>이라 합니다. DNA의 유전 정보가 mRNA로 복사되는 <span class="why-term" onclick="showWhy(1)">전사(Transcription)</span>와, 리보솜이 mRNA를 읽어 아미노산 사슬로 만드는 <span class="why-term" onclick="showWhy(2)">번역(Translation)</span>을 거칩니다. 또한 한 생물이 물려주는 유전 정보의 총합인 유전체 전체를 연구하면 <span class="why-term" onclick="showWhy(3)">유전체학(Genomics)</span>, 발현된 전체 단백질을 연구하면 <b>단백질체학(Proteomics)</b>이라 합니다.`,
+    whys: [
+      { term: "유전자 발현 (전체 원리)", desc: "왜 DNA가 직접 단백질을 안 만들고 mRNA를 거칠까요? DNA는 38억 년의 생체 설계도가 담긴 귀중한 '원본 도서'라 핵 금고 안에 안전하게 보관해야 합니다. 따라서 필요한 부분만 복사본(작업지시서)인 mRNA로 떠서 세포질 공장(리보솜)으로 내보내는 것입니다." },
+      { term: "전사 (Transcription)", desc: "왜 이름이 '전사'일까요? 핵 속에서 DNA(핵산)의 염기서열 언어를 똑같은 핵산 언어인 mRNA(단일가닥)로 그대로 베껴 쓴다(복사한다)는 뜻입니다." },
+      { term: "번역 (Translation)", desc: "왜 '번역'일까요? mRNA의 '뉴클레오타이드 염기 서열(4가지 글자)'이라는 언어를 전혀 다른 체계인 '20가지 아미노산 서열(단백질)' 언어로 통역·변환하기 때문입니다." },
+      { term: "유전체학 vs 단백질체학", desc: "왜 유전자 하나씩 안 보고 전체(유전체/단백질체)를 볼까요? 자동차 타이어 하나만 연구(환원주의)해서는 자동차 전체가 어떻게 굴러가는지 알 수 없듯, 생물정보학 컴퓨터 기술로 전체 네트워크를 통합적으로 이해(시스템 생물학)해야 하기 때문입니다." }
+    ]
+  },
+  {
+    id: 2,
+    chapter: "2장 (21~27p)",
+    tag: "무조건 출제",
+    title: "화합물의 창발적 특성과 4가지 화학 결합 (공이수반)",
+    diagram: `<svg width="100%" height="80" viewBox="0 0 420 80">
+      <circle cx="60" cy="40" r="24" fill="#ef4444" opacity="0.85"/><text x="60" y="45" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">O (δ-)</text>
+      <circle cx="25" cy="60" r="14" fill="#3b82f6"/><text x="25" y="64" text-anchor="middle" fill="#fff" font-size="10">H(δ+)</text>
+      <circle cx="95" cy="60" r="14" fill="#3b82f6"/><text x="95" y="64" text-anchor="middle" fill="#fff" font-size="10">H(δ+)</text>
+      <line x1="112" y1="60" x2="185" y2="45" stroke="#f59e0b" stroke-width="3" stroke-dasharray="5,5"/>
+      <text x="148" y="38" text-anchor="middle" font-size="11" fill="#b45309" font-weight="bold">수소결합</text>
+      <circle cx="210" cy="40" r="24" fill="#1d4ed8"/><text x="210" y="45" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">N (δ-)</text>
+      <text x="330" y="35" text-anchor="middle" font-size="12" fill="#334155" font-weight="bold">강한 결합: 공유 / 이온(건조)</text>
+      <text x="330" y="55" text-anchor="middle" font-size="12" fill="#64748b">약한 결합: 수소 / 반데르발스</text>
+    </svg>`,
+    diagramCaption: "물 분자 내 극성 공유결합과 분자 간 수소결합",
+    content: `두 개 이상의 서로 다른 원소가 일정 비율로 결합한 <span class="why-term" onclick="showWhy(0)">화합물(예: NaCl)</span>은 구성 원소와 전혀 다른 창발적 특성을 가집니다. 화학 결합 중 <span class="why-term" onclick="showWhy(1)">공유결합</span>은 원자가 전자를 공유하는 가장 강한 결합이고, <span class="why-term" onclick="showWhy(2)">이온결합</span>은 전자를 완전히 주고받아 형성됩니다. 반면 <span class="why-term" onclick="showWhy(3)">수소결합과 반데르발스 인력</span>은 약한 결합이지만 생체 거대분자의 3차원 구조를 유지하는 데 핵심적입니다.`,
+    whys: [
+      { term: "화합물(NaCl)의 창발적 특성", desc: "왜 독성 기체인 염소(Cl)와 폭발성 금속인 소듐(Na)이 만나면 먹을 수 있는 소금이 될까요? 상위 단계로 조직화되면서 이전 구성 요소에는 없던 완전히 새로운 성질(창발적 특성)이 나타나기 때문입니다." },
+      { term: "극성 vs 비극성 공유결합", desc: "왜 물(H2O)은 극성을 띨까요? 산소(O)의 전기음성도(전자를 끌어당기는 힘)가 수소(H)보다 훨씬 커서 공유 전자쌍이 산소 쪽으로 쏠리기 때문에 산소는 부분 음전하(δ-), 수소는 부분 양전하(δ+)를 띱니다." },
+      { term: "이온결합이 물속에서 약해지는 이유", desc: "왜 망치로 깨야 할 만큼 단단한 소금 결정(이온결합)이 물에 들어가면 쉽게 풀어질까요? 극성을 띤 물 분자들이 Na+와 Cl- 이온 주변을 둘러싸서(수화껍질) 정전기적 인력을 차폐하기 때문입니다. 그래서 약은 보관할 땐 안정하고 먹으면 잘 녹도록 염 형태로 만듭니다!" },
+      { term: "약한 결합(수소결합·반데르발스)이 중요한 이유", desc: "왜 생체 분자들은 강한 결합만 쓰지 않고 약한 결합을 쓸까요? 분자끼리 잠깐 붙었다가 신호를 전달한 뒤 다시 떨어져야(가역성) 생명 활동이 가능하고, 약한 결합도 수만 개가 모이면 도마뱀붙이가 벽을 타듯 강력한 힘으로 단백질 3차원 구조를 지탱할 수 있기 때문입니다." }
+    ]
+  },
+  {
+    id: 3,
+    chapter: "2장 (37~38p)",
+    tag: "암기 필수",
+    title: "생물학적으로 중요한 7가지 화학기 (수카카 아황인메)",
+    diagram: `<svg width="100%" height="65" viewBox="0 0 420 65">
+      <rect x="8" y="10" width="52" height="45" rx="6" fill="#eff6ff"/><text x="34" y="30" text-anchor="middle" font-size="11" font-weight="bold">-OH</text><text x="34" y="47" text-anchor="middle" font-size="10">수산기</text>
+      <rect x="66" y="10" width="55" height="45" rx="6" fill="#eff6ff"/><text x="93" y="30" text-anchor="middle" font-size="11" font-weight="bold">&gt;C=O</text><text x="93" y="47" text-anchor="middle" font-size="10">카르보닐</text>
+      <rect x="127" y="10" width="58" height="45" rx="6" fill="#eff6ff"/><text x="156" y="30" text-anchor="middle" font-size="11" font-weight="bold">-COOH</text><text x="156" y="47" text-anchor="middle" font-size="10">카르복실</text>
+      <rect x="191" y="10" width="52" height="45" rx="6" fill="#eff6ff"/><text x="217" y="30" text-anchor="middle" font-size="11" font-weight="bold">-NH₂</text><text x="217" y="47" text-anchor="middle" font-size="10">아미노기</text>
+      <rect x="249" y="10" width="50" height="45" rx="6" fill="#fef3c7"/><text x="274" y="30" text-anchor="middle" font-size="11" font-weight="bold">-SH</text><text x="274" y="47" text-anchor="middle" font-size="10">황화수소</text>
+      <rect x="305" y="10" width="54" height="45" rx="6" fill="#dcfce7"/><text x="332" y="30" text-anchor="middle" font-size="10" font-weight="bold">-OPO₃²⁻</text><text x="332" y="47" text-anchor="middle" font-size="10">인산기</text>
+      <rect x="365" y="10" width="48" height="45" rx="6" fill="#f1f5f9"/><text x="389" y="30" text-anchor="middle" font-size="11" font-weight="bold">-CH₃</text><text x="389" y="47" text-anchor="middle" font-size="10">메틸기</text>
+    </svg>`,
+    diagramCaption: "7대 화학기: 앞의 6개는 화학반응에 직접 참여하는 작용기, 메틸기는 인식 표지",
+    content: `7가지 화학기 중 <span class="why-term" onclick="showWhy(0)">카르보닐기(&gt;C=O)</span>는 탄소 골격 내부에 있으면 <b>케톤</b>, 끝에 수소와 붙어 있으면 <b>알데하이드</b>가 됩니다. <span class="why-term" onclick="showWhy(1)">카르복실기(-COOH)와 아미노기(-NH₂)</span>는 세포 내 pH에서 각각 이온화된 산과 염기로 작용합니다. <span class="why-term" onclick="showWhy(2)">황화수소기(-SH)</span>는 단백질의 이황화 결합을 만들고, <span class="why-term" onclick="showWhy(3)">인산기(-OPO₃²⁻)</span>는 ATP에서 에너지를 공급합니다.`,
+    whys: [
+      { term: "카르보닐기: 케톤 vs 알데하이드 구분", desc: "교수님께서 '99.9점과 100점의 차이'라며 강조하신 부분입니다! 똑같은 C=O라도 양쪽에 탄소가 붙어 골격 중간에 있으면 케톤(예: 아세톤, 과당), 골격 맨 끝에서 수소(-H)와 붙어 있으면 알데하이드(예: 포도당)가 됩니다." },
+      { term: "카르복실기(산성)와 아미노기(염기성)", desc: "왜 카르복실기는 산이고 아미노기는 염기일까요? 카르복실기(-COOH)는 수용액에 H+를 내놓아(-COO-) 수소이온 농도를 높이므로 산이고, 아미노기(-NH2)는 H+를 받아들여(-NH3+) 수소이온 농도를 낮추므로 염기입니다." },
+      { term: "황화수소기(-SH)의 역할", desc: "알코올기(-OH)에서 산소 대신 황(S)이 들어간 형태(티올)입니다. 시스테인 아미노산에 들어 있으며, 두 개의 -SH가 만나 수소가 빠지면 강력한 공유결합인 이황화 결합(-S-S-)을 만들어 단백질 구조를 단단히 고정합니다." },
+      { term: "인산기와 ATP 에너지 스위치", desc: "왜 ATP에서 인산기 하나를 떼어 효소에 붙이면 효소가 켜질까요? 음전하를 띤 3개의 인산기가 서로 밀어내는 반발력을 이기고 붙여놓은 상태라, 말단 인산기가 떨어질 때 7.3 kcal/mol의 에너지가 방출되며 효소의 입체 구조를 바꿔 스위치를 켜기 때문입니다." }
+    ]
+  },
+  {
+    id: 4,
+    chapter: "2장 (39~40p)",
+    tag: "비교 단골",
+    title: "탄수화물: 단당류·이당류·다당류 (녹말 vs 글리코젠 vs 셀룰로스)",
+    diagram: `<svg width="100%" height="75" viewBox="0 0 420 75">
+      <polygon points="40,20 70,20 85,40 70,60 40,60 25,40" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+      <text x="55" y="44" text-anchor="middle" font-size="11" font-weight="bold">α-포도당</text>
+      <text x="95" y="65" font-size="11" fill="#dc2626" font-weight="bold">1번 -OH 아래(↓)</text>
+      <polygon points="240,20 270,20 285,40 270,60 240,60 225,40" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+      <text x="255" y="44" text-anchor="middle" font-size="11" font-weight="bold">β-포도당</text>
+      <text x="295" y="25" font-size="11" fill="#2563eb" font-weight="bold">1번 -OH 위(↑)</text>
+    </svg>`,
+    diagramCaption: "1번 탄소의 수산기(-OH) 방향이 알파(α)와 베타(β) 및 다당류 구조를 결정!",
+    content: `단당류들이 탈수반응으로 연결될 때 형성되는 공유결합을 <span class="why-term" onclick="showWhy(0)">글리코시드 결합</span>이라 합니다. 식물의 저장 다당류인 <b>녹말</b>과 동물의 저장 다당류인 <span class="why-term" onclick="showWhy(1)">글리코젠</span>은 모두 <b>α 1-4 결합</b>으로 이루어진 나선형 구조이지만 글리코젠이 가지(α 1-6)가 훨씬 더 많습니다. 반면 식물 세포벽을 이루는 <span class="why-term" onclick="showWhy(2)">셀룰로스</span>는 <b>β 1-4 결합</b>으로 이루어진 직선 사슬 구조입니다.`,
+    whys: [
+      { term: "글리코시드 결합 (Glycosidic linkage)", desc: "왜 그냥 탈수결합이라 안 하고 글리코시드 결합이라 부를까요? 탄수화물·지질·단백질 모두 물이 빠지는 탈수반응으로 합쳐지므로, 당과 당 사이의 결합임을 명확히 구분하기 위해 '글리코시드 결합'이라는 전용 이름을 붙인 것입니다." },
+      { term: "왜 글리코젠은 녹말보다 가지가 훨씬 많을까?", desc: "동물은 식물과 달리 끊임없이 움직여야 하므로 간과 근육에 당을 고밀도로 압축 저장했다가, 에너지가 필요할 때 여러 가지 끝에서 동시에 빠르게 포도당을 분해해 꺼내 써야 하기 때문입니다." },
+      { term: "왜 인간은 셀룰로스(식이섬유)를 소화하지 못할까?", desc: "1번 탄소의 -OH가 위를 향한 β-포도당들이 결합할 때는 옆 분자가 180도씩 뒤집혀 지그재그로 결합해 판판하고 단단한 섬유 다발을 만듭니다. 인간에게는 α 1-4 결합을 자르는 효소만 있고 β 1-4 결합을 자르는 '셀룰레이스' 효소가 없기 때문에 불용성 식이섬유로 배출됩니다." }
+    ]
+  },
+  {
+    id: 5,
+    chapter: "2장 (43~44p)",
+    tag: "핵심 비교",
+    title: "지질: 포화지방 vs 불포화지방, 인지질, 스테로이드",
+    diagram: `<svg width="100%" height="75" viewBox="0 0 420 75">
+      <text x="90" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">포화지방 (이중결합 X → 고체)</text>
+      <polyline points="20,35 40,25 60,35 80,25 100,35 120,25 140,35 160,25" fill="none" stroke="#0f172a" stroke-width="3"/>
+      <polyline points="20,55 40,45 60,55 80,45 100,55 120,45 140,55 160,45" fill="none" stroke="#0f172a" stroke-width="3"/>
+      <text x="310" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#2563eb">불포화지방 (시스 이중결합 → 꺾임·액체)</text>
+      <polyline points="230,35 250,25 270,35 290,25 310,35 335,60 355,55 375,70" fill="none" stroke="#2563eb" stroke-width="3"/>
+    </svg>`,
+    diagramCaption: "시스(cis) 이중결합이 사슬을 꺾어 분자 간 밀착을 방해함",
+    content: `<span class="why-term" onclick="showWhy(0)">중성지방(트리아실글리세롤)</span>은 글리세롤 1분자에 지방산 3분자가 <b>에스터 결합</b>으로 연결됩니다. 탄소 간 이중결합이 없는 <b>포화지방</b>은 상온에서 고체이고, <span class="why-term" onclick="showWhy(1)">불포화지방</span>은 시스 이중결합에 의한 꺾임 때문에 상온에서 액체(기름)입니다. 세포막의 주성분인 <span class="why-term" onclick="showWhy(2)">인지질</span>은 친수성 머리와 소수성 꼬리 2개를 가졌으며, <span class="why-term" onclick="showWhy(3)">스테로이드(콜레스테롤)</span>는 4개의 융합 고리 구조를 가집니다.`,
+    whys: [
+      { term: "중성지방과 에스터 결합", desc: "글리세롤(3탄소 알코올)의 -OH기 3곳에 지방산(보통 탄소 16~18개)의 카르복실기(-COOH) 3개가 각각 물(H2O)을 빼며 결합하는데, 이 결합을 '에스터 결합'이라 부릅니다." },
+      { term: "왜 불포화지방(올리브유)은 실온에서 액체일까?", desc: "교수님의 '키스(cis)할 때 한쪽 다리를 들어 올리는 비유'를 기억하세요! 시스(cis) 이중결합이 있으면 탄화수소 꼬리가 확 꺾여서 분자끼리 가까이 붙지 못합니다. 거리가 멀어지니 반데르발스 인력이 약해져 유동적인 액체(오일)가 됩니다." },
+      { term: "왜 인지질을 물에 던지면 저절로 이중층 세포막이 될까?", desc: "인지질은 인산기 머리(친수성)와 지방산 꼬리 2개(소수성)를 동시에 가진 양친매성 분자입니다. 에너지를 따로 주지 않아도 물을 좋아하는 머리는 바깥 물 쪽을 향하고, 물을 싫어하는 꼬리는 안쪽에서 서로 마주 보며 자발적으로 인지질 이중층(2개의 막이 아니라 2개의 층!)을 만듭니다." },
+      { term: "세포막에 콜레스테롤(스테로이드)이 꼭 필요한 이유", desc: "콜레스테롤은 첫째로 성호르몬을 만드는 원료(전구체)이고, 둘째로 시멘트에 자갈을 섞어 단단하게 만들듯 유동적인 인지질 막 사이에 끼어들어 체온(37℃)에서 막이 너무 흐물거리지 않게 유동성을 감소·안정화시켜 주기 때문입니다." }
+    ]
+  },
+  {
+    id: 6,
+    chapter: "2장 (45~51p)",
+    tag: "주관식 1순위",
+    title: "단백질의 1~4차 구조와 변성(Denaturation) vs 분해",
+    diagram: `<svg width="100%" height="70" viewBox="0 0 420 70">
+      <rect x="6" y="12" width="95" height="46" rx="8" fill="#f1f5f9"/><text x="53" y="32" text-anchor="middle" font-size="11" font-weight="bold">1차 구조</text><text x="53" y="48" text-anchor="middle" font-size="10" fill="#64748b">아미노산 서열</text>
+      <rect x="110" y="12" width="95" height="46" rx="8" fill="#dbeafe"/><text x="157" y="32" text-anchor="middle" font-size="11" font-weight="bold">2차 구조</text><text x="157" y="48" text-anchor="middle" font-size="10" fill="#1e3a8a">골격 수소결합(α/β)</text>
+      <rect x="214" y="12" width="95" height="46" rx="8" fill="#fef3c7"/><text x="261" y="32" text-anchor="middle" font-size="11" font-weight="bold">3차 구조</text><text x="261" y="48" text-anchor="middle" font-size="10" fill="#92400e">R기 상호작용(5종)</text>
+      <rect x="318" y="12" width="96" height="46" rx="8" fill="#dcfce7"/><text x="366" y="32" text-anchor="middle" font-size="11" font-weight="bold">4차 구조</text><text x="366" y="48" text-anchor="middle" font-size="10" fill="#065f46">2개 이상 사슬 결합</text>
+    </svg>`,
+    diagramCaption: "단백질 구조 4단계 및 안정화 원리",
+    content: `단백질은 아미노산들이 펩타이드 결합으로 연결된 선형 사슬인 <span class="why-term" onclick="showWhy(0)">1차 구조(N말단→C말단)</span>, 골격 간 수소결합으로 생기는 <b>2차 구조(α나선, β병풍)</b>, <span class="why-term" onclick="showWhy(1)">곁사슬(R기) 간의 5가지 상호작용</span>으로 접힌 <b>3차 구조</b>, 그리고 <span class="why-term" onclick="showWhy(2)">둘 이상의 폴리펩타이드 사슬</span>이 모인 <b>4차 구조</b>로 이루어집니다. 열이나 pH 변화로 3차원 구조가 풀리는 것을 <span class="why-term" onclick="showWhy(3)">변성(Denaturation)</span>이라 합니다.`,
+    whys: [
+      { term: "1차 구조 변화와 낫모양 적혈구 빈혈증", desc: "왜 아미노산 단 1개만 바뀌어도 치명적일까요? 헤모글로빈 베타 사슬 6번 아미노산인 글루탐산(친수성)이 발린(소수성)으로 하나 바뀌면, 소수성 부분끼리 서로 들러붙어 적혈구가 낫 모양으로 찌그러지고 모세혈관을 막기 때문입니다(단, 말라리아 저항성 때문에 아프리카에서 자연선택됨)." },
+      { term: "3차 구조를 안정화하는 5가지 결합 (이수이소반)", desc: "2차 구조는 '골격' 간의 수소결합이지만, 3차 구조는 '곁사슬(R기)' 간의 결합입니다! ①이황화 결합(시스테인 -S-S- 공유결합, 파마 원리), ②수소결합, ③이온결합, ④소수성 상호작용, ⑤반데르발스 인력 5가지를 주관식에 모두 써야 만점입니다." },
+      { term: "3차 구조 vs 4차 구조의 결정적 차이", desc: "폴리펩타이드 사슬이 끊어지지 않고 '한 줄'로 연결된 채 입체를 이루면 3차 구조이고, 완전히 분리된 '2개 이상의 폴리펩타이드 사슬'이 모여서 만들어진 합체 로봇(예: 4개 사슬인 헤모글로빈, 3중 나선인 콜라젠)이면 4차 구조입니다." },
+      { term: "변성(Denaturation) vs 분해(Degradation)", desc: "시험 단골 함정입니다! '분해'는 무를 깍두기 썰듯 펩타이드 결합을 끊어 아미노산 조각으로 자르는 것이고, '변성'은 아미노산 사슬(1차 구조)은 그대로인데 열·pH 때문에 약한 결합이 풀려 3차원 모양과 기능을 잃는 것입니다." }
+    ]
+  },
+  {
+    id: 7,
+    chapter: "2장 (53p)",
+    tag: "핵심 비교",
+    title: "핵산: DNA와 RNA를 구별하는 3가지 기준",
+    diagram: `<svg width="100%" height="70" viewBox="0 0 420 70">
+      <rect x="15" y="10" width="180" height="50" rx="8" fill="#dbeafe" stroke="#2563eb"/>
+      <text x="105" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">DNA (디옥시리보스: 2'-H)</text>
+      <text x="105" y="48" text-anchor="middle" font-size="11" fill="#1e40af">염기: A, G, C, T(타이민) / 이중나선</text>
+      <rect x="225" y="10" width="180" height="50" rx="8" fill="#fce7f3" stroke="#db2777"/>
+      <text x="315" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#9d174d">RNA (리보스: 2'-OH)</text>
+      <text x="315" y="48" text-anchor="middle" font-size="11" fill="#be185d">염기: A, G, C, U(유라실) / 단일가닥</text>
+    </svg>`,
+    diagramCaption: "2번 프라임(2') 탄소의 산소 유무와 타이민(T) vs 유라실(U)을 확인하세요!",
+    content: `핵산의 단위체인 <b>뉴클레오타이드</b>는 5탄당 + 인산기 + 질소성 염기로 구성됩니다(인산기가 빠지면 <b>뉴클레오사이드</b>). DNA와 RNA는 <span class="why-term" onclick="showWhy(0)">2' 탄소의 작용기(-H vs -OH)</span>, <span class="why-term" onclick="showWhy(1)">염기의 종류(타이민 T vs 유라실 U)</span>, 그리고 가닥 수(이중나선 vs 단일가닥) 3가지로 완벽히 구별할 수 있습니다. 이중나선에서 <span class="why-term" onclick="showWhy(2)">A=T와 G≡C의 수소결합 수</span>도 다릅니다.`,
+    whys: [
+      { term: "왜 이름이 디옥시리보스(Deoxyribose)일까?", desc: "De(떨어져 나감) + Oxy(산소)라는 어원 그대로, 5탄당 고리의 2번 프라임(2') 탄소에 있던 수산기(-OH)에서 산소(O)가 빠져나가 수소(-H)만 남았기 때문에 디옥시리보스(DNA)입니다. 2' 탄소에 -OH가 그대로 있으면 리보스(RNA)입니다!" },
+      { term: "타이민(T) vs 유라실(U) 염기 구분", desc: "아데닌(A), 구아닌(G), 사이토신(C)은 DNA와 RNA 모두에 있지만, 타이민(T)은 무조건 DNA에만 오고 유라실(U)은 무조건 RNA에만 옵니다. (tRNA처럼 부분적으로 겹쳐 접힌 구조라도 U가 있으면 100% RNA입니다!)" },
+      { term: "A=T(2개) vs G≡C(3개) 상보적 수소결합", desc: "아데닌(A)과 타이민(T) 사이에는 수소결합이 2개, 구아닌(G)과 사이토신(C) 사이에는 수소결합이 3개 형성됩니다. 따라서 G-C 비율이 높을수록 DNA 이중나선이 더 단단하게 결합합니다." }
+    ]
+  },
+  {
+    id: 8,
+    chapter: "3장 (61~73p)",
+    tag: "단골 메뉴",
+    title: "원핵 vs 진핵세포, 동물 vs 식물세포 및 내막계 소기관",
+    diagram: `<svg width="100%" height="70" viewBox="0 0 420 70">
+      <rect x="10" y="15" width="75" height="40" rx="6" fill="#ede9fe"/><text x="47" y="39" text-anchor="middle" font-size="11" font-weight="bold">핵 (DNA)</text>
+      <text x="95" y="39" font-size="14">→</text>
+      <rect x="108" y="15" width="85" height="40" rx="6" fill="#dbeafe"/><text x="150" y="39" text-anchor="middle" font-size="11" font-weight="bold">조면소포체</text>
+      <text x="203" y="39" text-size="14">→</text>
+      <rect x="216" y="15" width="95" height="40" rx="6" fill="#dcfce7"/><text x="263" y="33" text-anchor="middle" font-size="11" font-weight="bold">골지체</text><text x="263" y="48" text-anchor="middle" font-size="9">(시스→트랜스)</text>
+      <text x="320" y="39" font-size="14">→</text>
+      <rect x="333" y="15" width="78" height="40" rx="6" fill="#fef3c7"/><text x="372" y="39" text-anchor="middle" font-size="11" font-weight="bold">세포막/리소좀</text>
+    </svg>`,
+    diagramCaption: "내막계 분비 단백질 이동 경로: 조면소포체 → 수송소낭 → 골지체(시스→트랜스) → 세포막(세포외배출)",
+    content: `<span class="why-term" onclick="showWhy(0)">원핵세포와 진핵세포</span>는 핵막과 막성 소기관 유무로 구분됩니다. 진핵세포 내막계에서 <span class="why-term" onclick="showWhy(1)">활면소포체와 조면소포체</span>는 기능이 다르며, 조면소포체에서 만든 단백질은 <b>골지체(시스면 수령 → 트랜스면 발송)</b>에서 가공됩니다. 소화 효소를 가진 <span class="why-term" onclick="showWhy(2)">리소좀</span>은 식포 소화와 자가소화(Autophagy)를 수행하고, <span class="why-term" onclick="showWhy(3)">미토콘드리아와 엽록체</span>는 세포내 공생설의 증거를 가집니다.`,
+    whys: [
+      { term: "원핵세포 vs 진핵세포 & 왜 세포는 작을까?", desc: "원핵세포(세균, 고세균)는 핵막이 없어 DNA가 '핵양체'에 풀려 있고 막성 소기관이 없습니다. 또한 세포가 눈에 안 보일 만큼 작은 이유는 부피 대비 '표면적 비율'을 극대화하여 물질 교환(확산)을 효율적으로 하기 위해서입니다." },
+      { term: "활면소포체(SER) vs 조면소포체(RER)", desc: "표면에 리보솜이 다닥다닥 붙어 거친 '조면소포체'는 분비 단백질과 막을 합성하고, 리보솜이 없어 매끈한 '활면소포체'는 지질(스테로이드 성호르몬), 간 해독(약물에 -OH기 부착), 근육 수축용 칼슘 이온(Ca2+) 저장을 담당합니다." },
+      { term: "왜 리소좀이 터져도 세포가 당장 죽지 않을까?", desc: "리소좀 내부의 가수분해 효소는 산성(낮은 pH)에서 가장 활발하게 작동하도록 설계되어 있습니다. 따라서 리소좀 한두 개가 터져 중성(pH ~7)인 세포질로 새어 나와도 효소 활성이 확 떨어져 세포를 보호할 수 있습니다!" },
+      { term: "미토콘드리아와 엽록체의 세포내 공생설 증거 3가지", desc: "원래 독립 생활을 하던 산소 호흡 세균과 광합성 세균이 숙주 진핵세포에 삼켜져 공생하게 되었다는 설입니다. 증거로 ①단일막이 아닌 '이중막' 구조이고, ②내부에 세균과 같은 자체 '원형 DNA'가 있으며, ③자체 '리보솜'을 가지고 스스로 증식합니다." }
+    ]
+  },
+  {
+    id: 9,
+    chapter: "3장 (76~82p)",
+    tag: "단골 출제",
+    title: "세포골격 3종(관중섬), 세포 간 연접 3종(밀데간), 세포막 유동 모자이크",
+    diagram: `<svg width="100%" height="65" viewBox="0 0 420 65">
+      <circle cx="70" cy="32" r="22" fill="none" stroke="#16a34a" stroke-width="6"/><text x="70" y="36" text-anchor="middle" font-size="10" font-weight="bold">25nm 관</text>
+      <line x1="160" y1="32" x2="250" y2="32" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/><text x="205" y="55" text-anchor="middle" font-size="10" font-weight="bold">중간섬유(8~12nm)</text>
+      <line x1="300" y1="32" x2="390" y2="32" stroke="#ef4444" stroke-width="3"/><text x="345" y="55" text-anchor="middle" font-size="10" font-weight="bold">미세섬유(7nm)</text>
+    </svg>`,
+    diagramCaption: "세포골격 지름 비교: 미세소관(25nm, 튜불린) > 중간섬유(8~12nm, 케라틴) > 미세섬유(7nm, 액틴)",
+    content: `세포골격은 굵기순으로 <span class="why-term" onclick="showWhy(0)">미세소관(25nm, 튜불린)</span>, <b>중간섬유(8~12nm, 케라틴)</b>, <b>미세섬유(7nm, 액틴)</b> 3가지가 있습니다. 동물세포 간 연접에는 <span class="why-term" onclick="showWhy(1)">밀착연접, 데스모솜, 간극연접</span>이 있으며, 세포막 외면에는 세포 인식용 <span class="why-term" onclick="showWhy(2)">당단백질(Glycoprotein)</span>과 세포외기질(ECM)의 <b>프로테오글리칸(Proteoglycan)</b>이 존재합니다.`,
+    whys: [
+      { term: "미세소관과 운동 단백질(디네인)의 이동 원리", desc: "미세소관은 속이 빈 파이프 철도입니다. 운동 단백질이 소낭을 업고 이 철도를 걸어갈 때 한 걸음 내디딜 때마다 ATP 1개씩을 가수분해하며 이동합니다. 또한 편모(1~3개, 김)와 섬모(다수, 짧음)도 미세소관 '9+2 구조'와 디네인 단백질로 움직입니다." },
+      { term: "밀착연접 vs 데스모솜 vs 간극연접", desc: "①밀착연접은 오바로크 치듯 막을 봉합해 물이 새는 걸 막고(방수), ②데스모솜은 케라틴 중간섬유로 양쪽 세포를 대못처럼 튼튼히 고정하며, ③간극연접(식물의 원형질 연락사 역할)은 이온과 작은 분자·약물이 이웃 세포로 넘어가는 통로입니다." },
+      { term: "당단백질(Glycoprotein) vs 프로테오글리칸(Proteoglycan)", desc: "교수님 명언: '주인공은 늦게 등장한다!' 뒤에 적힌 단어가 몸집이 훨씬 큰 주인공입니다. Glycoprotein은 Protein(단백질)이 뒤에 오므로 큰 단백질에 작은 당이 붙은 것이고, Proteoglycan은 Glycan(다당류)이 뒤에 오므로 거대한 다당류 줄기에 작은 단백질들이 붙은 것입니다!" }
+    ]
+  },
+  {
+    id: 10,
+    chapter: "3장 (87~98p)",
+    tag: "시험 핵심",
+    title: "삼투 현상, 수동 vs 능동수송, 세포내 섭취 3종 & 신호전달",
+    diagram: `<svg width="100%" height="75" viewBox="0 0 420 75">
+      <rect x="10" y="10" width="125" height="55" rx="8" fill="#fee2e2"/><text x="72" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#991b1b">저장액 (물 유입)</text><text x="72" y="48" text-anchor="middle" font-size="10">동물: 용해(터짐) / 식물: 팽만(정상)</text>
+      <rect x="147" y="10" width="125" height="55" rx="8" fill="#dcfce7"/><text x="210" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">등장액 (균형)</text><text x="210" y="48" text-anchor="middle" font-size="10">동물: 정상 / 식물: 시듦(축 처짐)</text>
+      <rect x="285" y="10" width="125" height="55" rx="8" fill="#fef3c7"/><text x="347" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#92400e">고장액 (물 유출)</text><text x="347" y="48" text-anchor="middle" font-size="10">동물: 쪼그라듦 / 식물: 원형질분리</text>
+    </svg>`,
+    diagramCaption: "저장액·등장액·고장액에서의 동물세포(세포벽 X) vs 식물세포(세포벽 O) 비교",
+    content: `<span class="why-term" onclick="showWhy(0)">삼투 현상</span>에 의해 물은 저농도(저장액)에서 고농도(고장액)로 이동하며, 고장액에서 식물세포는 <span class="why-term" onclick="showWhy(1)">원형질 분리</span>가 일어납니다. <span class="why-term" onclick="showWhy(2)">수동수송과 능동수송</span>은 ATP 소모 여부로 나뉩니다. 세포 신호전달에서는 수용체에 결합하는 신호 분자인 <b>리간드(1차 전달자)</b>가 결합하면 세포 내부에서 <span class="why-term" onclick="showWhy(3)">2차 전달자(cAMP, Ca²⁺)</span>가 신호를 증폭합니다.`,
+    whys: [
+      { term: "왜 물은 용질 농도가 낮은 곳(저장액)에서 높은 곳(고장액)으로 갈까?", desc: "설탕(용질)은 반투막 구멍보다 커서 통과하지 못하고, 설탕 주변에 물 분자들이 달라붙어 있기 때문에 고농도 설탕물 쪽에는 '자유롭게 움직일 수 있는 물 분자'가 적습니다. 따라서 물의 입장에서 보면 물이 많은 곳(저장액)에서 물이 적은 곳(고장액)으로 확산되는 것입니다!" },
+      { term: "왜 식물세포는 고장액에서 원형질 분리가 일어나고 저장액에선 안 터질까?", desc: "식물세포는 단단한 '세포벽'이 바깥을 감싸고 있어서 저장액에서 물이 들어와도 팽압으로 버텨주어 탱탱하고 건강한(팽만) 상태가 됩니다. 반대로 소금물(고장액)에 넣으면 세포벽은 그대로인데 안쪽 세포막만 물이 빠져 쪼그라들면서 벽에서 떨어지는 '원형질 분리'가 일어납니다(김치 절이기 원리)." },
+      { term: "수동수송(단순·촉진확산) vs 능동수송", desc: "농도 기울기(고→저)를 따라 미끄럼틀 타듯 내려가는 수동수송은 통로 단백질(아쿠아포린 등)이나 운반체 단백질을 쓰더라도 에너지(ATP)가 전혀 안 듭니다. 하지만 저농도→고농도로 거슬러 퍼 올리는 능동수송(소듐-포타슘 펌프)은 반드시 차비(ATP)를 내야 하며 통로 단백질이 아닌 '운반체 단백질'만 가능합니다." },
+      { term: "리간드·GPCR·2차 전달자(cAMP) 신호전달 원리", desc: "에피네프린 같은 수용성 신호분자(리간드, 1차 전달자)는 세포막을 못 뚫고 막 수용체(GPCR)를 노크합니다. 그러면 G-단백질이 아데닐산 고리화효소를 켜서 ATP를 cAMP(2차 전달자)로 바꾸고, cAMP가 인산화효소 A(PKA)를 깨워 세포 반응을 일으킵니다." }
+    ]
+  },
+  {
+    id: 11,
+    chapter: "4장 (101~110p)",
+    tag: "시험 핵심",
+    title: "발열반응 vs 흡열반응, 효소 최적 조건, 경쟁적 vs 비경쟁적 억제",
+    diagram: `<svg width="100%" height="75" viewBox="0 0 420 75">
+      <rect x="20" y="15" width="45" height="50" fill="#ef4444"/><text x="42" y="38" text-anchor="middle" fill="#fff" font-size="10">반응물</text>
+      <text x="80" y="42" font-size="14">→</text>
+      <rect x="100" y="40" width="45" height="25" fill="#fca5a5"/><text x="122" y="56" text-anchor="middle" font-size="10">생성물</text>
+      <text x="85" y="14" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">발열반응 (ΔG &lt; 0, 자발적)</text>
+      <rect x="235" y="40" width="45" height="25" fill="#93c5fd"/><text x="257" y="56" text-anchor="middle" font-size="10">반응물</text>
+      <text x="295" y="42" font-size="14">→</text>
+      <rect x="315" y="15" width="45" height="50" fill="#2563eb"/><text x="337" y="38" text-anchor="middle" fill="#fff" font-size="10">생성물</text>
+      <text x="300" y="14" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e3a8a">흡열반응 (ΔG &gt; 0, 비자발적)</text>
+    </svg>`,
+    diagramCaption: "자유 에너지 변화(ΔG)에 따른 발열반응과 흡열반응 비교",
+    content: `에너지를 방출하는 <span class="why-term" onclick="showWhy(0)">발열반응(ΔG &lt; 0, 자발적)</span>과 에너지를 흡수하는 <b>흡열반응(ΔG &gt; 0, 비자발적)</b>은 ATP를 통해 에너지 연계됩니다. 효소는 활성화 에너지($E_A$) 장벽만 낮추며, 인체 효소는 <span class="why-term" onclick="showWhy(1)">최적 온도와 최적 pH(펩신 pH 2 vs 트립신 pH 8)</span>를 가집니다. 효소 저해제는 <span class="why-term" onclick="showWhy(2)">경쟁적 억제자와 비경쟁적 억제자</span>로 나뉘며, 대사 경로는 <b>되먹임 억제</b>로 조절됩니다.`,
+    whys: [
+      { term: "왜 발열반응은 ΔG가 음수(-)이고 자발적일까?", desc: "ΔG = (생성물 에너지) - (반응물 에너지)입니다. 반응물이 에너지를 밖으로 내뿜고(발열) 에너지가 낮은 안정한 생성물이 되었으니 빼기를 하면 마이너스(ΔG < 0)가 되며, 높은 곳에서 낮은 곳으로 공이 굴러가듯 외부 에너지 투입 없이 자발적으로 일어납니다." },
+      { term: "왜 위장 효소 펩신은 pH 2에서, 장 효소 트립신은 pH 8에서 작동할까?", desc: "보통 단백질은 강산에서 변성되지만, 펩신은 위산(pH 2) 환경에서 3차원 구조가 가장 안정하도록 진화했기 때문입니다(콜라·레몬·블랙커피를 마시면 위산 pH가 낮아져 펩신 소화가 잘 되는 이유!). 반대로 소장 효소인 트립신은 염기성인 pH 8이 최적입니다." },
+      { term: "경쟁적 억제자 vs 비경쟁적 억제자 & 되먹임 억제", desc: "경쟁적 억제자는 기질과 닮아서 '활성 부위' 의자를 뺏어 앉는 녀석이라 기질을 많이 넣어주면 이길 수 있습니다. 반면 비경쟁적 억제자는 활성 부위가 아닌 '다른 자리'에 붙어 효소 모양 자체를 찌그러뜨립니다. 최종 산물이 첫 단계 효소의 다른 자리에 붙어 생산 라인을 멈추는 것을 '되먹임 억제'라 합니다." }
+    ]
+  },
+  {
+    id: 12,
+    chapter: "4장 (121~123p)",
+    tag: "최종 보스",
+    title: "세포호흡 포도당 1분자당 30~32 ATP 계산 & 알코올 vs 젖산 발효",
+    diagram: `<svg width="100%" height="75" viewBox="0 0 420 75">
+      <rect x="8" y="12" width="110" height="50" rx="8" fill="#dbeafe"/><text x="63" y="32" text-anchor="middle" font-size="11" font-weight="bold">1. 해당과정(세포질)</text><text x="63" y="48" text-anchor="middle" font-size="10" fill="#1e3a8a">+2 ATP / 2 NADH</text>
+      <rect x="130" y="12" width="135" height="50" rx="8" fill="#ffedd5"/><text x="197" y="32" text-anchor="middle" font-size="11" font-weight="bold">2. 피루브산산화·시트르산</text><text x="197" y="48" text-anchor="middle" font-size="10" fill="#9a3412">+2 ATP / 8 NADH / 2 FADH₂</text>
+      <rect x="277" y="12" width="135" height="50" rx="8" fill="#f3e8ff"/><text x="344" y="32" text-anchor="middle" font-size="11" font-weight="bold">3. 산화적 인산화(내막)</text><text x="344" y="48" text-anchor="middle" font-size="10" fill="#6b21a8">+26~28 ATP → 총 30~32개!</text>
+    </svg>`,
+    diagramCaption: "기질 수준 인산화(2+2=4 ATP) + 산화적 인산화(26 또는 28 ATP) = 총 30 또는 32 ATP",
+    content: `포도당 1분자가 세포호흡을 거치면 해당과정과 시트르산 회로에서 <b>기질 수준 인산화로 4 ATP(2+2)</b>가 생기고, 미토콘드리아 내막의 <b>산화적 인산화(전자전달계+화학삼투)로 26~28 ATP</b>가 생겨 <span class="why-term" onclick="showWhy(0)">총 30 또는 32 ATP</span>가 생성됩니다. 산소가 없을 때는 해당과정의 2 ATP만 얻고 <span class="why-term" onclick="showWhy(1)">NAD⁺를 재생하기 위해 발효</span>를 하며, <span class="why-term" onclick="showWhy(2)">알코올 발효와 젖산 발효</span>로 나뉩니다.`,
+    whys: [
+      { term: "왜 딱 32개가 아니라 '30 또는 32 ATP'로 숫자가 다를까?", desc: "NADH 1개는 2.5 ATP, FADH2 1개는 1.5 ATP를 만듭니다. 세포질(해당과정)에서 만들어진 2 NADH가 미토콘드리아 안으로 전자를 넘길 때, 심장세포처럼 효율 좋은 전자 셔틀(NAD+로 전달)을 쓰면 28개가 되어 총 32 ATP가 되고, 뇌세포처럼 FAD 셔틀로 전달하면 2개가 줄어 총 30 ATP가 되기 때문입니다!" },
+      { term: "산소가 없을 때 왜 발효를 해야만 할까? (NAD+ 재생)", desc: "산소가 없어도 해당과정만으로 2 ATP를 벌 수 있지만, 계속 해당과정을 돌리려면 전자를 받아줄 빈 트럭(NAD+)이 필요합니다. 산소가 없으면 전자전달계가 멈추므로, 피루브산에게 전자를 떠넘겨 NADH를 다시 빈 트럭(NAD+)으로 재생시키기 위해 발효를 하는 것입니다." },
+      { term: "알코올 발효 vs 젖산 발효의 결정적 차이", desc: "알코올 발효(효모: 맥주·제빵)는 3탄소인 피루브산에서 이산화탄소(CO2) 기포가 빠져나가 아세트알데하이드(2탄소)가 된 뒤 에탄올이 됩니다(빵이 부푸는 이유!). 반면 젖산 발효(인간 근육세포, 요구르트 유산균)는 CO2 방출 없이 피루브산이 곧바로 젖산으로 환원됩니다." }
+    ]
+  }
+];
 
-    const oxFalseMap = {
-      1:"WHO는 건강을 단순히 질병이 없는 상태라고만 정의하였다.",
-      2:"WHO 건강 정의에는 사회적 안녕이 포함되지 않는다.",
-      3:"사회적 건강은 경제적 안정만을 의미한다.",
-      4:"Claude Bernard는 건강을 사회적 역할 수행의 최적 상태로 보았다.",
-      5:"Wylie는 건강을 내부환경 항상성으로만 설명하였다.",
-      6:"Parson은 건강을 숙주와 병인의 균형 상태라고 하였다.",
-      7:"건강개념 변천의 4가지 모형은 생태학적 모형, 치료모형, 경제모형, WHO 모형이다.",
-      8:"생태학적 모형은 사회적 역할만으로 건강을 설명한다.",
-      9:"사회생태학적 모형은 사회적 환경을 고려하지 않는다.",
-      10:"WHO 모형은 정신적 안녕을 제외한다.",
-      11:"전인적 모형은 유전적 요인을 고려하지 않는다.",
-      12:"건강개념은 점점 더 소극적 의미로 축소되었다.",
-      13:"건강과 질병은 생물학적 요인 하나만으로 결정된다.",
-      14:"건강문제는 전체적 관점에서 이해할 필요가 없다.",
-      15:"건강증진은 질병 치료만을 의미한다.",
-      16:"건강을 사회적 역할 수행과 연결한 학자는 Wylie이다.",
-      17:"질병은 사회적 기능과는 관련이 없다.",
-      18:"질병 발생의 3요소는 숙주, 치료, 재활이다.",
-      19:"숙주(Host)는 환경오염 자체를 의미한다.",
-      20:"환경(Environment)은 개인의 면역상태만을 의미한다.",
-      21:"병인(Agent)은 사회복지서비스를 의미한다.",
-      22:"결함(Impairment)은 사회적 역할 불이익 상태이다.",
-      23:"장애(Disability)는 구조 손상 그 자체를 의미한다.",
-      24:"불구(Handicap)는 기능손상만을 의미한다.",
-      25:"결함은 사회적 불이익, 장애는 구조 손상, 불구는 활동 제한이다.",
-      26:"질병의 자연사는 질병이 생긴 후 치료과정만 말한다.",
-      27:"질병의 자연사는 예방과 관계가 없다.",
-      28:"질병예방 3단계는 진단, 수술, 입원이다.",
-      29:"1차적 예방은 조기발견과 조기치료단계이다.",
-      30:"2차적 예방은 재활 및 사회복귀단계이다.",
-      31:"3차적 예방은 예방접종과 환경개선을 의미한다.",
-      32:"비전염성 질환의 2차적 예방은 전염기회 최소화를 의미한다.",
-      33:"공중보건학은 개인치료만을 위한 기술이다.",
-      34:"Winslow는 공중보건학을 병원행정이라고 정의하였다.",
-      35:"공중보건학의 목적은 병원 수익 향상이다.",
-      36:"예방의학은 지역사회 전체를, 공중보건학은 개인을 대상으로 한다.",
-      37:"공중보건학의 범위에는 보건관리가 포함되지 않는다.",
-      38:"공중보건학은 지역사회와 관련이 없다.",
-      39:"공중보건학의 발전과정에는 발전기가 없다.",
-      40:"Jenner는 콜레라 원인을 역학적으로 조사하였다.",
-      41:"Chadwick은 종두법을 개발하였다.",
-      42:"John Snow는 사회보험 제도를 도입하였다.",
-      43:"Alma-Ata 회의는 건강보험 급여만을 다루었다.",
-      44:"Ottawa 회의는 건강증진과 무관하다.",
-      45:"공중보건학은 조직화된 지역사회 노력이 필요 없다.",
-      46:"보건행정은 병원 수익 관리만을 의미한다.",
-      47:"Smillie는 보건행정을 개인진료 기술이라고 정의하였다.",
-      48:"보건행정의 특성에는 봉사성이 포함되지 않는다.",
-      49:"공공성 및 사회성은 보건행정과 무관하다.",
-      50:"조장성 및 교육성은 보건행정의 특징이 아니다.",
-      51:"봉사성은 현대국가 행정과 관계없다.",
-      52:"과학성은 보건행정에서 중요하지 않다.",
-      53:"POSDCORB는 예방, 간호, 처치, 재활을 뜻한다.",
-      54:"Planning(기획)은 사업 결과 보고만 의미한다.",
-      55:"Organizing(조직)은 예산 편성만 의미한다.",
-      56:"Staffing(인사)은 감염병 신고만 의미한다.",
-      57:"Directing(지휘)은 문서 보관을 의미한다.",
-      58:"의사결정은 정보수집 없이 이루어진다.",
-      59:"보건소는 중앙행정기관으로서 정책만 수립한다.",
-      60:"보건소의 감염병 예방 기능에는 예방접종이 포함되지 않는다.",
-      61:"보건소의 모자보건 기능은 노인 대상 사업이다.",
-      62:"보건소의 노인보건 기능은 영유아 예방접종만을 의미한다.",
-      63:"보건소의 정신보건 기능은 식품위생 관리만을 의미한다.",
-      64:"보건소의 방문보건 기능은 입원환자만 대상이다.",
-      65:"중앙보건행정조직은 방문보건만 담당한다.",
-      66:"보건복지부는 지방보건소의 하위기관이다.",
-      67:"보건복지부는 단일차관제만 운영한다.",
-      68:"제1차관은 보건·의료, 제2차관은 복지·인구를 담당한다.",
-      69:"장관 직속 조직에는 건강보험정책국만 있다.",
-      70:"제1차관과 제2차관은 같은 분야를 맡는다.",
-      71:"사회보장은 오직 의료서비스만을 의미한다.",
-      72:"사회보장의 체계에는 사회보험이 포함되지 않는다.",
-      73:"공적부조는 보험료 납부를 전제로 한다.",
-      74:"사회복지서비스는 강제가입 보험제도이다.",
-      75:"건강보험은 공적부조 방식만으로 운영된다.",
-      76:"의료급여는 모든 국민이 보험료를 내는 사회보험이다.",
-      77:"의료보장의 기능에는 위험분산이 포함되지 않는다.",
-      78:"WHO의 목적은 특정 국가의 보건만 향상시키는 것이다.",
-      79:"국제보건은 국경을 넘는 건강문제와 관련이 없다.",
-      80:"WHO의 역할에는 국제적 보건정책 조정이 포함되지 않는다."
-    };
+let currentCardIndex = 0;
+let starredIds = new Set();
+let cardFilter = 'all';
 
-    let current = null;
-    let currentPool = [];
-    let examMode = false;
-    let examType = "";
-    let examQuestions = [];
-    let examIndex = 0;
-    let examScore = 0;
-    let examAnswered = false;
+function getFilteredCards() {
+  if (cardFilter === 'star') return flashcards.filter(c => starredIds.has(c.id));
+  return flashcards;
+}
 
-    let stats = JSON.parse(localStorage.getItem("ph_stats_fast") || "{}");
-    let wrongNotes = JSON.parse(localStorage.getItem("ph_wrong_fast") || "[]");
-    let userShortAnswers = JSON.parse(localStorage.getItem("ph_short_fast") || "{}");
+function renderCard() {
+  const list = getFilteredCards();
+  const container = document.getElementById('flashcardContainer');
+  if (list.length === 0) {
+    container.innerHTML = `<p style="text-align:center; padding:30px; color:var(--muted);">⭐ 표시한 헷갈리는 카드가 아직 없습니다. 전체 보기에서 카드를 별표해 보세요!</p>`;
+    document.getElementById('cardCounter').innerText = `0 / 0`;
+    return;
+  }
+  if (currentCardIndex >= list.length) currentCardIndex = 0;
+  const card = list[currentCardIndex];
+  document.getElementById('cardCounter').innerText = `${currentCardIndex + 1} / ${list.length}`;
+  document.getElementById('starBtn').innerText = starredIds.has(card.id) ? "⭐ 별표 해제" : "☆ 헷갈림 표시";
 
-    function saveAll() {
-      localStorage.setItem("ph_stats_fast", JSON.stringify(stats));
-      localStorage.setItem("ph_wrong_fast", JSON.stringify(wrongNotes));
-      localStorage.setItem("ph_short_fast", JSON.stringify(userShortAnswers));
+  let whyButtonsHtml = card.whys.map((w, idx) => 
+    `<button class="why-sentence-btn" onclick="showWhy(${idx})">💡 왜 그럴까요?: ${w.term}</button>`
+  ).join(' ');
+
+  container.innerHTML = `
+    <span class="badge">${card.chapter}</span>
+    <span class="badge hot">${card.tag}</span>
+    <div class="card-title">${card.title}</div>
+    <div class="diagram-box">
+      ${card.diagram}
+      <div class="diagram-caption">📊 ${card.diagramCaption}</div>
+    </div>
+    <div class="interactive-text">${card.content}</div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;">
+      ${whyButtonsHtml}
+    </div>
+    <div class="why-box" id="whyBox"></div>
+  `;
+}
+
+function showWhy(idx) {
+  const list = getFilteredCards();
+  const card = list[currentCardIndex];
+  const w = card.whys[idx];
+  const box = document.getElementById('whyBox');
+  box.innerHTML = `<h4>🤔 왜 그럴까요? — ${w.term}</h4><p>${w.desc}</p>`;
+  box.classList.add('show');
+}
+
+function nextCard() {
+  const list = getFilteredCards();
+  if (list.length === 0) return;
+  currentCardIndex = (currentCardIndex + 1) % list.length;
+  renderCard();
+}
+
+function prevCard() {
+  const list = getFilteredCards();
+  if (list.length === 0) return;
+  currentCardIndex = (currentCardIndex - 1 + list.length) % list.length;
+  renderCard();
+}
+
+function toggleStar() {
+  const list = getFilteredCards();
+  if (list.length === 0) return;
+  const id = list[currentCardIndex].id;
+  if (starredIds.has(id)) starredIds.delete(id);
+  else starredIds.add(id);
+  renderCard();
+}
+
+function filterCards(mode) {
+  cardFilter = mode;
+  currentCardIndex = 0;
+  document.getElementById('filterAllBtn').className = mode === 'all' ? 'btn btn-primary' : 'btn btn-outline';
+  document.getElementById('filterStarBtn').className = mode === 'star' ? 'btn btn-primary' : 'btn btn-outline';
+  renderCard();
+}
+
+// ==================== 2. 랜덤 문제 은행 (빈칸 / 비교서술 / 옳지 않은 것) ====================
+const quizBank = [
+  // [빈칸 채우기 문제들]
+  {
+    type: "blank",
+    title: "3대 거대분자의 탈수합성 결합 명칭 빈칸 채우기",
+    text: "단위체들이 물 분자(H₂O)를 잃으며 결합하는 탈수반응에서, 탄수화물은 [ (1) ] 결합, 지방은 글리세롤과 지방산 사이의 [ (2) ] 결합, 단백질은 아미노산 사이의 [ (3) ] 결합을 형성한다.",
+    answers: ["글리코시드", "에스터", "펩타이드"],
+    explanation: "암기 공식 '탄글-지에-단펩'! 탄수화물은 글리코시드 결합, 지방은 에스터 결합, 단백질은 펩타이드 결합입니다."
+  },
+  {
+    type: "blank",
+    title: "유전자 발현과 폴리펩타이드 합성 방향 빈칸 채우기",
+    text: "핵 안에서 DNA를 주형으로 mRNA를 합성하는 과정을 [ (1) ]라고 하며, 리보솜에서 mRNA 정보를 읽어 단백질을 합성하는 과정을 [ (2) ]라고 한다. 이때 아미노산 사슬은 항상 [ (3) ]-말단에서 [ (4) ]-말단 방향으로 합성되며 첫 번째 개시 아미노산은 [ (5) ]이다.",
+    answers: ["전사", "번역", "N", "C", "메싸이오닌"],
+    explanation: "DNA→mRNA는 전사(Transcription), mRNA→단백질은 번역(Translation)이며, 생체 내 리보솜 합성은 항상 아미노 말단(N-말단)에서 카르복실 말단(C-말단)으로 진행되고 1번 타자는 메싸이오닌(Met, M)입니다."
+  },
+  {
+    type: "blank",
+    title: "삼투 현상과 식물·동물 세포의 변화 빈칸 채우기",
+    text: "반투막을 통해 물은 용질 농도가 낮은 [ (1) ]에서 용질 농도가 높은 [ (2) ]으로 이동한다. 동물세포를 저장액에 넣으면 물이 들어와 터지는 [ (3) ] 현상이 일어나지만, 식물세포를 고장액에 넣으면 물이 빠져나가 세포막이 세포벽에서 떨어지는 [ (4) ] 현상이 일어난다.",
+    answers: ["저장액", "고장액", "용해", "원형질 분리"],
+    explanation: "저장액에서는 물이 유입되어 동물세포는 용해(터짐), 식물세포는 팽만(정상) 상태가 되고, 고장액에서는 물이 빠져나가 식물세포에서 원형질 분리가 일어납니다."
+  },
+  {
+    type: "blank",
+    title: "세포 호흡의 단계별 ATP 생성량 빈칸 채우기",
+    text: "포도당 1분자 호흡 시 해당과정과 시트르산 회로에서는 [ (1) ] 수준 인산화로 각각 2 ATP씩 총 4 ATP가 생성되고, 미토콘드리아 내막의 전자전달계와 화학삼투를 통한 [ (2) ] 인산화로 약 26~28 ATP가 생성되어, 포도당 1분자당 최대 약 [ (3) ] 또는 [ (4) ] ATP가 만들어진다.",
+    answers: ["기질", "산화적", "30", "32"],
+    explanation: "기질 수준 인산화(4 ATP) + 산화적 인산화(26 또는 28 ATP) = 총 30 또는 32 ATP가 생성됩니다."
+  },
+
+  // [비교·서술형 문제들]
+  {
+    type: "essay",
+    title: "[서술형 단골] 단백질의 '변성(Denaturation)'과 '분해(Degradation)'의 차이점을 서술하시오.",
+    keywords: ["구조", "활성", "펩타이드", "아미노산"],
+    modelAnswer: "변성(Denaturation)은 열, pH, 염 농도 변화에 의해 단백질의 약한 결합들이 깨져 고유한 3차원 입체 구조가 풀리고 생물학적 활성을 상실하는 현상(펩타이드 결합은 유지됨)인 반면, 분해(Degradation)는 가수분해 효소에 의해 펩타이드 결합 자체가 끊어져 아미노산 단위로 잘라지는 것입니다."
+  },
+  {
+    type: "essay",
+    title: "[서술형 만점 대비] 단백질의 8가지 주요 기능을 모두 쓰고 각각 예시를 들어 서술하시오.",
+    keywords: ["효소", "방어", "저장", "수송", "호르몬", "수용체", "수축", "구조"],
+    modelAnswer: "①효소 단백질(소화효소-반응 가속화), ②방어 단백질(항체-질병 보호), ③저장 단백질(오브알부민, 카제인-아미노산 저장), ④수송 단백질(헤모글로빈-산소 및 물질 수송), ⑤호르몬 단백질(인슐린-혈당 등 활성 조절), ⑥수용체 단백질(신경세포 수용체-신호 감지), ⑦수축 및 운동 단백질(액틴, 마이오신-근수축 및 이동), ⑧구조 단백질(콜라젠, 케라틴-지지) 8가지입니다."
+  },
+  {
+    type: "essay",
+    title: "[서술형 단골] 단백질의 1차, 2차, 3차, 4차 구조의 정의와 3차 구조를 안정화하는 5가지 결합을 서술하시오.",
+    keywords: ["서열", "수소결합", "나선", "병풍", "곁사슬", "이황화", "소수성", "폴리펩타이드"],
+    modelAnswer: "1차 구조는 펩타이드 결합으로 연결된 선형 아미노산 서열이고, 2차 구조는 폴리펩타이드 골격 간 수소결합으로 형성된 α-나선과 β-병풍 구조입니다. 3차 구조는 아미노산 곁사슬(R기) 간의 상호작용(①이황화 결합, ②수소결합, ③이온결합, ④소수성 상호작용, ⑤반데르발스 인력)에 의해 형성된 3차원 구조이며, 4차 구조는 둘 이상의 폴리펩타이드 사슬(소단위체)이 결합한 구조(예: 헤모글로빈, 콜라젠)입니다."
+  },
+  {
+    type: "essay",
+    title: "[비교 서술형] 원핵세포와 진핵세포의 차이점, 그리고 동물세포와 식물세포의 차이점을 비교하여 서술하시오.",
+    keywords: ["핵막", "핵양체", "소기관", "세포벽", "엽록체", "중심 액포", "리소좀"],
+    modelAnswer: "원핵세포(세균, 고세균)는 핵막이 없어 DNA가 핵양체에 위치하며 막성 세포소기관이 없고 크기가 작지만, 진핵세포는 이중막인 핵막으로 둘러싸인 핵과 다양한 막성 소기관을 가집니다. 진핵세포 중 식물세포에만 있는 구조는 세포벽(셀룰로스), 엽록체, 중심 액포, 원형질 연락사이며, 동물세포에만 있는 구조는 리소좀, 중심립을 포함한 중심체, 편모입니다."
+  },
+  {
+    type: "essay",
+    title: "[비교 서술형] 알코올 발효와 젖산 발효의 공통점(목적, ATP 생성량)과 차이점을 비교하여 서술하시오.",
+    keywords: ["해당과정", "2", "NAD+", "이산화탄소", "에탄올", "젖산"],
+    modelAnswer: "두 발효 모두 산소 없이 해당과정의 기질 수준 인산화를 통해 2 ATP를 생성하며, NADH에서 전자를 피루브산(유도체)으로 전달해 해당과정에 필요한 NAD+를 재생한다는 공통점이 있습니다. 차이점으로 알코올 발효(효모)는 피루브산에서 이산화탄소(CO2)가 방출된 후 아세트알데하이드를 거쳐 에탄올이 생성되지만, 젖산 발효(근육세포, 유산균)는 CO2 방출 없이 피루브산이 직접 젖산으로 환원됩니다."
+  },
+
+  // [옳지 않은 것은? 객관식 문제들]
+  {
+    type: "mcq",
+    title: "다음 중 동물세포와 식물세포, 원핵세포의 구조 및 기능 비교에 대한 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 원핵세포는 핵막이 없어 DNA가 핵양체(nucleoid) 영역에 존재하며 막성 소기관이 없다.",
+      "② 식물세포는 셀룰로스 성분의 세포벽과 광합성을 하는 엽록체, 큰 중심 액포를 가진다.",
+      "③ 식물세포의 원형질 연락사는 동물세포의 간극연접(gap junction)과 유사하게 세포 간 물질 이동 통로 역할을 한다.",
+      "④ 미토콘드리아는 동물세포에만 존재하고 식물세포에는 미토콘드리아 대신 엽록체만 존재한다.",
+      "⑤ 리소좀 내의 가수분해 효소는 산성 환경에서 활성이 높으며 손상된 소기관을 분해하는 자가소화(autophagy)에 관여한다."
+    ],
+    answerIdx: 3,
+    explanation: "정답은 ④번입니다! 식물세포도 세포 호흡을 통해 ATP를 만들어야 하므로 미토콘드리아와 엽록체를 둘 다 가지고 있습니다. 엽록체는 식물과 조류에만 있지만, 미토콘드리아는 식물과 동물 세포 모두에 존재합니다!"
+  },
+  {
+    type: "mcq",
+    title: "다음 중 다당류(녹말, 글리코젠, 셀룰로스)에 대한 비교 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 세 가지 다당류 모두 포도당 단위체들이 글리코시드 결합으로 연결된 중합체이다.",
+      "② 고리 평면에서 1번 탄소의 수산기(-OH)가 아래를 향하면 α-포도당, 위를 향하면 β-포도당이다.",
+      "③ 녹말과 글리코젠은 α 1-4 글리코시드 결합을 가지며 나선형 사슬을 형성한다.",
+      "④ 동물의 간과 근육에 저장되는 글리코젠은 식물의 녹말보다 가지(α 1-6 결합)가 훨씬 적다.",
+      "⑤ 셀룰로스는 β 1-4 결합으로 포도당이 180도씩 교대로 뒤집혀 결합된 직선형 구조이며 인간은 소화 효소가 없다."
+    ],
+    answerIdx: 3,
+    explanation: "정답은 ④번입니다! 동물의 저장 다당류인 글리코젠은 식물의 녹말(아밀로펙틴)보다 가지가 훨씬 더 많습니다."
+  },
+  {
+    type: "mcq",
+    title: "다음 중 DNA와 RNA의 구조 및 특징을 비교한 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 핵산의 기본 단위체인 뉴클레오타이드는 인산기, 5탄당, 질소성 염기로 구성된다.",
+      "② DNA의 5탄당은 2' 탄소에 산소가 없는 디옥시리보스이고, RNA는 2' 탄소에 -OH가 있는 리보스이다.",
+      "③ 아데닌(A), 구아닌(G), 사이토신(C)은 DNA와 RNA 모두에 공통으로 존재하는 염기이다.",
+      "④ 유라실(U)은 DNA에만 존재하고 타이민(T)은 RNA에만 존재한다.",
+      "⑤ DNA 이중나선에서 아데닌(A)과 타이민(T)은 2개의 수소결합, 구아닌(G)과 사이토신(C)은 3개의 수소결합을 형성한다."
+    ],
+    answerIdx: 3,
+    explanation: "정답은 ④번입니다! 반대로 설명되었습니다. 타이민(T)이 DNA에만 존재하고, 유라실(U)이 RNA에만 존재합니다."
+  },
+  {
+    type: "mcq",
+    title: "다음 중 세포막의 구조와 물질 수송(수동수송·능동수송·삼투)에 대한 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 인지질 꼬리에 불포화 지방산(시스 이중결합) 비율이 높을수록 꺾임 구조 때문에 막의 유동성이 증가한다.",
+      "② 콜레스테롤은 37℃의 따뜻한 체온에서 인지질의 측면 이동을 제한하여 세포막을 안정화(유동성 감소)시킨다.",
+      "③ 통로 단백질(예: 아쿠아포린)을 통한 촉진확산은 단백질의 도움을 받으므로 ATP 에너지를 소모하는 능동수송이다.",
+      "④ 소듐-포타슘 펌프는 ATP를 소모하여 농도 기울기를 거슬러 이온을 수송하는 능동수송 운반체 단백질이다.",
+      "⑤ 짚신벌레는 저장성 연못물에서 들어오는 과잉의 물을 수축포를 통해 밖으로 배출하여 세포 파열을 막는다."
+    ],
+    answerIdx: 2,
+    explanation: "정답은 ③번입니다! 촉진확산은 수송 단백질(통로 단백질, 운반체 단백질)의 도움을 받지만, 농도 기울기(고→저)를 따라 이동하므로 ATP 에너지가 전혀 필요 없는 '수동수송'입니다."
+  },
+  {
+    type: "mcq",
+    title: "다음 중 물질대사, 효소 및 세포 호흡에 대한 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 발열반응은 자유 에너지 변화(ΔG)가 음수(ΔG < 0)이며 에너지 투입 없이 자발적으로 일어난다.",
+      "② 효소는 화학 반응의 활성화 에너지(EA) 장벽을 낮추어 반응 속도를 높이지만 반응의 ΔG 값 자체는 바꾸지 못한다.",
+      "③ 경쟁적 억제자는 효소의 활성 부위가 아닌 다른 자리에 결합하므로 기질 농도를 높여도 극복할 수 없다.",
+      "④ 세포 호흡에서 가장 많은 ATP가 만들어지는 단계는 미토콘드리아 내막에서 일어나는 산화적 인산화(전자전달계+화학삼투)이다.",
+      "⑤ 대사 경로의 최종 생성물이 초기 단계 효소에 결합해 활성을 저해하는 조절 방식을 되먹임 억제(feedback inhibition)라 한다."
+    ],
+    answerIdx: 2,
+    explanation: "정답은 ③번입니다! 경쟁적 억제자는 기질과 모양이 닮아 효소의 '활성 부위'를 두고 직접 경쟁하므로, 기질의 농도를 높이면 억제를 극복할 수 있습니다. 다른 부위에 결합해 효소 모양을 바꾸는 것은 비경쟁적 억제자입니다."
+  }
+];
+
+let quizMode = 'all';
+let currentQuiz = null;
+
+function setQuizMode(mode) {
+  quizMode = mode;
+  ['all', 'blank', 'essay', 'mcq'].forEach(m => {
+    document.getElementById('qMode-' + m).className = (m === mode) ? 'btn btn-primary' : 'btn btn-outline';
+  });
+  nextQuiz();
+}
+
+function nextQuiz() {
+  const pool = quizMode === 'all' ? quizBank : quizBank.filter(q => q.type === quizMode);
+  currentQuiz = pool[Math.floor(Math.random() * pool.length)];
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quizContainer');
+  const q = currentQuiz;
+
+  if (q.type === 'blank') {
+    let formattedText = q.text;
+    q.answers.forEach((ans, idx) => {
+      formattedText = formattedText.replace(`[ (${idx + 1}) ]`, `<input type="text" class="blank-input" id="blank-${idx}" placeholder="(${idx + 1}) 정답 입력">`);
+    });
+    container.innerHTML = `
+      <span class="badge">✏️ 빈칸 채우기 문제</span>
+      <div class="card-title">${q.title}</div>
+      <p style="font-size:1.05rem; line-height:2.2; margin:16px 0;">${formattedText}</p>
+      <button class="btn btn-success" onclick="checkBlank()">정답 확인하기</button>
+      <div class="feedback-box" id="quizFeedback"></div>
+    `;
+  } else if (q.type === 'essay') {
+    container.innerHTML = `
+      <span class="badge hot">🖋️ 비교·서술형 주관식</span>
+      <div class="card-title">${q.title}</div>
+      <textarea class="essay-input" id="essayUserText" placeholder="여기에 서술형 답안을 작성해 보세요. 핵심 키워드가 모두 들어갔는지 자동으로 채점해 드립니다!"></textarea>
+      <button class="btn btn-success" onclick="checkEssay()">키워드 채점 & 모범답안 보기</button>
+      <div class="feedback-box" id="quizFeedback"></div>
+    `;
+  } else if (q.type === 'mcq') {
+    let choicesHtml = q.choices.map((c, idx) => 
+      `<button class="choice-btn" id="mcq-${idx}" onclick="checkMcq(${idx})">${c}</button>`
+    ).join('');
+    container.innerHTML = `
+      <span class="badge">❌ 알맞지 않은 것 고르기</span>
+      <div class="card-title">${q.title}</div>
+      <div style="margin-top:14px;">${choicesHtml}</div>
+      <div class="feedback-box" id="quizFeedback"></div>
+    `;
+  }
+}
+
+function checkBlank() {
+  const q = currentQuiz;
+  let correctCount = 0;
+  q.answers.forEach((ans, idx) => {
+    const inputEl = document.getElementById(`blank-${idx}`);
+    const userVal = inputEl.value.trim();
+    if (userVal === ans) {
+      inputEl.style.borderColor = "#10b981";
+      inputEl.style.backgroundColor = "#dcfce7";
+      correctCount++;
+    } else {
+      inputEl.style.borderColor = "#ef4444";
+      inputEl.style.backgroundColor = "#fee2e2";
     }
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.innerHTML = `<strong>🎯 채점 결과: ${q.answers.length}개 중 ${correctCount}개 정답!</strong><br>
+    <b>정답:</b> ${q.answers.map((a, i) => `(${i+1})${a}`).join(', ')}<br>
+    <b>해설:</b> ${q.explanation}`;
+  fb.classList.add('show');
+}
 
-    function initStats() {
-      items.forEach(item => {
-        if (!stats[item.id]) {
-          stats[item.id] = { seen:false, hard:false, known:false, correct:0, wrong:0 };
-        }
-      });
-      saveAll();
-    }
+function checkEssay() {
+  const q = currentQuiz;
+  const userText = document.getElementById('essayUserText').value;
+  let hitCount = 0;
+  let kwTags = q.keywords.map(kw => {
+    const hit = userText.includes(kw);
+    if (hit) hitCount++;
+    return `<span class="kw-tag ${hit ? 'kw-hit' : 'kw-miss'}">${hit ? '✔ ' : '✘ '}${kw}</span>`;
+  }).join('');
 
-    function shuffle(arr) {
-      const a = [...arr];
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
+  const fb = document.getElementById('quizFeedback');
+  fb.innerHTML = `
+    <strong>📊 필수 키워드 포함도: ${q.keywords.length}개 중 ${hitCount}개 포함!</strong>
+    <div style="margin:8px 0;">${kwTags}</div>
+    <hr style="border:none; border-top:1px solid #bbf7d0; margin:10px 0;">
+    <strong>📖 만점 모범 답안:</strong><br>${q.modelAnswer}
+  `;
+  fb.classList.add('show');
+}
 
-    function clearBoxes() {
-      document.getElementById("choicesBox").innerHTML = "";
-      document.getElementById("answerBox").style.display = "none";
-      document.getElementById("answerBox").textContent = "";
-      document.getElementById("compareBox").style.display = "none";
-      document.getElementById("compareBox").textContent = "";
-      document.getElementById("wrongBox").style.display = "none";
-      document.getElementById("wrongBox").textContent = "";
-    }
+function checkMcq(selectedIdx) {
+  const q = currentQuiz;
+  q.choices.forEach((_, idx) => {
+    const btn = document.getElementById(`mcq-${idx}`);
+    if (idx === q.answerIdx) btn.classList.add('correct');
+    else if (idx === selectedIdx) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  const isRight = selectedIdx === q.answerIdx;
+  fb.innerHTML = `<strong>${isRight ? '⭕ 정답입니다!' : '❌ 아쉽네요! 다시 확인해 보세요.'}</strong><br>${q.explanation}`;
+  fb.classList.add('show');
+}
 
-    function updateStats() {
-      document.getElementById("totalStat").textContent = items.length;
-      document.getElementById("seenStat").textContent = items.filter(x => stats[x.id].seen).length;
-      document.getElementById("hardStat").textContent = items.filter(x => stats[x.id].hard).length;
-      document.getElementById("knownStat").textContent = items.filter(x => stats[x.id].known).length;
-      document.getElementById("savedStat").textContent = Object.keys(userShortAnswers).length;
+// ==================== 3. 앞글자 공식 & 20종 아미노산 특훈 ====================
+const mnemonics = [
+  { code: "탄글 - 지에 - 단펩", full: "3대 탈수합성 결합: 탄수화물(글리코시드 결합) / 지방(에스터 결합) / 단백질(펩타이드 결합)" },
+  { code: "공이 수반", full: "4가지 화학 결합: 공유결합 / 이온결합(물속에선 약함) / 수소결합 / 반데르발스 인력" },
+  { code: "수카카 아황인메", full: "7가지 화학기: 수산기(-OH) / 카르보닐기(>C=O: 케톤·알데하이드) / 카르복실기(-COOH) / 아미노기(-NH₂) / 황화수소기(-SH) / 인산기(-OPO₃²⁻) / 메틸기(-CH₃)" },
+  { code: "효방저수 호수수구", full: "단백질 8대 기능: 효소 / 방어(항체) / 저장(오브알부민) / 수송(헤모글로빈) / 호르몬(인슐린) / 수용체 / 수축·운동(액틴·마이오신) / 구조(콜라젠·케라틴)" },
+  { code: "이수이 소반", full: "단백질 3차 구조 안정화 결합 5종: 이황화 결합(-S-S-) / 수소결합 / 이온결합 / 소수성 상호작용 / 반데르발스 인력" },
+  { code: "관(25) - 중(10) - 섬(7)", full: "세포골격 3종: 미세소관(25nm, 튜불린) / 중간섬유(8~12nm, 케라틴) / 미세섬유(7nm, 액틴)" },
+  { code: "밀 - 데 - 간 / 식 - 음 - 수", full: "세포 연접 3종(밀착연접·데스모솜·간극연접) / 세포내 섭취 3종(식세포·음세포·수용체 매개)" }
+];
 
-      let c = 0, t = 0;
-      items.forEach(x => {
-        c += stats[x.id].correct;
-        t += stats[x.id].correct + stats[x.id].wrong;
-      });
-      document.getElementById("accStat").textContent = (t ? Math.round(c/t*100) : 0) + "%";
-    }
+function renderMnemonics() {
+  const el = document.getElementById('mnemonicList');
+  el.innerHTML = mnemonics.map((m, i) => `
+    <div style="padding:12px; border-bottom:1px solid #e2e8f0; cursor:pointer;" onclick="document.getElementById('mn-${i}').style.display = document.getElementById('mn-${i}').style.display === 'block' ? 'none' : 'block'">
+      <strong style="color:var(--primary); font-size:1.05rem;">▶ ${m.code}</strong> <span style="font-size:0.8rem; color:var(--muted);">(터치하여 펼치기)</span>
+      <div id="mn-${i}" style="display:none; margin-top:6px; color:#334155; font-size:0.93rem; background:#f8fafc; padding:10px; border-radius:8px;">${m.full}</div>
+    </div>
+  `).join('');
+}
 
-    function getFiltered() {
-      const part = document.getElementById("part").value;
-      const filter = document.getElementById("filter").value;
-      const search = document.getElementById("search").value.trim().toLowerCase();
+const aminoAcids = [
+  { name: "글리신", abbr3: "Gly", abbr1: "G", group: "비극성(소수성)", tip: "R기가 수소(H) 하나로 가장 단순함" },
+  { name: "알라닌", abbr3: "Ala", abbr1: "A", group: "비극성(소수성)", tip: "R기가 메틸기(-CH3)" },
+  { name: "발린", abbr3: "Val", abbr1: "V", group: "비극성(소수성)", tip: "낫모양 적혈구 빈혈증에서 6번 글루탐산 대신 들어간 소수성 아미노산!" },
+  { name: "류신", abbr3: "Leu", abbr1: "L", group: "비극성(소수성)", tip: "비극성 탄화수소 사슬" },
+  { name: "아이소류신", abbr3: "Ile", abbr1: "I", group: "비극성(소수성)", tip: "되먹임 억제 예시로 나오는 아미노산" },
+  { name: "메싸이오닌", abbr3: "Met", abbr1: "M", group: "비극성(소수성)", tip: "황(S)을 포함하며, 모든 단백질 합성의 1번 타자(개시 아미노산)!" },
+  { name: "페닐알라닌", abbr3: "Phe", abbr1: "F", group: "비극성(소수성)", tip: "주의! P가 아니라 발음 소리대로 'F'를 약어로 사용함" },
+  { name: "트립토판", abbr3: "Trp", abbr1: "W", group: "비극성(소수성)", tip: "주의! T가 아니라 고리 두 개가 붙은 모양인 'W'를 약어로 사용함!" },
+  { name: "프롤린", abbr3: "Pro", abbr1: "P", group: "비극성(소수성)", tip: "고리 구조를 형성함" },
+  { name: "세린", abbr3: "Ser", abbr1: "S", group: "극성(친수성)", tip: "수산기(-OH)를 가짐" },
+  { name: "트레오닌", abbr3: "Thr", abbr1: "T", group: "극성(친수성)", tip: "T 약어의 주인! 수산기(-OH)를 가짐" },
+  { name: "시스테인", abbr3: "Cys", abbr1: "C", group: "극성(친수성)", tip: "황화수소기(-SH)를 가져 이황화 결합(-S-S-)을 형성함!" },
+  { name: "타이로신", abbr3: "Tyr", abbr1: "Y", group: "극성(친수성)", tip: "주의! T 대신 두 번째 글자인 'Y'를 약어로 사용함" },
+  { name: "아스파라진", abbr3: "Asn", abbr1: "N", group: "극성(친수성)", tip: "주의! A 대신 끝 글자인 'N'을 사용함" },
+  { name: "글루타민", abbr3: "Gln", abbr1: "Q", group: "극성(친수성)", tip: "주의! G 대신 'Q(큐트한 글루타민)'를 약어로 사용함" },
+  { name: "아스파르트산", abbr3: "Asp", abbr1: "D", group: "산성(음전하)", tip: "주의! 카르복실기를 가진 산성 아미노산으로 약어는 'D'" },
+  { name: "글루탐산", abbr3: "Glu", abbr1: "E", group: "산성(음전하)", tip: "주의! 산성 아미노산으로 약어는 D 다음 글자인 'E'" },
+  { name: "리신(라이신)", abbr3: "Lys", abbr1: "K", group: "염기성(양전하)", tip: "주의! L 앞의 알파벳인 'K'를 약어로 사용함" },
+  { name: "아르지닌", abbr3: "Arg", abbr1: "R", group: "염기성(양전하)", tip: "주의! '아르(R)' 발음대로 'R'을 약어로 사용함" },
+  { name: "히스티딘", abbr3: "His", abbr1: "H", group: "염기성(양전하)", tip: "염기성 아미노산, 약어는 'H'" }
+];
 
-      return items.filter(item => {
-        if (part !== "all" && item.part !== part) return false;
-        if (filter === "hard" && !stats[item.id].hard) return false;
-        if (filter === "unseen" && stats[item.id].seen) return false;
-        if (search) {
-          const text = (item.question + " " + item.answer + " " + item.part).toLowerCase();
-          if (!text.includes(search)) return false;
-        }
-        return true;
-      });
-    }
+let currentAA = null;
+function nextAAQuiz() {
+  currentAA = aminoAcids[Math.floor(Math.random() * aminoAcids.length)];
+  const box = document.getElementById('aaQuizBox');
+  box.innerHTML = `
+    <div style="font-size:1.15rem; font-weight:800; margin-bottom:8px;">Q. [${currentAA.name}]의 3글자·1글자 약어와 성질 분류는?</div>
+    <button class="btn btn-primary" onclick="document.getElementById('aaAns').style.display='block'">정답 및 암기 팁 확인</button>
+    <button class="btn btn-outline" onclick="nextAAQuiz()">다음 아미노산 ▶</button>
+    <div id="aaAns" style="display:none; margin-top:12px; padding:12px; background:#fff; border-radius:8px; border-left:4px solid var(--primary);">
+      <b>• 약어:</b> <span style="color:var(--primary); font-weight:800;">${currentAA.abbr3} / ${currentAA.abbr1}</span><br>
+      <b>• 성질 그룹:</b> ${currentAA.group}<br>
+      <b>• 암기 포인트:</b> ${currentAA.tip}
+    </div>
+  `;
+}
 
-    function renderShort(item) {
-      document.getElementById("shortArea").style.display = "block";
-      document.getElementById("questionBox").textContent = item.question;
-      document.getElementById("userAnswer").value = userShortAnswers[item.id] || "";
-    }
+function switchTab(tabId) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
 
-    function getWrongChoices(item) {
-      const samePart = items.filter(x => x.part === item.part && x.id !== item.id).map(x => x.answer);
-      const fallback = items.filter(x => x.id !== item.id).map(x => x.answer);
-      const pool = [...new Set([...samePart, ...fallback])].filter(x => x !== item.answer);
-      return shuffle(pool).slice(0, 3);
-    }
+// 초기 실행
+renderCard();
+nextQuiz();
+renderMnemonics();
+nextAAQuiz();
+</script>
 
-    function renderMCQ(item, isExam=false) {
-      document.getElementById("questionBox").textContent = item.question;
-      const choices = shuffle([item.answer, ...getWrongChoices(item)]);
-      const correctAnswer = item.answer;
-      const box = document.getElementById("choicesBox");
-      box.innerHTML = "";
-
-      choices.forEach((choice, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "choice";
-        btn.textContent = `${idx+1}. ${choice}`;
-        btn.onclick = () => {
-          const all = Array.from(document.querySelectorAll(".choice"));
-          all.forEach(b => b.disabled = true);
-
-          if (choice === correctAnswer) {
-            btn.classList.add("correct");
-            stats[item.id].correct += 1;
-            if (isExam) examScore++;
-          } else {
-            btn.classList.add("wrong");
-            all.forEach(b => {
-              const txt = b.textContent.replace(/^\d+\.\s*/, "");
-              if (txt === correctAnswer) b.classList.add("correct");
-            });
-            stats[item.id].wrong += 1;
-            wrongNotes.unshift({
-              time: new Date().toLocaleString(),
-              part: item.part,
-              mode: isExam ? "모의고사 객관식" : "객관식",
-              question: item.question,
-              userChoice: choice,
-              correctAnswer: correctAnswer,
-              answer: item.answer
-            });
-            if (wrongNotes.length > 120) wrongNotes = wrongNotes.slice(0,120);
-          }
-
-          saveAll();
-          updateStats();
-
-          const ans = document.getElementById("answerBox");
-          ans.style.display = "block";
-          ans.textContent = `정답: ${correctAnswer}\n\n모범답안:\n${item.answer}`;
-
-          if (isExam) {
-            examAnswered = true;
-            updateExamStatus();
-          }
-        };
-        box.appendChild(btn);
-      });
-    }
-
-    function renderOX(item, isExam=false) {
-      document.getElementById("questionBox").textContent = item.question;
-      const isTrue = Math.random() < 0.5;
-      const statement = isTrue ? item.answer : oxFalseMap[item.id];
-      const box = document.getElementById("choicesBox");
-      box.innerHTML = "";
-
-      const statementDiv = document.createElement("div");
-      statementDiv.style.padding = "12px";
-      statementDiv.style.background = "#f9fafb";
-      statementDiv.style.border = "1px solid #e5e7eb";
-      statementDiv.style.borderRadius = "12px";
-      statementDiv.style.lineHeight = "1.7";
-      statementDiv.innerHTML = `<strong>판단 문장</strong><br>${statement}`;
-      box.appendChild(statementDiv);
-
-      ["O","X"].forEach(mark => {
-        const btn = document.createElement("button");
-        btn.className = "choice";
-        btn.textContent = mark;
-        btn.onclick = () => {
-          const all = Array.from(document.querySelectorAll(".choice"));
-          all.forEach(b => b.disabled = true);
-
-          const correct = (mark === "O" && isTrue) || (mark === "X" && !isTrue);
-
-          if (correct) {
-            btn.classList.add("correct");
-            stats[item.id].correct += 1;
-            if (isExam) examScore++;
-          } else {
-            btn.classList.add("wrong");
-            stats[item.id].wrong += 1;
-            wrongNotes.unshift({
-              time: new Date().toLocaleString(),
-              part: item.part,
-              mode: isExam ? "모의고사 OX" : "OX",
-              question: item.question,
-              userChoice: mark,
-              correctAnswer: isTrue ? "O" : "X",
-              answer: item.answer
-            });
-            if (wrongNotes.length > 120) wrongNotes = wrongNotes.slice(0,120);
-          }
-
-          saveAll();
-          updateStats();
-
-          const ans = document.getElementById("answerBox");
-          ans.style.display = "block";
-          ans.textContent = `정답: ${isTrue ? "O" : "X"}\n\n모범답안:\n${item.answer}`;
-
-          if (isExam) {
-            examAnswered = true;
-            updateExamStatus();
-          }
-        };
-        box.appendChild(btn);
-      });
-    }
-
-    function renderNormal() {
-      if (examMode) return;
-
-      clearBoxes();
-      currentPool = getFiltered();
-      const mode = document.getElementById("mode").value;
-
-      document.getElementById("badgeMode").textContent = mode === "short" ? "서술형" : mode === "mcq" ? "객관식 4지선다" : "OX";
-      document.getElementById("badgeCount").textContent = `현재 조건 ${currentPool.length}문제`;
-
-      if (currentPool.length === 0) {
-        document.getElementById("metaText").textContent = "조건에 맞는 문제가 없습니다.";
-        document.getElementById("questionBox").textContent = "필터나 검색 조건을 바꿔보세요.";
-        document.getElementById("shortArea").style.display = "none";
-        return;
-      }
-
-      current = currentPool[Math.floor(Math.random() * currentPool.length)];
-      stats[current.id].seen = true;
-      saveAll();
-      updateStats();
-
-      document.getElementById("badgePart").textContent = current.part;
-      document.getElementById("metaText").textContent = `파트: ${current.part}`;
-
-      if (mode === "short") {
-        renderShort(current);
-      } else {
-        document.getElementById("shortArea").style.display = "none";
-        if (mode === "mcq") renderMCQ(current, false);
-        if (mode === "ox") renderOX(current, false);
-      }
-    }
-
-    function showAnswer() {
-      if (!current) return;
-      const mode = document.getElementById("mode").value;
-
-      if (mode === "short") {
-        compareAnswer();
-      } else {
-        const ans = document.getElementById("answerBox");
-        ans.style.display = "block";
-        ans.textContent = current.answer;
-      }
-    }
-
-    function saveShort() {
-      if (!current) return;
-      const val = document.getElementById("userAnswer").value;
-      userShortAnswers[current.id] = val;
-      saveAll();
-      updateStats();
-      alert("내 답을 저장했어.");
-
-      if (examMode && examType === "short") {
-        examAnswered = val.trim().length > 0;
-        updateExamStatus();
-      }
-    }
-
-    function compareAnswer() {
-      if (!current) return;
-      const mine = document.getElementById("userAnswer").value.trim();
-      const box = document.getElementById("compareBox");
-      box.style.display = "block";
-      box.textContent = `내 답:\n${mine || "(작성 안 함)"}\n\n모범답안:\n${current.answer}`;
-    }
-
-    function markKnown() {
-      if (!current) return;
-      stats[current.id].known = true;
-      stats[current.id].hard = false;
-      saveAll();
-      updateStats();
-      alert("외웠음으로 표시했어.");
-    }
-
-    function markHard() {
-      if (!current) return;
-      stats[current.id].hard = true;
-      saveAll();
-      updateStats();
-      alert("어려움 문제로 표시했어.");
-    }
-
-    function showWrongNotes() {
-      const box = document.getElementById("wrongBox");
-      if (wrongNotes.length === 0) {
-        box.style.display = "block";
-        box.textContent = "아직 기록된 오답이 없어.";
-        return;
-      }
-      let text = "오답노트\n\n";
-      wrongNotes.slice(0, 25).forEach((n, i) => {
-        text += `${i+1}. [${n.part}] ${n.question}\n- 내가 고른 답: ${n.userChoice}\n- 정답: ${n.correctAnswer}\n- 모범답안: ${n.answer}\n- 기록 시각: ${n.time}\n\n`;
-      });
-      box.style.display = "block";
-      box.textContent = text;
-    }
-
-    function updateExamStatus() {
-      const box = document.getElementById("examBox");
-      const btns = document.getElementById("examControlBtns");
-
-      if (!examMode) {
-        box.style.display = "none";
-        btns.style.display = "none";
-        return;
-      }
-
-      box.style.display = "block";
-      btns.style.display = "flex";
-
-      if (examType === "mcq") {
-        box.textContent = `객관식 20문제 시험 | 문항 ${examIndex+1}/${examQuestions.length} | 현재 점수 ${examScore}점 | ${examAnswered ? "답안 선택 완료" : "답안 선택 전"}`;
-      } else {
-        box.textContent = `서술형 10문제 시험 | 문항 ${examIndex+1}/${examQuestions.length} | ${examAnswered ? "작성 완료" : "작성 미완료"}`;
-      }
-    }
-
-    function renderExamQuestion() {
-      clearBoxes();
-
-      if (examIndex >= examQuestions.length) {
-        finishExam();
-        return;
-      }
-
-      current = examQuestions[examIndex];
-      stats[current.id].seen = true;
-      saveAll();
-      updateStats();
-
-      document.getElementById("badgePart").textContent = current.part;
-      document.getElementById("badgeMode").textContent = examType === "mcq" ? "객관식 시험" : "서술형 시험";
-      document.getElementById("badgeCount").textContent = `시험 ${examIndex+1}/${examQuestions.length}`;
-      document.getElementById("metaText").textContent = "시험 모드 진행 중";
-
-      if (examType === "mcq") {
-        document.getElementById("shortArea").style.display = "none";
-        renderMCQ(current, true);
-        examAnswered = false;
-      } else {
-        document.getElementById("shortArea").style.display = "block";
-        document.getElementById("questionBox").textContent = current.question;
-        document.getElementById("userAnswer").value = userShortAnswers[current.id] || "";
-        examAnswered = (userShortAnswers[current.id] || "").trim().length > 0;
-      }
-
-      updateExamStatus();
-    }
-
-    function startMcqExam() {
-      examMode = true;
-      examType = "mcq";
-      examIndex = 0;
-      examScore = 0;
-      examQuestions = shuffle(items).slice(0,20);
-      renderExamQuestion();
-    }
-
-    function startShortExam() {
-      examMode = true;
-      examType = "short";
-      examIndex = 0;
-      examScore = 0;
-      examQuestions = shuffle(items).slice(0,10);
-      renderExamQuestion();
-    }
-
-    function nextExamQuestion() {
-      if (!examMode) return;
-
-      if (examType === "mcq" && !examAnswered) {
-        alert("먼저 답을 선택해줘.");
-        return;
-      }
-
-      if (examType === "short") {
-        const val = document.getElementById("userAnswer").value.trim();
-        userShortAnswers[current.id] = val;
-        saveAll();
-        examAnswered = val.length > 0;
-      }
-
-      examIndex++;
-      renderExamQuestion();
-    }
-
-    function finishExam() {
-      clearBoxes();
-      document.getElementById("shortArea").style.display = "none";
-
-      if (examType === "mcq") {
-        document.getElementById("questionBox").textContent = `객관식 시험 종료! 총점: ${examScore} / ${examQuestions.length}`;
-      } else {
-        const answered = examQuestions.filter(q => (userShortAnswers[q.id] || "").trim().length > 0).length;
-        document.getElementById("questionBox").textContent = `서술형 시험 종료! 작성한 문항 수: ${answered} / ${examQuestions.length}`;
-      }
-
-      document.getElementById("metaText").textContent = "오답노트 보기나 서술형 비교 기능으로 복습해봐.";
-      document.getElementById("examBox").style.display = "none";
-      document.getElementById("examControlBtns").style.display = "none";
-      examMode = false;
-      examType = "";
-    }
-
-    function resetAll() {
-      if (!confirm("학습 기록, 오답노트, 서술형 답안을 모두 초기화할까요?")) return;
-      stats = {};
-      wrongNotes = [];
-      userShortAnswers = {};
-      examMode = false;
-      examType = "";
-      examQuestions = [];
-      examIndex = 0;
-      examScore = 0;
-      examAnswered = false;
-      initStats();
-      updateStats();
-      clearBoxes();
-      document.getElementById("examBox").style.display = "none";
-      document.getElementById("examControlBtns").style.display = "none";
-      renderNormal();
-    }
-
-    document.getElementById("newBtn").addEventListener("click", renderNormal);
-    document.getElementById("showBtn").addEventListener("click", showAnswer);
-    document.getElementById("knownBtn").addEventListener("click", markKnown);
-    document.getElementById("hardBtn").addEventListener("click", markHard);
-    document.getElementById("wrongBtn").addEventListener("click", showWrongNotes);
-    document.getElementById("resetBtn").addEventListener("click", resetAll);
-    document.getElementById("mcqExamBtn").addEventListener("click", startMcqExam);
-    document.getElementById("shortExamBtn").addEventListener("click", startShortExam);
-    document.getElementById("saveShortBtn").addEventListener("click", saveShort);
-    document.getElementById("compareBtn").addEventListener("click", compareAnswer);
-    document.getElementById("nextExamBtn").addEventListener("click", nextExamQuestion);
-    document.getElementById("finishExamBtn").addEventListener("click", finishExam);
-
-    document.getElementById("mode").addEventListener("change", () => { if (!examMode) renderNormal(); });
-    document.getElementById("part").addEventListener("change", () => { if (!examMode) renderNormal(); });
-    document.getElementById("filter").addEventListener("change", () => { if (!examMode) renderNormal(); });
-    document.getElementById("search").addEventListener("input", () => { if (!examMode) renderNormal(); });
-
-    initStats();
-    updateStats();
-    renderNormal();
-  </script>
 </body>
 </html>
