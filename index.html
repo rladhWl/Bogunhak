@@ -552,4 +552,230 @@ function filterAtomic(ch, btn) {
   renderAtomic();
 }
 
-function renderAtomic()
+function renderAtomic() {
+  const list = currentAtomicFilter === 'all' ? atomicCards : atomicCards.filter(c => c.ch === currentAtomicFilter);
+  const el = document.getElementById('atomicList');
+  el.innerHTML = list.map((c, idx) => `
+    <div class="card">
+      <span class="badge">${c.ch} · 교과서 ${c.p}</span>
+      <div class="card-title">${c.title}</div>
+      <p style="font-size:0.96rem; line-height:1.8;">${c.text}</p>
+      <button class="why-btn" onclick="document.getElementById('at-why-${idx}').classList.toggle('show')">💡 왜 그럴까요? 원리 보기</button>
+      <div class="why-drawer" id="at-why-${idx}">${c.why}</div>
+    </div>
+  `).join('');
+}
+
+// ==================== 4. 실전 랜덤 문제 은행 (빈칸 / 비교서술 / 옳지 않은 것) ====================
+const quizPool = [
+  // 빈칸 채우기
+  {
+    type: "blank",
+    title: "[빈칸] 1장~2장 유전자 발현과 거대분자 결합 명칭",
+    text: "유전자 정보가 단백질로 만들어지는 유전자 발현은 DNA가 mRNA로 복사되는 [ (1) ]와 mRNA가 단백질로 합성되는 [ (2) ] 과정을 거친다. 또한 단위체가 물 분자를 잃으며 중합체를 합성하는 반응은 [ (3) ] 반응이라 하며, 탄수화물은 [ (4) ] 결합, 지방은 [ (5) ] 결합, 단백질은 [ (6) ] 결합을 형성한다.",
+    answers: ["전사", "번역", "탈수", "글리코시드", "에스터", "펩타이드"],
+    exp: "유전자 발현(전사→번역)과 3대 탈수반응 결합(탄글-지에-단펩)은 시험 필수 암기 사항입니다."
+  },
+  {
+    type: "blank",
+    title: "[빈칸] 2장 화학기 7종과 핵산(DNA vs RNA) 구분",
+    text: "카르보닐기(>C=O)가 탄소 골격 내부에 있으면 [ (1) ], 골격 끝에 있으면 [ (2) ]라 한다. 시스테인의 [ (3) ]기(-SH) 두 개가 반응하면 단백질 3차 구조를 안정화하는 [ (4) ] 결합(-S-S-)을 형성한다. 한편 DNA는 2' 탄소에 산소가 없는 [ (5) ] 당과 A, G, C, [ (6) ] 염기를 가지며, RNA는 [ (7) ] 당과 A, G, C, [ (8) ] 염기를 가진다.",
+    answers: ["케톤", "알데하이드", "황화수소", "이황화", "디옥시리보스", "타이민", "리보스", "유라실"],
+    exp: "카르보닐기(케톤/알데하이드), 황화수소기→이황화결합, 디옥시리보스(타이민) vs 리보스(유라실)를 정확히 구분하세요."
+  },
+  {
+    type: "blank",
+    title: "[빈칸] 3장 세포골격 3종, 세포연접 3종, 신호전달 2차 전달자",
+    text: "세포골격 중 지름이 25nm로 가장 굵고 튜불린으로 구성된 관은 [ (1) ]이고, 7nm로 가장 가늘며 액틴으로 구성된 것은 [ (2) ]이다. 동물세포 연접 중 액체 누출을 막는 것은 [ (3) ]연접, 이온과 작은 분자가 이동하는 통로는 [ (4) ]연접이다. 또한 GPCR 신호전달에서 아데닐산 고리화효소는 ATP를 2차 전달자인 [ (5) ]로 전환한다.",
+    answers: ["미세소관", "미세섬유", "밀착", "간극", "cAMP"],
+    exp: "세포골격(미세소관-중간섬유-미세섬유), 세포연접(밀착-데스모솜-간극), 2차 전달자(cAMP, 칼슘이온)를 기억하세요."
+  },
+  {
+    type: "blank",
+    title: "[빈칸] 4장 자유에너지(ΔG), 효소 억제, 세포호흡과 발효",
+    text: "자유 에너지를 방출하여 자발적으로 일어나는 반응은 [ (1) ] 반응(ΔG < 0)이다. 대사 경로의 최종 생성물이 초기 단계 효소를 억제하는 조절을 [ (2) ] 억제라 한다. 포도당 1분자 산소 호흡 시 기질 수준 인산화로 4 ATP, 산화적 인산화로 26~28 ATP가 생겨 총 [ (3) ] 또는 [ (4) ] ATP가 생성된다. 반면 산소가 없을 때 효모는 CO₂를 방출하며 에탄올을 만드는 [ (5) ] 발효를 수행한다.",
+    answers: ["발열", "되먹임", "30", "32", "알코올"],
+    exp: "발열반응(ΔG<0), 되먹임 억제, 포도당 1분자당 30 또는 32 ATP, 알코올 발효(CO₂ 방출) vs 젖산 발효(CO₂ 미방출)는 필수입니다."
+  },
+
+  // 비교·서술형
+  {
+    type: "essay",
+    title: "[비교 서술형] 식물세포와 동물세포의 구조적 차이점을 비교하여 서술하시오. (65p)",
+    keywords: ["세포벽", "엽록체", "중심 액포", "원형질 연락사", "리소좀", "중심체", "편모"],
+    model: "식물세포에만 있고 동물세포에는 없는 구조로는 셀룰로스 성분의 세포벽, 광합성이 일어나는 엽록체, 물과 이온을 저장하고 팽압을 유지하는 큰 중심 액포, 인접 세포와 세포질을 연결하는 원형질 연락사가 있습니다. 반대로 동물세포에만 있는 구조로는 가수분해 효소를 가진 리소좀, 한 쌍의 중심립을 포함하는 중심체, 이동 기관인 편모가 있습니다."
+  },
+  {
+    type: "essay",
+    title: "[비교 서술형] 녹말, 글리코젠, 셀룰로스의 단위체 결합 방식과 구조·기능의 차이점을 비교하시오. (40p)",
+    keywords: ["알파", "베타", "1-4", "가지", "나선", "직선", "세포벽", "소화"],
+    model: "녹말(식물 저장 다당류)과 글리코젠(동물 간·근육 저장 다당류)은 모두 α-포도당이 α 1-4 글리코시드 결합으로 연결된 나선형 구조이며 인간이 소화할 수 있고, 글리코젠이 녹말보다 가지(α 1-6 결합)가 훨씬 더 많습니다. 반면 셀룰로스(식물 세포벽 구성 다당류)는 β-포도당이 β 1-4 글리코시드 결합으로 180도씩 뒤집혀 연결된 가지 없는 직선형 사슬 구조이며, 인간은 이를 분해하는 효소(셀룰레이스)가 없어 소화하지 못합니다."
+  },
+  {
+    type: "essay",
+    title: "[비교 서술형] 수동수송과 능동수송의 차이점을 농도 기울기와 에너지(ATP) 측면에서 비교하고 각각의 예시를 서술하시오. (89p)",
+    keywords: ["농도 기울기", "ATP", "단순확산", "촉진확산", "운반체", "소듐-포타슘 펌프"],
+    model: "수동수송은 물질이 농도 기울기를 따라(고농도→저농도) 이동하므로 ATP 에너지를 소모하지 않는 과정으로, 인지질 막을 직접 통과하는 단순확산(기체, 스테로이드)과 통로·운반체 단백질의 도움을 받는 촉진확산(아쿠아포린을 통한 물 이동 등)이 있습니다. 반면 능동수송은 농도 기울기를 거슬러(저농도→고농도) 물질을 이동시키므로 반드시 ATP 에너지를 소모하며 운반체 단백질만 관여합니다(예: 소듐-포타슘 펌프, 양성자 펌프)."
+  },
+  {
+    type: "essay",
+    title: "[비교 서술형] 효소의 경쟁적 억제자와 비경쟁적 억제자의 작용 기전 차이점을 비교하여 서술하시오. (107~108p)",
+    keywords: ["활성 부위", "기질", "농도", "다른 부위", "모양"],
+    model: "경쟁적 억제자는 정상 기질과 구조가 유사하여 효소의 '활성 부위'를 놓고 기질과 직접 경쟁하며, 기질의 농도를 높이면 억제를 극복할 수 있습니다. 반면 비경쟁적 억제자는 활성 부위가 아닌 효소의 '다른 부위'에 결합하여 효소 단백질의 입체 모양을 변형시킴으로써 기질이 활성 부위에 결합하더라도 촉매 기능이 제대로 일어나지 못하게 합니다."
+  },
+
+  // 옳지 않은 것은? (객관식)
+  {
+    type: "mcq",
+    title: "다음 중 동물세포와 식물세포 및 삼투 현상에 대한 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 식물세포는 셀룰로스로 이루어진 세포벽, 광합성을 하는 엽록체, 중심 액포를 가진다.",
+      "② 동물세포를 저장액(맹물)에 넣으면 세포 안으로 물이 유입되어 세포가 부풀어 터진다(용해).",
+      "③ 식물세포를 저장액에 넣으면 동물세포와 마찬가지로 세포벽이 터져서 죽게 된다.",
+      "④ 식물세포를 고장액(소금물)에 넣으면 물이 빠져나가 세포막이 세포벽에서 분리되는 원형질 분리가 일어난다.",
+      "⑤ 식물세포의 원형질 연락사와 동물세포의 간극연접(gap junction)은 모두 인접한 세포 간에 물질이 이동하는 통로이다."
+    ],
+    ans: 2,
+    exp: "정답은 ③번입니다! 식물세포는 단단한 세포벽이 팽압으로 버텨주기 때문에 저장액에 넣어도 터지지 않고 오히려 단단하고 건강한 '팽만(정상)' 상태가 됩니다."
+  },
+  {
+    type: "mcq",
+    title: "다음 중 단백질과 20가지 아미노산에 대한 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 리보솜에서 폴리펩타이드가 합성될 때는 항상 아미노 말단(N-말단)에서 카르복실 말단(C-말단) 방향으로 진행된다.",
+      "② 트립토판의 1글자 약어는 W이고, 페닐알라닌은 F, 타이로신은 Y, 글루타민은 Q이다.",
+      "③ 단백질의 2차 구조인 α-나선과 β-병풍 구조는 아미노산 곁사슬(R기) 간의 이황화 결합에 의해 형성된다.",
+      "④ 헤모글로빈 베타 사슬 6번 아미노산인 글루탐산(친수성)이 발린(소수성)으로 치환되면 낫모양 적혈구 빈혈증이 발생한다.",
+      "⑤ 단백질이 열이나 pH 변화로 고유한 3차원 구조를 잃고 활성을 상실하는 현상을 변성(denaturation)이라 한다."
+    ],
+    ans: 2,
+    exp: "정답은 ③번입니다! 2차 구조(α-나선, β-병풍)는 곁사슬(R기)이 아니라 '폴리펩타이드 골격' 원자들 사이의 수소결합에 의해 형성됩니다. R기 간의 상호작용(이황화 결합 등)은 3차 구조를 만듭니다."
+  },
+  {
+    type: "mcq",
+    title: "다음 중 세포 신호전달(수용체, 리간드, 2차 전달자)에 대한 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 표적 세포의 수용체에 특이적으로 결합하는 신호 분자를 리간드(1차 전달자)라고 한다.",
+      "② 에피네프린 같은 수용성 신호 분자는 세포막을 직접 통과할 수 없어 세포막 수용체(GPCR)에 결합한다.",
+      "③ 스테로이드 호르몬(알도스테론, 테스토스테론 등)은 소수성이므로 세포막을 통과해 세포질이나 핵 내부의 수용체와 결합한다.",
+      "④ 아데닐산 고리화효소는 GTP를 분해하여 칼슘 이온(Ca²⁺)을 합성하는 효소이다.",
+      "⑤ 고리형 AMP(cAMP)와 칼슘 이온(Ca²⁺)은 대표적인 2차 전달자로서 세포 내 신호를 전달하고 증폭한다."
+    ],
+    ans: 3,
+    exp: "정답은 ④번입니다! 아데닐산 고리화효소(adenylyl cyclase)는 활성화된 G-단백질에 의해 켜져서 'ATP를 고리형 AMP(cAMP)로 전환'하는 효소입니다."
+  },
+  {
+    type: "mcq",
+    title: "다음 중 세포 호흡과 발효(알코올 발효·젖산 발효)를 비교한 설명으로 옳지 않은 것은?",
+    choices: [
+      "① 해당과정은 세포질에서 일어나며 산소의 유무와 관계없이 포도당 1분자당 기질 수준 인산화로 2 ATP를 생성한다.",
+      "② 산소 호흡에서 가장 많은 ATP(약 26~28 ATP)가 생성되는 단계는 미토콘드리아 내막의 산화적 인산화 과정이다.",
+      "③ 발효는 전자전달계를 사용하지 않고 피루브산(또는 유도체)에 전자를 넘겨 해당과정에 필요한 NAD⁺를 재생하는 과정이다.",
+      "④ 효모가 수행하는 알코올 발효와 인간 근육세포가 수행하는 젖산 발효는 모두 이산화탄소(CO₂) 기체를 방출한다.",
+      "⑤ 산소가 있을 때는 산소 호흡을 하고 산소가 없을 때는 발효를 하여 살아가는 생물을 조건부 혐기성 생물이라 한다."
+    ],
+    ans: 3,
+    exp: "정답은 ④번입니다! 알코올 발효는 피루브산(3C)이 아세트알데하이드(2C)가 될 때 CO₂를 방출하지만, 젖산 발효는 CO₂ 방출 없이 피루브산(3C)이 곧바로 젖산(3C)으로 환원됩니다."
+  }
+];
+
+let currentQType = 'all';
+let activeQuiz = null;
+
+function setQType(t) {
+  currentQType = t;
+  ['all', 'blank', 'essay', 'mcq'].forEach(k => {
+    document.getElementById('qt-' + k).className = (k === t) ? 'btn btn-primary' : 'btn btn-outline';
+  });
+  loadRandomQuiz();
+}
+
+function loadRandomQuiz() {
+  const pool = currentQType === 'all' ? quizPool : quizPool.filter(q => q.type === currentQType);
+  activeQuiz = pool[Math.floor(Math.random() * pool.length)];
+  const box = document.getElementById('quizBox');
+
+  if (activeQuiz.type === 'blank') {
+    let htmlText = activeQuiz.text;
+    activeQuiz.answers.forEach((a, i) => {
+      htmlText = htmlText.replace(`[ (${i+1}) ]`, `<input type="text" class="blank-input" id="qblank-${i}" placeholder="(${i+1}) 입력">`);
+    });
+    box.innerHTML = `
+      <span class="badge">✏️ 빈칸 채우기</span>
+      <div class="card-title">${activeQuiz.title}</div>
+      <p style="font-size:1.02rem; line-height:2.2; margin:14px 0;">${htmlText}</p>
+      <button class="btn btn-success" onclick="gradeBlank()">정답 채점하기</button>
+      <div class="why-drawer" id="qResult"></div>
+    `;
+  } else if (activeQuiz.type === 'essay') {
+    box.innerHTML = `
+      <span class="badge badge-hot">🖋️ 비교·서술형 주관식</span>
+      <div class="card-title">${activeQuiz.title}</div>
+      <textarea class="essay-area" id="qEssayInput" placeholder="핵심 키워드를 포함하여 답안을 작성해 보세요!"></textarea>
+      <button class="btn btn-success" onclick="gradeEssay()">필수 키워드 채점 & 모범답안 확인</button>
+      <div class="why-drawer" id="qResult"></div>
+    `;
+  } else {
+    box.innerHTML = `
+      <span class="badge">❌ 옳지 않은 것 고르기</span>
+      <div class="card-title">${activeQuiz.title}</div>
+      <div style="margin-top:12px;">
+        ${activeQuiz.choices.map((c, i) => `<button class="choice-item" id="qchoice-${i}" onclick="gradeMcq(${i})">${c}</button>`).join('')}
+      </div>
+      <div class="why-drawer" id="qResult"></div>
+    `;
+  }
+}
+
+function gradeBlank() {
+  let hit = 0;
+  activeQuiz.answers.forEach((ans, i) => {
+    const el = document.getElementById(`qblank-${i}`);
+    if (el.value.trim() === ans) {
+      el.style.background = "#dcfce7"; el.style.borderColor = "#10b981"; hit++;
+    } else {
+      el.style.background = "#fee2e2"; el.style.borderColor = "#ef4444";
+    }
+  });
+  const res = document.getElementById('qResult');
+  res.innerHTML = `<strong>🎯 채점 결과: ${activeQuiz.answers.length}개 중 ${hit}개 정답!</strong><br>
+    <b>정답:</b> ${activeQuiz.answers.map((a, i) => `(${i+1})${a}`).join(', ')}<br>
+    <b>해설:</b> ${activeQuiz.exp}`;
+  res.classList.add('show');
+}
+
+function gradeEssay() {
+  const val = document.getElementById('qEssayInput').value;
+  let hit = 0;
+  const tags = activeQuiz.keywords.map(k => {
+    const ok = val.includes(k);
+    if (ok) hit++;
+    return `<span class="kw-badge ${ok ? 'kw-ok' : 'kw-no'}">${ok ? '✔ ' : '✘ '}${k}</span>`;
+  }).join('');
+  const res = document.getElementById('qResult');
+  res.innerHTML = `<strong>📊 키워드 채점: ${activeQuiz.keywords.length}개 중 ${hit}개 포함</strong><div style="margin:6px 0;">${tags}</div>
+    <b>📖 만점 모범 답안:</b> ${activeQuiz.model}`;
+  res.classList.add('show');
+}
+
+function gradeMcq(idx) {
+  activeQuiz.choices.forEach((_, i) => {
+    const btn = document.getElementById(`qchoice-${i}`);
+    if (i === activeQuiz.ans) btn.classList.add('correct');
+    else if (i === idx) btn.classList.add('wrong');
+  });
+  const res = document.getElementById('qResult');
+  res.innerHTML = `<strong>${idx === activeQuiz.ans ? '⭕ 정답입니다!' : '❌ 오답입니다!'}</strong><br>${activeQuiz.exp}`;
+  res.classList.add('show');
+}
+
+// 초기 실행
+renderComparisons();
+renderAAGrid();
+loadAASpeedGame();
+renderAtomic();
+loadRandomQuiz();
+</script>
+
+</body>
+</html>
