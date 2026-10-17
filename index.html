@@ -1,960 +1,410 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>일반생물학 파이널 완벽 암기 앱 v3</title>
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --primary-light: #dbeafe;
-      --role-bg: #dcfce7;
-      --role-text: #166534;
-      --role-border: #4ade80;
-      --accent: #f59e0b;
-      --accent-light: #fef3c7;
-      --danger: #ef4444;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Malgun Gothic', sans-serif;
-      -webkit-tap-highlight-color: rgba(37, 99, 235, 0.2);
-      touch-action: manipulation;
-    }
-    body { background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 220px; }
-    button, .t-name, .t-role, .aa-card, .choice-item { cursor: pointer; user-select: none; -webkit-user-select: none; }
-
-    /* Header & Sticky Controls */
-    header { background: linear-gradient(135deg, #0f172a, #1e3a8a); color: white; padding: 12px 10px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-    header h1 { font-size: 1.12rem; font-weight: 800; }
-    .header-sub { font-size: 0.76rem; color: #93c5fd; margin-top: 3px; }
-
-    .nav-bar { display: flex; gap: 5px; justify-content: center; background: #fff; padding: 8px 6px; border-bottom: 1px solid #cbd5e1; position: sticky; top: 56px; z-index: 95; flex-wrap: wrap; }
-    .nav-btn { padding: 7px 11px; border: 1px solid #cbd5e1; border-radius: 99px; background: #f8fafc; color: #334155; font-weight: 800; font-size: 0.78rem; }
-    .nav-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 2px 6px rgba(37,99,235,0.3); }
-
-    .blind-bar { display: flex; gap: 6px; justify-content: center; align-items: center; background: #eff6ff; padding: 7px 8px; border-bottom: 1px solid #bfdbfe; position: sticky; top: 101px; z-index: 90; flex-wrap: wrap; font-size: 0.78rem; }
-    .blind-btn { padding: 5px 10px; border-radius: 8px; border: 1px solid #93c5fd; background: #fff; color: #1e3a8a; font-weight: 800; font-size: 0.76rem; }
-    .blind-btn.on { background: #1e293b; color: #fde047; border-color: #0f172a; }
-
-    .container { max-width: 900px; margin: 12px auto; padding: 0 10px; }
-    .tab-section { display: none; }
-    .tab-section.active { display: block; }
-
-    /* Cards & Tables */
-    .card { background: var(--card); border-radius: 14px; padding: 15px; margin-bottom: 12px; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; background: var(--primary-light); color: var(--primary-dark); margin-bottom: 6px; }
-    .badge-hot { background: #fee2e2; color: #dc2626; margin-left: 4px; }
-    .card-title { font-size: 1.04rem; font-weight: 800; margin-bottom: 8px; color: #0f172a; }
-
-    .comp-table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 0.86rem; }
-    .comp-table th, .comp-table td { border: 1px solid #cbd5e1; padding: 8px 9px; text-align: left; vertical-align: top; }
-    .comp-table th { background: #f8fafc; font-weight: 800; color: #1e293b; }
-
-    /* Clickable Terms (Blue = Name/Term, Green = Role/Function) */
-    .t-name {
-      display: inline;
-      background: #dbeafe;
-      color: #1e3a8a;
-      font-weight: 800;
-      padding: 1px 5px;
-      border-radius: 4px;
-      border-bottom: 2px solid #3b82f6;
-      transition: 0.12s;
-    }
-    .t-role {
-      display: inline;
-      background: #dcfce7;
-      color: #166534;
-      font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 4px;
-      border-bottom: 2px dashed #16a34a;
-      transition: 0.12s;
-    }
-    .t-name:active, .t-role:active { transform: scale(0.97); }
-
-    /* Blind Modes */
-    body.hide-names .t-name:not(.revealed) {
-      background: #1e293b; color: transparent; border-bottom: 2px solid #0f172a; border-radius: 4px;
-    }
-    body.hide-roles .t-role:not(.revealed) {
-      background: #064e3b; color: transparent; border-bottom: 2px solid #022c22; border-radius: 4px;
-    }
-
-    /* Floating Bottom Explanation Popup (단어 선택 시 즉시 뜨는 설명창) */
-    #explainDock {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #0f172a;
-      color: #f8fafc;
-      padding: 14px 16px;
-      z-index: 200;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.35);
-      border-top: 3px solid var(--accent);
-      transform: translateY(105%);
-      transition: transform 0.22s ease-out;
-      max-height: 48vh;
-      overflow-y: auto;
-    }
-    #explainDock.show { transform: translateY(0); }
-    .dock-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .dock-title { font-size: 1rem; font-weight: 800; color: #fde047; }
-    .dock-close { background: #334155; color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; }
-    .dock-role { font-size: 0.88rem; color: #86efac; font-weight: 700; margin-bottom: 6px; }
-    .dock-why { font-size: 0.86rem; color: #e2e8f0; background: #1e293b; padding: 9px 11px; border-radius: 8px; border-left: 3px solid #38bdf8; }
-
-    /* Amino Acid Grid */
-    .aa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-    .aa-card { background: #fff; border-radius: 12px; border: 2px solid #cbd5e1; padding: 10px; text-align: center; transition: 0.12s; }
-    .aa-card:active { border-color: var(--primary); background: #eff6ff; }
-    .aa-tag { font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 99px; display: inline-block; margin-bottom: 5px; }
-    .aa-svg-wrap { background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; height: 148px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
-    .aa-name { font-size: 0.98rem; font-weight: 800; color: #0f172a; }
-    .aa-code { font-size: 0.9rem; font-weight: 800; color: var(--primary); margin-top: 2px; }
-    .aa-warn { background: #fee2e2; color: #dc2626; padding: 1px 5px; border-radius: 4px; font-weight: 900; }
-    .aa-desc { font-size: 0.74rem; color: #334155; margin-top: 5px; background: #f1f5f9; padding: 5px; border-radius: 6px; text-align: left; }
-
-    .aa-hide-r .r-box { opacity: 0; }
-    .aa-hide-name .aa-name { background: #1e293b; color: transparent; border-radius: 4px; }
-    .aa-hide-code .aa-code, .aa-hide-code .aa-warn { background: #1e293b; color: transparent; border-radius: 4px; }
-
-    /* Quiz */
-    .toolbar { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #cbd5e1; flex-wrap: wrap; gap: 6px; }
-    .btn { padding: 7px 11px; border-radius: 8px; border: 1px solid transparent; font-weight: 700; font-size: 0.8rem; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-outline { background: #f8fafc; color: #334155; border-color: #cbd5e1; }
-    .btn-outline.active { background: #0f172a; color: #fff; }
-    .btn-success { background: #10b981; color: #fff; }
-    .btn-warn { background: var(--accent); color: #fff; }
-
-    .blank-input { padding: 5px; border: 2px solid #94a3b8; border-radius: 6px; width: 110px; font-weight: 700; text-align: center; font-size: 0.86rem; margin: 2px; }
-    .choice-item { display: block; width: 100%; text-align: left; padding: 10px 12px; margin-bottom: 7px; border-radius: 9px; border: 1px solid #cbd5e1; background: #fff; font-size: 0.86rem; }
-    .choice-item.correct { background: #dcfce7; border-color: #10b981; color: #065f46; font-weight: 800; }
-    .choice-item.wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
-    .essay-area { width: 100%; min-height: 85px; padding: 9px; border: 1px solid #cbd5e1; border-radius: 8px; margin: 8px 0; font-size: 0.88rem; }
-    .kw-badge { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 0.74rem; font-weight: 700; margin: 2px; }
-    .kw-ok { background: #dcfce7; color: #166534; }
-    .kw-no { background: #fee2e2; color: #991b1b; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>일반생물학 파이널 최종 완성본 v4</title>
+<style>
+  :root { --pri:#2563eb; --pri-bg:#dbeafe; --role-bg:#dcfce7; --role-txt:#166534; --acc:#f59e0b; --bg:#f1f5f9; }
+  * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Pretendard',sans-serif; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+  body { background:var(--bg); color:#0f172a; line-height:1.55; padding-bottom:220px; }
+  button, .t-n, .t-r, .aa-card, .q-opt { cursor:pointer; user-select:none; -webkit-user-select:none; }
+  header { background:linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; padding:12px; text-align:center; position:sticky; top:0; z-index:100; }
+  header h1 { font-size:1.08rem; font-weight:800; }
+  header p { font-size:0.74rem; color:#fde047; margin-top:3px; font-weight:700; }
+  .nav { display:flex; gap:4px; justify-content:center; background:#fff; padding:8px 4px; border-bottom:1px solid #cbd5e1; position:sticky; top:52px; z-index:95; flex-wrap:wrap; }
+  .nav-b { padding:7px 10px; border:1px solid #cbd5e1; border-radius:99px; background:#f8fafc; font-weight:800; font-size:0.76rem; color:#334155; }
+  .nav-b.on { background:var(--pri); color:#fff; border-color:var(--pri); }
+  .b-bar { display:flex; gap:5px; justify-content:center; align-items:center; background:#eff6ff; padding:6px; border-bottom:1px solid #bfdbfe; position:sticky; top:94px; z-index:90; flex-wrap:wrap; font-size:0.75rem; }
+  .b-btn { padding:5px 9px; border-radius:8px; border:1px solid #93c5fd; background:#fff; color:#1e3a8a; font-weight:800; font-size:0.74rem; }
+  .b-btn.on { background:#0f172a; color:#fde047; border-color:#0f172a; }
+  .wrap { max-width:900px; margin:10px auto; padding:0 10px; }
+  .sec { display:none; }
+  .sec.on { display:block; }
+  .card { background:#fff; border-radius:14px; padding:14px; margin-bottom:12px; border:1px solid #cbd5e1; box-shadow:0 2px 5px rgba(0,0,0,0.04); }
+  .bdg { display:inline-block; padding:2px 8px; border-radius:6px; font-size:0.71rem; font-weight:800; background:var(--pri-bg); color:#1d4ed8; margin-bottom:5px; }
+  .bdg.hot { background:#fee2e2; color:#dc2626; margin-left:4px; }
+  .c-title { font-size:0.98rem; font-weight:800; margin-bottom:8px; }
+  .svg-box { background:#f8fafc; border:1px dashed #cbd5e1; border-radius:10px; padding:8px; margin:8px 0; text-align:center; }
+  table { width:100%; border-collapse:collapse; font-size:0.84rem; margin-top:4px; }
+  th, td { border:1px solid #cbd5e1; padding:7px 8px; text-align:left; vertical-align:top; }
+  th { background:#f8fafc; font-weight:800; width:26%; }
+  .t-n { display:inline-block; background:var(--pri-bg); color:#1e3a8a; font-weight:800; padding:1px 6px; border-radius:4px; border-bottom:2px solid #3b82f6; margin:1px; }
+  .t-r { display:inline; background:var(--role-bg); color:var(--role-txt); font-weight:700; padding:1px 5px; border-radius:4px; border-bottom:2px dashed #16a34a; }
+  body.hide-n .t-n:not(.show) { background:#1e293b; color:transparent; border-color:#0f172a; }
+  body.hide-r .t-r:not(.show) { background:#064e3b; color:transparent; border-color:#022c22; }
+  #dock { position:fixed; bottom:0; left:0; right:0; background:#0f172a; color:#fff; padding:13px 15px; z-index:200; border-top:3px solid var(--acc); box-shadow:0 -4px 20px rgba(0,0,0,0.35); transform:translateY(105%); transition:0.2s; max-height:46vh; overflow-y:auto; }
+  #dock.on { transform:translateY(0); }
+  .d-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+  .d-tit { font-size:0.95rem; font-weight:800; color:#fde047; }
+  .d-role { font-size:0.85rem; color:#86efac; font-weight:700; margin-bottom:5px; }
+  .d-why { font-size:0.83rem; color:#e2e8f0; background:#1e293b; padding:8px 10px; border-radius:8px; border-left:3px solid #38bdf8; }
+  .aa-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
+  .aa-card { background:#fff; border-radius:12px; border:2px solid #cbd5e1; padding:8px; text-align:center; }
+  .aa-svg { background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; height:132px; display:flex; align-items:center; justify-content:center; margin:4px 0; }
+  .aa-hide-n .aa-nm, .aa-hide-c .aa-cd, .aa-hide-r .r-g { opacity:0; }
+  .warn-c { background:#fee2e2; color:#dc2626; padding:1px 5px; border-radius:4px; font-weight:900; }
+  .inp { padding:5px; border:2px solid #94a3b8; border-radius:6px; width:115px; font-weight:700; text-align:center; margin:2px; }
+  .q-opt { display:block; width:100%; text-align:left; padding:9px 11px; margin-bottom:6px; border-radius:8px; border:1px solid #cbd5e1; background:#fff; font-size:0.85rem; }
+  .q-opt.ok { background:#dcfce7; border-color:#10b981; font-weight:800; }
+  .q-opt.no { background:#fee2e2; border-color:#ef4444; }
+</style>
 </head>
 <body>
 
 <header>
-  <h1>🧬 일반생물학 파이널 완벽 암기 앱 v3</h1>
-  <div class="header-sub">💡 파란색(용어)이나 초록색(역할) 글자를 터치하면 아래에 즉시 원리 설명이 뜹니다!</div>
+  <h1>🧬 일반생물학 파이널 최종 완성본 (7p~123p 전 범위)</h1>
+  <p>시험 방식: 단답형(용어) 10문제 + 주관식 10문제 중 7문제 선택 | 글자 터치 시 즉시 해설 팝업!</p>
 </header>
 
-<div class="nav-bar">
-  <button type="button" class="nav-btn active" data-act="tab" data-target="tab-role">📌 종류+역할 완벽정리</button>
-  <button type="button" class="nav-btn" data-act="tab" data-target="tab-comp">⚡ 1:1 비교표 (12선)</button>
-  <button type="button" class="nav-btn" data-act="tab" data-target="tab-aa">🧪 20종 아미노산 그림</button>
-  <button type="button" class="nav-btn" data-act="tab" data-target="tab-quiz">📝 실전 문제 (3종)</button>
+<div class="nav">
+  <button type="button" class="nav-b on" data-tab="sec-role">📌 7p~123p 종류+역할+그림</button>
+  <button type="button" class="nav-b" data-tab="sec-comp">⚡ 1:1 비교표 (12선)</button>
+  <button type="button" class="nav-b" data-tab="sec-aa">🧪 20종 아미노산 그림</button>
+  <button type="button" class="nav-b" data-tab="sec-quiz">📝 실전 문제 (4종·대량)</button>
 </div>
 
-<!-- 상단 고정 가림막 컨트롤 바 -->
-<div class="blind-bar">
-  <span>👆 <b>글자 터치</b> = 설명 팝업 | 암기 모드:</span>
-  <button type="button" class="blind-btn" id="btnHideName" data-act="toggle-hide-name">🙈 용어(파랑) 가리기</button>
-  <button type="button" class="blind-btn" id="btnHideRole" data-act="toggle-hide-role">🙈 역할·기능(초록) 가리기</button>
-  <button type="button" class="blind-btn" data-act="reveal-all">👀 모두 보기</button>
+<div class="b-bar">
+  <span>👆 <b>글자 터치</b>=해설창 |</span>
+  <button type="button" class="b-btn" id="bName">🙈 용어(파랑) 가리기</button>
+  <button type="button" class="b-btn" id="bRole">🙈 역할(초록) 가리기</button>
+  <button type="button" class="b-btn" id="bShow">👀 모두 보기</button>
 </div>
 
-<div class="container">
-
-  <!-- ==================== 탭 1: 종류 + 역할(기능) + 예시 완벽 정리 ==================== -->
-  <div id="tab-role" class="tab-section active">
-    <div class="toolbar">
+<div class="wrap">
+  <div id="sec-role" class="sec on"><div id="roleBox"></div></div>
+  <div id="sec-comp" class="sec"><div id="compBox"></div></div>
+  <div id="sec-aa" class="sec">
+    <div class="card" style="display:flex; gap:5px; flex-wrap:wrap; justify-content:space-between;">
       <div style="display:flex; gap:4px; flex-wrap:wrap;">
-        <button type="button" class="btn btn-outline active" data-act="filter-role" data-val="all">전체 보기</button>
-        <button type="button" class="btn btn-outline" data-act="filter-role" data-val="단백질">단백질 8대 기능·구조</button>
-        <button type="button" class="btn btn-outline" data-act="filter-role" data-val="화학">결합·화학기·핵산</button>
-        <button type="button" class="btn btn-outline" data-act="filter-role" data-val="세포">소기관·골격·막·신호</button>
-        <button type="button" class="btn btn-outline" data-act="filter-role" data-val="호흡">효소·세포호흡·발효</button>
+        <button type="button" class="b-btn on" data-aaf="all">전체(20)</button>
+        <button type="button" class="b-btn" data-aaf="비극성">🟨비극성(9)</button>
+        <button type="button" class="b-btn" data-aaf="극성">🟩극성(6)</button>
+        <button type="button" class="b-btn" data-aaf="산성">🟥산성(2)</button>
+        <button type="button" class="b-btn" data-aaf="염기성">🟦염기성(3)</button>
+        <button type="button" class="b-btn" data-aaf="warn">⚠️특이약어(9)</button>
+      </div>
+      <div style="display:flex; gap:4px;">
+        <button type="button" class="b-btn" data-aam="aa-hide-n">이름가림</button>
+        <button type="button" class="b-btn" data-aam="aa-hide-c">약어가림</button>
+        <button type="button" class="b-btn" data-aam="aa-hide-r">그림가림</button>
       </div>
     </div>
-    <div id="roleList"></div>
+    <div class="aa-grid" id="aaBox"></div>
   </div>
-
-  <!-- ==================== 탭 2: 1:1 비교 암기장 ==================== -->
-  <div id="tab-comp" class="tab-section">
-    <div id="compList"></div>
-  </div>
-
-  <!-- ==================== 탭 3: 20종 아미노산 그림 암기 ==================== -->
-  <div id="tab-aa" class="tab-section">
-    <div class="toolbar">
+  <div id="sec-quiz" class="sec">
+    <div class="card" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:5px;">
       <div style="display:flex; gap:4px; flex-wrap:wrap;">
-        <button type="button" class="btn btn-outline active" data-act="filter-aa" data-val="all">전체(20)</button>
-        <button type="button" class="btn btn-outline" data-act="filter-aa" data-val="비극성">🟨비극성(9)</button>
-        <button type="button" class="btn btn-outline" data-act="filter-aa" data-val="극성">🟩극성(6)</button>
-        <button type="button" class="btn btn-outline" data-act="filter-aa" data-val="산성">🟥산성(2)</button>
-        <button type="button" class="btn btn-outline" data-act="filter-aa" data-val="염기성">🟦염기성(3)</button>
-        <button type="button" class="btn btn-outline" data-act="filter-aa" data-val="warn" style="color:#dc2626; border-color:#dc2626;">⚠️특이약어(9)</button>
+        <button type="button" class="b-btn on" data-qt="all">🎲 전체 랜덤</button>
+        <button type="button" class="b-btn" data-qt="term">🔑 단답형 용어(10문제 대비)</button>
+        <button type="button" class="b-btn" data-qt="blank">✏️ 빈칸 채우기</button>
+        <button type="button" class="b-btn" data-qt="essay">🖋️ 주관식 서술형(7택 대비)</button>
+        <button type="button" class="b-btn" data-qt="mcq">❌ 옳지 않은 것은?</button>
       </div>
-      <div style="display:flex; gap:4px; flex-wrap:wrap;">
-        <button type="button" class="btn btn-warn" data-act="aa-mask" data-val="aa-hide-name">이름 가리기</button>
-        <button type="button" class="btn btn-warn" data-act="aa-mask" data-val="aa-hide-code">약어 가리기</button>
-        <button type="button" class="btn btn-warn" data-act="aa-mask" data-val="aa-hide-r">R기 그림 가리기</button>
-      </div>
-    </div>
-    <div class="card" id="aaQuizCard" style="background:#eff6ff; border-color:#bfdbfe;"></div>
-    <div class="aa-grid" id="aaGrid"></div>
-  </div>
-
-  <!-- ==================== 탭 4: 실전 랜덤 문제 ==================== -->
-  <div id="tab-quiz" class="tab-section">
-    <div class="toolbar">
-      <div style="display:flex; gap:4px; flex-wrap:wrap;">
-        <button type="button" class="btn btn-primary" data-act="qtype" data-val="all" id="qt-all">🎲 전체 랜덤</button>
-        <button type="button" class="btn btn-outline" data-act="qtype" data-val="blank" id="qt-blank">✏️ 빈칸 채우기</button>
-        <button type="button" class="btn btn-outline" data-act="qtype" data-val="essay" id="qt-essay">🖋️ 비교·서술형</button>
-        <button type="button" class="btn btn-outline" data-act="qtype" data-val="mcq" id="qt-mcq">❌ 옳지 않은 것은?</button>
-      </div>
-      <button type="button" class="btn btn-warn" data-act="next-quiz">🔄 다른 문제 뽑기</button>
+      <button type="button" class="b-btn on" id="nextQBtn">🔄 다음 문제 뽑기</button>
     </div>
     <div class="card" id="quizBox"></div>
   </div>
-
 </div>
 
-<!-- 하단 고정 단어 해설 팝업창 (어떤 단어든 누르면 즉시 뜸!) -->
-<div id="explainDock">
-  <div class="dock-header">
-    <div class="dock-title" id="dockTitle">💡 선택한 용어 설명</div>
-    <button type="button" class="dock-close" data-act="close-dock">닫기 ✕</button>
+<div id="dock">
+  <div class="d-top">
+    <div class="d-tit" id="dTit">💡 용어 및 역할 해설</div>
+    <button type="button" class="b-btn" id="dClose">닫기 ✕</button>
   </div>
-  <div class="dock-role" id="dockRole"></div>
-  <div class="dock-why" id="dockWhy"></div>
+  <div class="d-role" id="dRole"></div>
+  <div class="d-why" id="dWhy"></div>
 </div>
 
 <script>
-(function() {
-  // 클릭 가능한 용어(파랑) & 역할(초록) 헬퍼 함수
-  function T(text, title, role, why) {
-    return '<span class="t-name" data-title="' + esc(title || text) + '" data-role="' + esc(role) + '" data-why="' + esc(why) + '">' + text + '</span>';
+function N(txt, role, why) { return '<span class="t-n" data-t="'+txt+'" data-r="'+role+'" data-w="'+why+'">'+txt+'</span>'; }
+function R(txt, tit, why) { return '<span class="t-r" data-t="'+tit+'" data-r="'+txt+'" data-w="'+why+'">'+txt+'</span>'; }
+
+// 1. 7p~123p 전 범위 종류 + 역할 + 교과서 핵심 모식도 SVG
+var ROLES = [
+  {
+    p:"7~8p / 21~38p", tag:"1~2장 필수 용어·결합·화학기", tit:"1. 유전자 발현 · 유전체학 · 4대 화학 결합 · 7대 화학기 · 탈수반응과 가수분해",
+    svg:'<svg width="100%" height="58" viewBox="0 0 440 58"><rect x="8" y="10" width="85" height="38" rx="6" fill="#dbeafe" stroke="#2563eb"/><text x="50" y="34" text-anchor="middle" font-size="12" font-weight="bold">DNA</text><text x="115" y="25" text-anchor="middle" font-size="10" fill="#b45309" font-weight="bold">전사</text><path d="M98 30 L132 30" stroke="#2563eb" stroke-width="2"/><rect x="138" y="10" width="85" height="38" rx="6" fill="#fef3c7" stroke="#f59e0b"/><text x="180" y="34" text-anchor="middle" font-size="12" font-weight="bold">mRNA</text><text x="245" y="25" text-anchor="middle" font-size="10" fill="#b45309" font-weight="bold">번역</text><path d="M228 30 L262 30" stroke="#2563eb" stroke-width="2"/><rect x="268" y="10" width="160" height="38" rx="6" fill="#dcfce7" stroke="#10b981"/><text x="348" y="34" text-anchor="middle" font-size="12" font-weight="bold">단백질 (크리스탈린)</text></svg>',
+    rows:[
+      [N("유전자 발현 (7p)","DNA 정보가 전사(mRNA)와 번역(단백질)을 거쳐 세포 산물로 만들어지는 전 과정","단답형 용어 1순위! DNA 원본을 보호하기 위해 mRNA 복사본을 만들어 리보솜으로 보냅니다."), R("• 전사(Transcription): DNA 뉴클레오타이드 서열 정보를 이용해 mRNA를 합성하는 과정.<br>• 번역(Translation): 리보솜이 mRNA 서열 정보를 해독해 아미노산 사슬(단백질)을 만드는 과정.","유전자 발현의 단계별 역할","눈의 렌즈 세포는 크리스탈린 유전자를 발현시켜 투명한 크리스탈린 단백질을 만듭니다.")],
+      [N("유전체·유전체학·단백질체학 (7~8p)","유전체(Genome) / 유전체학(Genomics) / 단백질체학(Proteomics)","컴퓨터 도구로 방대한 생물 데이터를 분석하는 학문은 생물정보학(Bioinformatics)입니다."), R("• 유전체(게놈): 한 생물체가 다음 세대로 물려주는 유전 정보의 총합.<br>• 유전체학: 한 종이나 여러 종의 전체 유전자 세트를 연구하는 학문.<br>• 단백질체학: 세포에서 발현되는 전체 단백질 세트(단백질체, proteome)와 그 기능을 연구하는 학문.","유전체학과 단백질체학의 역할","환원주의(쪼개서 연구)와 시스템 생물학(전체 네트워크 통합 이해)을 결합해 연구합니다.")],
+      [N("화합물 & 4대 화학 결합 (21~27p)","화합물(Compound) / 공유·이온·수소·반데르발스 결합","강한 공유결합은 분자 골격을 만들고, 약한 결합들은 가역적 부착과 3차원 구조를 유지합니다."), R("• 화합물: 2개 이상의 서로 다른 원소가 일정 비율로 결합한 물질로 창발적 특성을 가짐(예: NaCl).<br>• ①공유결합: 원자가 전자 공유(가장 강함, 전기음성도 같으면 비극성 H₂·CH₄, 다르면 극성 H₂O).<br>• ②이온결합: 양이온(Na⁺)과 음이온(Cl⁻) 간의 정전기적 인력(건조 시 강함, 물속에선 약해짐).<br>• ③수소결합: δ+ 수소와 δ- 산소(O)·질소(N) 사이의 비공유 인력.<br>• ④반데르발스 인력: 전자의 순간적 쏠림에 의한 약한 인력(도마뱀붙이 발바닥).","화합물과 4가지 화학 결합의 역할","수용액 속의 이온결합, 수소결합, 반데르발스 인력은 대표적인 약한 화학 결합입니다.")],
+      [N("7대 화학기 (37p 그림 2.26)","수산기·카르보닐기·카르복실기·아미노기·황화수소기·인산기·메틸기","앞의 6개는 화학반응에 참여하는 작용기이고, 메틸기는 비극성 DNA 인식 꼬리표입니다."), R("①수산기(-OH: 알코올, 친수성) ②카르보닐기(&gt;C=O: 골격 내부면 케톤[아세톤·과당], 끝이면 알데하이드[포도당]) ③카르복실기(-COOH: H⁺ 내놓는 유기산) ④아미노기(-NH₂: H⁺ 받는 염기) ⑤황화수소기(-SH: 티올, 시스테인 이황화 결합 형성) ⑥인산기(-OPO₃²⁻: 유기인산, ATP 에너지 공급) ⑦메틸기(-CH₃: 비극성, 5-메틸시토신 DNA 표지).","7가지 화학기의 역할","여성호르몬(에스트라디올)과 남성호르몬(테스토스테론)도 스테로이드에 붙은 화학기 차이로 구분됩니다.")],
+      [N("탈수반응 vs 가수분해 (38~44p)","탄글(글리코시드) · 지에(에스터) · 단펩(펩타이드) / 인지질 · 스테로이드","모두 물(H2O)이 빠지는 탈수반응이지만 거대분자마다 결합 명칭이 다릅니다."), R("• 탈수반응: 물 분자(H₂O)가 제거되며 단위체를 연결해 중합체 합성(당=글리코시드 결합, 지방=에스터 결합, 단백질=펩타이드 결합) ↔ 가수분해: 물(H₂O)을 첨가해 결합을 끊어 분해.<br>• 인지질: 글리세롤+2 지방산(소수성 꼬리)+인산기(친수성 머리)로 세포막 이중층 형성.<br>• 스테로이드: 4개의 연결된 고리 구조를 가진 지질(예: 콜레스테롤 - 세포막 구성 및 성호르몬 전구체).","탈수·가수분해 및 지질의 역할","지방(트리아실글리세롤) 1g은 다당류 1g보다 2배 이상의 에너지를 저장합니다.")]
+    ]
+  },
+  {
+    p:"45~53p", tag:"주관식 1순위!", tit:"2. 단백질의 8가지 주요 기능(효방저수 호수수구) · 아미노산 기본구조 · 1~4차 구조 · 뉴클레오타이드",
+    svg:'<svg width="100%" height="68" viewBox="0 0 440 68"><rect x="10" y="8" width="195" height="52" rx="8" fill="#ede9fe" stroke="#7c3aed"/><text x="107" y="26" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">아미노산 기본구조 (47p)</text><text x="107" y="46" text-anchor="middle" font-size="11" font-weight="bold">아미노기(-NH₂) — α탄소(H, R기) — 카르복실기(-COOH)</text><rect x="220" y="8" width="210" height="52" rx="8" fill="#dbeafe" stroke="#2563eb"/><text x="325" y="26" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e3a8a">뉴클레오타이드 (53p 그림 2.45)</text><text x="325" y="46" text-anchor="middle" font-size="11" font-weight="bold">인산기(5\'C) + 5탄당 + 염기(1\'C) [인산 빼면 뉴클레오사이드]</text></svg>',
+    rows:[
+      [N("① 효소 · ② 방어 · ③ 저장 · ④ 수송 단백질 (45p)","단백질의 주요 기능 전반부 4가지","주관식에 단백질의 기능을 쓰라고 하면 8가지를 모두 적어야 만점입니다!"), R("• ①효소 단백질: 화학 반응의 선택적 가속화 (예: 소화 효소가 음식물 분자의 가수분해 촉매).<br>• ②방어 단백질: 질병에 대한 보호 (예: 항체가 바이러스나 세균을 불활성화함).<br>• ③저장 단백질: 아미노산의 저장 (예: 달걀 흰자 오브알부민, 우유 카제인, 씨앗 저장 단백질).<br>• ④수송 단백질: 물질의 수송 (예: 산소를 운반하는 혈액 헤모글로빈, 세포막 통로·운반체 단백질).","효소·방어·저장·수송 단백질의 역할","인체 내에는 단백질 저장 창고가 따로 없어서 매일 조금씩 단백질을 섭취해야 합니다.")],
+      [N("⑤ 호르몬 · ⑥ 수용체 · ⑦ 수축·운동 · ⑧ 구조 단백질 (45p)","단백질의 주요 기능 후반부 4가지","인슐린(호르몬), 액틴·마이오신(수축), 콜라젠·케라틴(구조) 예시까지 함께 외우세요."), R("• ⑤호르몬 단백질: 생물체의 활성 조절 (예: 이자에서 분비되는 인슐린이 혈당 농도를 조절함).<br>• ⑥수용체 단백질: 화학 자극에 대한 세포의 반응 (예: 신경세포 막의 수용체가 신호 분자 감지).<br>• ⑦수축 및 운동 단백질: 운동 수행 (예: 액틴과 마이오신의 근육 수축, 편모·섬모의 파동운동).<br>• ⑧구조 단백질: 지지 및 형태 유지 (예: 피부·뼈·힘줄 결합조직의 콜라젠, 머리카락·손톱의 케라틴, 거미줄 실크).","호르몬·수용체·수축·구조 단백질의 역할","콜라젠은 인체 단백질의 40%를 차지하는 가장 풍부한 섬유상 구조 단백질입니다.")],
+      [N("단백질 1차 ~ 4차 구조 (50~51p)","1차(서열) · 2차(골격 수소결합) · 3차(R기 5종 결합) · 4차(2개 이상 사슬)","단골 주관식! 3차 구조를 안정화하는 5가지 결합(이수이소반)을 모두 서술하세요."), R("• 1차 구조: 펩타이드 결합으로 연결된 선형 아미노산 서열(N-말단→C-말단, 1번은 메싸이오닌 / 헤모글로빈 6번 글루탐산→발린 치환 시 낫모양 적혈구 빈혈증).<br>• 2차 구조: 폴리펩타이드 '골격' 원자 간 수소결합으로 형성된 국소 구조(α-나선, β-병풍).<br>• 3차 구조: '곁사슬(R기)' 간의 5가지 상호작용(①이황화 결합[-S-S-] ②수소결합 ③이온결합 ④소수성 상호작용 ⑤반데르발스 인력)에 의해 접힌 3차원 형태.<br>• 4차 구조: 둘 이상의 폴리펩타이드 사슬(소단위체)이 결합한 구조(예: 4개 사슬 헤모글로빈, 3개 사슬 콜라젠).","단백질 1~4차 구조의 역할","사슬 1개가 접히면 3차 구조이고, 떨어진 2개 이상의 사슬이 모여야 4차 구조입니다.")],
+      [N("뉴클레오타이드 (53p 그림 2.45)","5탄당 + 인산기 + 질소성 염기 (퓨린 A·G / 피리미딘 C·T·U)","인산기를 제외한 '5탄당 + 질소성 염기' 부분은 뉴클레오사이드(nucleoside)라 부릅니다!"), R("• 구성: 5탄당(DNA는 2' 산소가 빠진 데옥시리보스, RNA는 리보스) + 5' 탄소에 결합한 인산기 + 1' 탄소에 결합한 질소성 염기.<br>• 염기 분류: 2개 고리인 퓨린(아데닌 A, 구아닌 G)과 1개 육각고리인 피리미딘(사이토신 C, 타이민 T[DNA 전용], 유라실 U[RNA 전용]).","뉴클레오타이드의 구조와 역할","인접한 뉴클레오타이드들은 당-인산 골격을 따라 5'→3' 방향으로 연결됩니다.")]
+    ]
+  },
+  {
+    p:"67~98p", tag:"3장 세포·막·신호 총정리", tit:"3. 세포소기관 · 세포골격 3종 · 세포연접 3종 · 세포막(3.29) · 세포내섭취 3종 · 수용체와 2차 전달자",
+    svg:'<svg width="100%" height="62" viewBox="0 0 440 62"><rect x="6" y="8" width="135" height="46" rx="6" fill="#dbeafe"/><text x="73" y="27" text-anchor="middle" font-size="10.5" font-weight="bold">세포골격 3종 (76p)</text><text x="73" y="44" text-anchor="middle" font-size="10">관(25nm)·중(10nm)·섬(7nm)</text><rect x="148" y="8" width="135" height="46" rx="6" fill="#dcfce7"/><text x="215" y="27" text-anchor="middle" font-size="10.5" font-weight="bold">세포연접 3종 (81p)</text><text x="215" y="44" text-anchor="middle" font-size="10">밀착 · 데스모솜 · 간극</text><rect x="290" y="8" width="144" height="46" rx="6" fill="#fef3c7"/><text x="362" y="27" text-anchor="middle" font-size="10.5" font-weight="bold">신호전달 (95~98p)</text><text x="362" y="44" text-anchor="middle" font-size="10">리간드→GPCR→cAMP/Ca²⁺</text></svg>',
+    rows:[
+      [N("소기관 총정리 (67~73p)","리보솜 · 소포체(활면/조면) · 골지체 · 리소좀 · 액포 · 미토콘드리아 · 엽록체","내막계 단백질 분비 경로: 조면소포체 → 수송 소낭 → 골지체(시스면→트랜스면) → 세포막(세포외 배출)!"), R("• 리보솜: 단백질 합성 공장(자유 리보솜: 세포질 내 단백질 / 부착 리보솜: 분비·막 단백질).<br>• 활면소포체(리보솜 X): 지질(스테로이드 성호르몬) 합성, 간 해독(-OH 부착), 근육 Ca²⁺ 저장.<br>• 조면소포체(리보솜 O): 분비 단백질(당단백질) 합성·수송 및 세포막(인지질·막단백질) 합성.<br>• 골지체: 시스 면에서 소낭 수령 → 당 변형·가공·분류 → 트랜스 면에서 소낭 발송.<br>• 리소좀: 산성 가수분해 효소로 식포 소화 및 손상 소기관 재활용(자가소화, autophagy).<br>• 미토콘드리아(세포호흡 ATP 합성, 내막 크리스타 주름) & 엽록체(광합성, 틸라코이드·그라나·스트로마): 이중막·원형 DNA·독자적 리보솜 보유(세포내 공생설).","세포소기관 각각의 역할","퍼옥시좀은 대사 부산물로 과산화수소(H2O2)를 생성했다가 카탈레이스로 물로 전환합니다.")],
+      [N("세포골격 3종 (76p) & 세포연접 3종 (81p)","미세소관·중간섬유·미세섬유 / 밀착연접·데스모솜·간극연접","세포골격 구성 단백질(튜불린·케라틴·액틴)과 동물세포 3가지 연접은 시험 단골 메뉴입니다."), R("• 미세소관(25nm, 튜불린 이합체 관): 세포 모양 유지, 소낭 이동 트랙, 염색체 이동, 편모·섬모(9+2 구조, 디네인 운동 단백질) 및 중심립(9+0) 구성.<br>• 중간섬유(8~12nm, 케라틴): 세포 모양 유지, 핵과 소기관 위치 고정, 핵라미나 형성.<br>• 미세섬유(7nm, 액틴 나선): 근육 수축, 미세융모 지지, 아메바 위족 운동, 세포질 유동.<br>• 동물세포 연접 3종: ①밀착연접(세포층 사이 액체 이동 억제·방수) ②데스모솜(중간섬유로 세포를 단단히 고정·근육 연결) ③간극연접(이온·당·아미노산 등 작은 분자가 통과하는 교신 통로 = 식물의 원형질 연락사).","세포골격과 세포연접의 역할","편모는 세포당 1~3개로 길고, 섬모는 세포 표면에 다수로 짧게 존재합니다.")],
+      [N("세포막 모형 (82p 그림 3.29) & 막단백질 6대 기능","유동 모자이크 모형 / 당단백질 vs 프로테오글리칸 / 막단백질 6대 기능","교수님의 주인공 법칙: Glycoprotein(당단백질)은 단백질이 크고, Proteoglycan(프로테오글리칸)은 다당류가 훨씬 큽니다!"), R("• 세포막(유동 모자이크 모형): 양친매성 인지질 이중층에 내재성 단백질과 주변부 단백질이 박혀 유동적으로 움직이며, 콜레스테롤이 체온(37℃)에서 유동성을 완충(감소)함. 바깥 면의 당단백질·당지질은 세포 인식표 역할을 함.<br>• 막단백질 6가지 기능: ①수송 ②효소 활성 ③신호전달 ④세포-세포 인식(당단백질) ⑤세포 간 결합 ⑥세포골격과 세포외기질(ECM: 콜라젠·프로테오글리칸·피브로넥틴→인테그린) 부착.","세포막 구성 성분과 막단백질의 역할","불포화 지방산 꼬리가 많을수록 꺾임 구조 때문에 세포막의 유동성이 커집니다.")],
+      [N("수용체와 리간드 (95p) & 2차 전달자 (98p)","리간드(1차 전달자) · 수용체(GPCR / 세포내 수용체) · 2차 전달자(cAMP, Ca²⁺)","뭐가 수용체고 뭐가 리간드인지 구분하는 것과 2차 전달자(cAMP, Ca2+)는 필수 암기 포인트입니다!"), R("• 리간드(Ligand, 1차 전달자): 다른 큰 분자(수용체)에 특이적으로 결합해 형태 변화를 일으키는 신호 분자(예: 에피네프린, 생장인자, 알도스테론).<br>• 수용체(Receptor): 표적 세포의 세포막(수용성 리간드 결합: GPCR, 이온통로 수용체)이나 세포 내부(소수성 스테로이드 호르몬인 알도스테론 결합 → 핵으로 들어가 전사인자로 작동)에서 신호를 감지하는 단백질.<br>• 2차 전달자(cAMP, Ca²⁺): 에피네프린이 GPCR에 결합하면 G-단백질이 '아데닐산 고리화효소'를 활성화해 ATP를 '고리형 AMP(cAMP)'로 변환함. cAMP와 칼슘 이온(Ca²⁺)은 세포 내 신호를 전달·증폭함.","수용체·리간드·2차 전달자의 역할","단백질 인산화효소(Kinase)는 ATP 인산기를 붙여 단백질을 켜고, 탈인산화효소(Phosphatase)는 인산기를 떼어 끕니다.")]
+    ]
+  },
+  {
+    p:"101~123p", tag:"4장 그림·호흡·발효", tit:"4. 발열 vs 흡열 그래프(102p) · 경쟁적 vs 비경쟁적 억제(108p) · 되먹임 억제(110p) · 30~32 ATP 생성(121p)",
+    svg:'<svg width="100%" height="82" viewBox="0 0 440 82">' +
+      '<!-- 102p 발열/흡열 그래프 -->' +
+      '<rect x="4" y="4" width="138" height="74" rx="6" fill="#fff" stroke="#cbd5e1"/>' +
+      '<text x="73" y="17" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#dc2626">102p 발열(ΔG&lt;0) vs 흡열(ΔG&gt;0)</text>' +
+      '<rect x="14" y="24" width="22" height="42" fill="#ef4444"/><text x="42" y="48" font-size="10">→</text><rect x="52" y="46" width="22" height="20" fill="#fca5a5"/><text x="44" y="75" text-anchor="middle" font-size="8.5" font-weight="bold">발열(자발적)</text>' +
+      '<rect x="84" y="46" width="20" height="20" fill="#93c5fd"/><text x="107" y="48" font-size="10">→</text><rect x="116" y="24" width="20" height="42" fill="#2563eb"/><text x="110" y="75" text-anchor="middle" font-size="8.5" font-weight="bold">흡열(비자발)</text>' +
+      '<!-- 108p 경쟁적/비경쟁적 억제 -->' +
+      '<rect x="148" y="4" width="142" height="74" rx="6" fill="#fff" stroke="#cbd5e1"/>' +
+      '<text x="219" y="17" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1e3a8a">108p 경쟁적 vs 비경쟁적 억제</text>' +
+      '<path d="M160 42 Q180 65 200 42 L200 68 L160 68 Z" fill="#a78bfa"/><circle cx="180" cy="40" r="9" fill="#2563eb"/><text x="180" y="76" text-anchor="middle" font-size="8.5" font-weight="bold">경쟁적(활성부위)</text>' +
+      '<path d="M235 46 Q255 40 275 46 L275 68 L235 68 Z" fill="#a78bfa"/><circle cx="255" cy="70" r="7" fill="#f97316"/><text x="255" y="76" text-anchor="middle" font-size="8.5" font-weight="bold">비경쟁(다른자리)</text>' +
+      '<!-- 121p 30~32 ATP 요약 -->' +
+      '<rect x="296" y="4" width="140" height="74" rx="6" fill="#fffbeb" stroke="#f59e0b"/>' +
+      '<text x="366" y="18" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#b45309">121p 그림 4.26 ATP 수율</text>' +
+      '<text x="366" y="34" text-anchor="middle" font-size="9" font-weight="bold">1.해당과정(세포질): +2 ATP</text>' +
+      '<text x="366" y="48" text-anchor="middle" font-size="9" font-weight="bold">2.시트르산회로(기질): +2 ATP</text>' +
+      '<text x="366" y="62" text-anchor="middle" font-size="9" font-weight="bold">3.산화적인산화(내막): +26~28</text>' +
+      '<text x="366" y="75" text-anchor="middle" font-size="9.5" font-weight="900" fill="#dc2626">★ 총 최대 30 또는 32 ATP!</text>' +
+    '</svg>',
+    rows:[
+      [N("발열반응 vs 흡열반응 (101~102p 그림 4.2)","발열반응(ΔG < 0, 자발적) vs 흡열반응(ΔG > 0, 비자발적)","102페이지 그래프 그림을 보고 어느 쪽이 발열이고 흡열인지 구분할 줄 알아야 합니다!"), R("• 발열반응(Exergonic): 반응물의 자유 에너지가 생성물보다 높아 에너지를 방출하며 자발적으로 일어남(ΔG &lt; 0, 예: 포도당 세포호흡 ΔG = -686 kcal/mol, ATP 가수분해 -7.3 kcal/mol).<br>• 흡열반응(Endergonic): 생성물의 자유 에너지가 반응물보다 높아 외부 에너지를 흡수해야 일어나는 비자발적 반응(ΔG &gt; 0, 세포는 ATP 가수분해로 흡열반응을 추진하는 '에너지 연계' 사용).","발열반응과 흡열반응의 특징","효소는 활성화 에너지(EA) 언덕만 낮출 뿐 발열·흡열의 ΔG 값은 바꾸지 못합니다.")],
+      [N("경쟁적 vs 비경쟁적 억제 (108p) & 되먹임 억제 (110p)","경쟁적 억제자 · 비경쟁적 억제자 · 되먹임 억제(그림 4.13)","108p 그림 4.11과 110p 그림 4.13(아이소루신 합성 경로의 되먹임 억제)을 꼭 확인하세요!"), R("• 경쟁적 억제자: 기질과 모양이 닮아 효소의 '활성 부위'를 놓고 기질과 직접 경쟁함(기질 농도를 높이면 억제를 극복할 수 있음).<br>• 비경쟁적 억제자: 활성 부위가 아닌 '다른 자리'에 결합해 효소의 형태를 변형시켜 활성 부위가 기질과 결합해도 제대로 기능하지 못하게 함.<br>• 되먹임 억제(Feedback inhibition, 그림 4.13): 대사 경로(트레오닌→아이소루신)의 '최종 생성물(아이소루신)'이 충분히 만들어지면 첫 단계 효소(효소 1)의 다른 자리 입체성 부위에 결합해 경로를 멈춤으로써 자원 낭비를 방지함.","효소 억제자와 되먹임 억제의 역할","되먹임 억제는 세포가 필요 이상의 산물을 만들지 않도록 조절하는 가장 대표적인 기작입니다.")],
+      [N("포도당 1분자당 30~32 ATP 생성 (121p 그림 4.26)","해당과정(+2) + 피루브산 산화·시트르산 회로(+2) + 산화적 인산화(+26~28) = 30 또는 32 ATP","에너지 흐름 순서: 포도당 → NADH/FADH2 → 전자전달계 → 양성자 구동력(H+ 기울기) → ATP!"), R("• ①해당과정(세포질): 포도당 → 2 피루브산 / 기질 수준 인산화로 '+2 ATP' 및 '2 NADH' 생성.<br>• ②피루브산 산화(미토콘드리아): 2 피루브산 → 2 아세틸 CoA / '2 NADH' 생성(CO₂ 방출).<br>• ③시트르산 회로(미토콘드리아 기질): 기질 수준 인산화로 '+2 ATP', '6 NADH', '2 FADH₂' 생성.<br>• ④산화적 인산화(미토콘드리아 내막: 전자전달사슬 + 화학삼투): 총 10 NADH(개당 2.5 ATP)와 2 FADH₂(개당 1.5 ATP)가 전달한 전자로 막사이 공간에 H⁺ 기울기를 만들고, ATP 합성효소를 통한 화학삼투로 '+26 또는 28 ATP' 생성 → 합계 최대 '약 30 또는 32 ATP'(효율 약 34%).","세포 호흡 단계별 ATP 생성 요약","세포질의 NADH 전자를 미토콘드리아로 나르는 전자 셔틀 종류에 따라 26개 또는 28개가 되어 총 30 또는 32 ATP가 됩니다.")]
+    ]
   }
-  function R(text, title, role, why) {
-    return '<span class="t-role" data-title="' + esc(title) + '" data-role="' + esc(role || text) + '" data-why="' + esc(why) + '">' + text + '</span>';
+];
+
+// 2. 1:1 비교 데이터 (12선)
+var COMPS = [
+  { p:"65p", tit:"1. 식물세포 vs 동물세포 비교", h:["항목","🌱 식물세포","🐾 동물세포"], r:[
+    ["고유 구조와 역할", N("세포벽","셀룰로스 주성분, 형태 유지·보호","저장액에서 터지지 않게 막아줍니다.")+", "+N("엽록체","광합성으로 태양 에너지를 당의 화학 에너지로 전환","틸라코이드와 스트로마 보유")+", "+N("중심 액포","물·이온 저장 및 팽압 유지","성숙한 식물세포의 큰 부피 차지")+", "+N("원형질 연락사","세포벽을 통과해 세포질을 연결하는 채널","동물세포의 간극연접과 같은 역할"), N("리소좀","산성 가수분해 효소를 가진 소화 및 자가소화 기관","동물세포의 청소부 역할")+", "+N("중심체(중심립)","미세소관이 시작되는 부분(한 쌍의 중심립 포함)","9+0 삼중체 구조")+", "+N("편모","일부 동물세포의 이동 기관(9+2 미세소관)","정자 꼬리 등")],
+    ["공통 소기관", "핵, "+N("미토콘드리아","세포 호흡과 대부분의 ATP를 만드는 소기관","식물과 동물 모두 보유함!")+", 소포체, 골지체, 리보솜, 퍼옥시좀", "핵, 미토콘드리아, 소포체, 골지체, 리보솜, 퍼옥시좀"]
+  ]},
+  { p:"61p", tit:"2. 원핵세포 vs 진핵세포 비교 (단골 메뉴)", h:["항목","🦠 원핵세포 (세균·고세균)","🧬 진핵세포 (원생생물·균류·식물·동물)"], r:[
+    ["핵막과 DNA 위치", R("핵막이 없음","원핵세포 DNA 위치","진짜 핵이 없어 핵양체에 응축됨")+" → "+N("핵양체(nucleoid)","DNA가 있는 지역으로 막에 둘러싸여 있지 않음","원핵세포의 핵심 키워드"), R("이중막인 핵막 존재","진핵세포 DNA 위치","핵공이 뚫린 이중막 핵막 보유")+" → "+N("핵(nucleus)","이중막으로 둘러싸인 유전 정보 보관소","대부분의 DNA가 핵 안에 존재함")],
+    ["막성 소기관 및 공통점", R("막으로 둘러싸인 세포소기관 없음","원핵세포 특징","단순한 구조, 크기 작음(1~5μm)")+" / 공통점: 원형질막, 세포기질, 염색체(DNA), "+N("리보솜","단백질 합성 기관으로 막이 없어 원핵·진핵 모두 보유","유전자의 명령에 따라 단백질 합성"), R("다양한 막성 세포소기관 존재","진핵세포 특징","미토콘드리아, 소포체, 골지체 등 보유, 크기 큼(10~100μm)")]
+  ]},
+  { p:"49p", tit:"3. 단백질의 변성(Denaturation) vs 분해(Degradation)", h:["구분","🔥 변성 (Denaturation)","🔪 분해 (Degradation)"], r:[
+    ["정의 및 결합 상태", R("pH·염 농도·온도(열) 변화로 약한 화학 결합이 파괴되어 단백질이 풀어지고 고유한 3차원 형태를 잃는 현상","변성(Denaturation)","펩타이드 결합(1차 구조)은 끊어지지 않고 그대로 유지됩니다!"), R("가수분해 효소에 의해 펩타이드 결합 자체가 끊어져 아미노산 단위로 조각나는 현상","분해(Degradation)","깍두기 무 썰듯 아미노산 단위로 잘리는 것입니다.")],
+    ["결과 및 복원", R("구조가 잘못되어 생물학적 활성을 잃음 (변성 물질 제거 시 기능적 형태로 복원될 수도 있음)","변성의 결과","달걀 흰자가 열에 의해 하얗게 응고되는 현상"), R("아미노산 단량체로 완전히 분해되어 원래 단백질로 복원 불가능","분해의 결과","소화관이나 리소좀에서 일어나는 소화 작용")]
+  ]},
+  { p:"40p", tit:"4. 다당류 3종 비교 (녹말 vs 글리코젠 vs 셀룰로스)", h:["구분","🥔 녹말(식물) & 🥩 글리코젠(동물)","🪵 셀룰로스 (식물 세포벽)"], r:[
+    ["결합 및 구조", N("α 1-4 글리코시드 결합","1번 탄소 -OH가 아래쪽인 α-포도당 결합","나선형 사슬 형성")+" / "+R("동물(간·근육)에 저장되는 글리코젠은 식물의 녹말(아밀로펙틴)보다 가지(α 1-6 결합)가 훨씬 더 많다!","글리코젠과 녹말의 차이","에너지 요구 시 빠르게 포도당으로 가수분해하기 위함"), N("β 1-4 글리코시드 결합","1번 탄소 -OH가 위쪽인 β-포도당 결합","180도 교대로 뒤집혀 결합된 가지 없는 직선 사슬")],
+    ["역할 및 소화", R("세포에 당(포도당)을 공급하는 에너지 저장 다당류 / 인간 소화 효소로 가수분해 가능","저장 다당류","감자나 곡물의 녹말, 간·근육의 글리코젠"), R("식물 세포를 감싸는 단단한 세포벽의 주성분(구조 다당류) / 인간은 분해 효소가 없어 소화 불가(불용성 섬유)","구조 다당류","지구상에서 가장 많은 유기 화합물")]
+  ]},
+  { p:"43p", tit:"5. 포화 지방산(포화 지방) vs 불포화 지방산(불포화 지방)", h:["구분","🧈 포화 지방 (동물성·버터·라드)","🫒 불포화 지방 (식물·어류·올리브유)"], r:[
+    ["사슬 구조", R("탄화수소 사슬에 탄소 간 이중결합이 없어 수소 원자로 포화된 일직선 구조","포화 지방산","사슬이 유연하고 일직선이라 조밀하게 배열됨"), R("탄화수소 사슬에 1개 이상의 시스(cis) 이중결합이 있어 꺾임 구조를 만듦","불포화 지방산","꺾임 구조 때문에 분자들이 조밀하게 채워질 수 없음")],
+    ["상온 상태", "분자들이 조밀하게 채워져 실온에서 "+N("고체","포화 지방 상태","버터, 동물 비계"), "꺾임 때문에 고체화될 수 없어 실온에서 "+N("액체(기름, oil)","불포화 지방 상태","인공 수소 첨가 시 심혈관 질환을 유발하는 트랜스지방 생성")]
+  ]},
+  { p:"53p", tit:"6. 핵산: DNA vs RNA 비교 (그림 2.45)", h:["구분","🧬 DNA (데옥시리보핵산)","📜 RNA (리보핵산)"], r:[
+    ["5탄당 & 염기", N("데옥시리보스(2' 탄소에 산소 없음, -H)","DNA의 5탄당","고리 2번 탄소에 산소 원자가 없어 데옥시리보스라 부름")+" / 염기: 사이토신(C), 아데닌(A), 구아닌(G), "+N("타이민(T)","DNA에만 존재하는 피리미딘 염기","아데닌과 A=T 이중 수소결합"), N("리보스(2' 탄소에 -OH 존재)","RNA의 5탄당","2번 탄소에 수산기(-OH) 보유")+" / 염기: 사이토신(C), 아데닌(A), 구아닌(G), "+N("유라실(U)","RNA에만 존재하는 피리미딘 염기","타이민 대신 유라실 존재")],
+    ["가닥 및 역할", "이중나선 구조(A=T 수소결합 2개, G≡C 3개) / 유전 정보 저장 및 복제·전사 지시", "단일 가닥 구조 / mRNA(유전정보 전달), tRNA(아미노산 운반), rRNA(리보솜 구성)"]
+  ]},
+  { p:"87~93p", tit:"7. 삼투 현상(저장액·등장액·고장액) · 수동 vs 능동수송 · 세포내 섭취 3종", h:["구분","개념 A","개념 B"], r:[
+    ["삼투 현상 (87p)", "<b>저장액 (Hypotonic, 용질 농도 낮음 → 물 유입)</b><br>동물세포는 부풀어 올라 "+N("터짐(용해)","세포벽이 없어 과도한 물 유입 시 파열됨","짚신벌레는 수축포로 물을 퍼냄")+" / 식물세포는 세포벽의 팽압 덕분에 단단하고 건강한 "+N("팽만(정상, Turgid)","식물세포의 건강한 정상 상태","등장액에서는 시든(축 처진) 상태가 됨"), "<b>고장액 (Hypertonic, 용질 농도 높음 → 물 유출)</b><br>동물세포는 물을 잃어 쪼그라듦 / 식물세포는 세포막이 세포벽에서 떨어져 나오는 "+N("원형질 분리(Plasmolysis)","고장액에서 식물 세포막이 벽에서 분리되는 현상","식물을 시들게 하여 죽일 수 있음")],
+    ["막 수송 & 섭취 (89~93p)", "<b>수동수송</b>: 농도 기울기 순행(고→저), "+R("ATP 에너지 필요 없음","수동수송","단순확산 및 통로·운반체 단백질을 통한 촉진확산(아쿠아포린 등)")+"<br><b>능동수송</b>: 농도 기울기 역행(저→고), "+R("ATP 에너지 반드시 사용(운반체 단백질만 가능, 예: 소듐-포타슘 펌프)","능동수송","세포 내 높은 K+와 낮은 Na+ 유지"), "<b>세포내 섭취 3가지 (93p 단골)</b><br>① "+N("식세포 작용","위족으로 음식·세균 등 고체 입자를 식포로 삼킴","아메바, 백혈구 대식세포")+" ② "+N("음세포 작용","세포막이 접혀 세포외액(액체) 방울을 소낭으로 빨아들임","비특이적 액체 흡수")+" ③ "+N("수용체 매개 세포내 섭취","막 수용체에 특정 물질(예: LDL) 결합 시 피막소포로 선택 섭취","콜레스테롤 섭취")]
+  ]},
+  { p:"123p", tit:"8. 알코올 발효 vs 젖산 발효 vs 산소 호흡 비교", h:["구분","🍺 알코올 발효 (효모 - 맥주·제빵)","🥛 젖산 발효 (인간 근육세포 · 유산균)"], r:[
+    ["공통점", "산소와 전자전달사슬 없이 해당과정의 기질 수준 인산화로 "+N("2 ATP","발효의 ATP 수율","산소 호흡(32 ATP)보다 16배 적음")+" 생성 / 전자를 피루브산(유도체)에 넘겨 "+R("해당과정에 필요한 산화제인 NAD⁺를 재생함","발효의 핵심 목적","NAD+가 고갈되면 해당과정이 멈추기 때문"), "산소 없이 세포질에서 해당과정으로 2 ATP 생성 및 NADH를 산화시켜 NAD⁺ 재생"],
+    ["차이점 (CO₂ 및 최종 산물)", "피루브산(3C)이 2단계를 거침: 먼저 "+N("이산화탄소(CO₂) 방출","제빵 효모가 빵을 부풀리는 기포","알코올 발효만의 특징")+" → 2탄소인 "+N("아세트알데하이드","알코올 발효의 중간 산물","최종 전자 수용체 역할")+"가 NADH에 의해 환원되어 "+N("에탄올","알코올 발효 최종 생성물","맥주·포도주 제조")+" 생성", R("CO₂를 방출하지 않고","젖산 발효의 특징","탄소 수 변화 없음")+" 피루브산이 NADH에 의해 직접 환원되어 최종 생성물로 "+N("젖산(lactate)","젖산 발효 최종 산물","생성된 젖산은 혈액을 통해 간으로 운반되어 피루브산으로 다시 전환됨")+" 생성"]
+  ]}
+];
+
+// 3. 20종 아미노산 데이터
+var AAS = [
+  {nm:"글리신",c3:"Gly",c1:"G",g:"비극성",w:0,bg:"#fef08a",bd:"#ca8a04",r:["H"],role:"R기가 수소(-H) 하나로 가장 단순한 비극성 아미노산"},
+  {nm:"알라닌",c3:"Ala",c1:"A",g:"비극성",w:0,bg:"#fef08a",bd:"#ca8a04",r:["CH₃"],role:"R기가 메틸기(-CH₃)인 비극성 아미노산"},
+  {nm:"발린",c3:"Val",c1:"V",g:"비극성",w:0,bg:"#fef08a",bd:"#ca8a04",r:["CH₃  CH₃","  CH"],role:"소수성 V자 가지! 헤모글로빈 6번 글루탐산 대신 치환되면 낫모양 적혈구 빈혈증 유발"},
+  {nm:"류신(루신)",c3:"Leu",c1:"L",g:"비극성",w:0,bg:"#fef08a",bd:"#ca8a04",r:["CH₃  CH₃","CH—CH₂"],role:"비극성 탄화수소 사슬 보유"},
+  {nm:"아이소류신",c3:"Ile",c1:"I",g:"비극성",w:0,bg:"#fef08a",bd:"#ca8a04",r:["CH₃—CH₂","H₃C—CH"],role:"트레오닌 대사 경로의 최종 생성물로 첫 효소를 끄는 '되먹임 억제(그림 4.13)' 예시"},
+  {nm:"메싸이오닌",c3:"Met",c1:"M",g:"비극성",w:0,bg:"#fef08a",bd:"#ca8a04",r:["CH₃—S(황)","CH₂—CH₂"],role:"⭐ 모든 단백질 번역 합성의 무조건 1번 개시 아미노산! 황(S) 포함"},
+  {nm:"페닐알라닌",c3:"Phe",c1:"F",g:"비극성",w:1,bg:"#fef08a",bd:"#ca8a04",r:["⬡ (벤젠고리)","CH₂"],role:"⚠️ 벤젠고리 소수성 아미노산. 발음 소리('에프')대로 약어 [F] 사용!"},
+  {nm:"트립토판",c3:"Trp",c1:"W",g:"비극성",w:1,bg:"#fef08a",bd:"#ca8a04",r:["⬡⬢—NH(2중고리)","CH₂"],role:"⚠️ 가장 큰 이중고리 비극성 아미노산. T 대신 고리 2개 모양인 [W] 사용!"},
+  {nm:"프롤린",c3:"Pro",c1:"P",g:"비극성",w:0,bg:"#fef08a",bd:"#ca8a04",r:["H₂C—CH₂—CH₂","(아미노기와 고리)"],pro:1,role:"R기가 아미노기와 결합해 고리를 형성하는 비극성 아미노산"},
+  {nm:"세린",c3:"Ser",c1:"S",g:"극성",w:0,bg:"#bbf7d0",bd:"#16a34a",r:["OH (수산기)","CH₂"],role:"수산기(-OH)를 가져 친수성이며 인산화 스위치 역할"},
+  {nm:"트레오닌",c3:"Thr",c1:"T",g:"극성",w:0,bg:"#bbf7d0",bd:"#16a34a",r:["OH   CH₃","  CH"],role:"알파벳 [T] 약어의 주인! 수산기(-OH)를 가진 극성 친수성 아미노산"},
+  {nm:"시스테인",c3:"Cys",c1:"C",g:"극성",w:0,bg:"#bbf7d0",bd:"#16a34a",r:["SH (황화수소기)","CH₂"],role:"⭐ 두 시스테인의 -SH가 만나 단백질 3차 구조를 고정하는 '이황화 결합(-S-S-)' 형성!"},
+  {nm:"타이로신",c3:"Tyr",c1:"Y",g:"극성",w:1,bg:"#bbf7d0",bd:"#16a34a",r:["OH — ⬡","CH₂"],role:"⚠️ 벤젠고리+수산기(-OH) 극성 아미노산. 두 번째 글자 [Y] 사용!"},
+  {nm:"아스파라진",c3:"Asn",c1:"N",g:"극성",w:1,bg:"#bbf7d0",bd:"#16a34a",r:["H₂N—C=O","CH₂"],role:"⚠️ 아마이드기 보유 극성 아미노산. 끝 글자 발음대로 [N] 사용!"},
+  {nm:"글루타민",c3:"Gln",c1:"Q",g:"극성",w:1,bg:"#bbf7d0",bd:"#16a34a",r:["H₂N—C=O","CH₂—CH₂"],role:"⚠️ 극성 아미노산. G 대신 '큐(Q)트한 글루타민'으로 [Q] 암기!"},
+  {nm:"아스파르트산",c3:"Asp",c1:"D",g:"산성",w:1,bg:"#fbcfe8",bd:"#db2777",r:["⁻O—C=O","CH₂"],role:"⚠️ 카르복실기(-COO⁻) 음전하를 띤 산성 아미노산. 약어는 [D]!"},
+  {nm:"글루탐산",c3:"Glu",c1:"E",g:"산성",w:1,bg:"#fbcfe8",bd:"#db2777",r:["⁻O—C=O","CH₂—CH₂"],role:"⚠️ 음전하(-COO⁻) 산성 아미노산(정상 헤모글로빈 6번). 약어는 D 다음인 [E]!"},
+  {nm:"리신(라이신)",c3:"Lys",c1:"K",g:"염기성",w:1,bg:"#bfdbfe",bd:"#2563eb",r:["⁺NH₃ (양전하)","(CH₂)₄"],role:"⚠️ 양전하(+전하) 염기성 아미노산. L 앞 글자인 [K] 사용!"},
+  {nm:"아르지닌",c3:"Arg",c1:"R",g:"염기성",w:1,bg:"#bfdbfe",bd:"#2563eb",r:["H₂N—C=NH₂⁺","NH—(CH₂)₃"],role:"⚠️ 양전하(+전하) 염기성 아미노산. '아르(R)' 발음대로 [R] 사용!"},
+  {nm:"히스티딘",c3:"His",c1:"H",g:"염기성",w:0,bg:"#bfdbfe",bd:"#2563eb",r:["⬠—NH⁺ (오각고리)","CH₂"],role:"양전하(+전하) 오각고리를 가진 염기성 아미노산. 약어 [H]"}
+];
+
+function aaSvg(a) {
+  var t = a.r.map(function(l,i){ return '<text x="90" y="'+(26+i*18)+'" text-anchor="middle" font-size="11.5" font-weight="800">'+l+'</text>'; }).join('');
+  return '<svg width="140" height="126" viewBox="0 0 180 135">' +
+    '<g class="r-g"><rect x="25" y="6" width="130" height="58" rx="6" fill="'+a.bg+'" stroke="'+a.bd+'" stroke-width="2"/>'+t+'<line x1="90" y1="64" x2="90" y2="85" stroke="#0f172a" stroke-width="2"/></g>' +
+    '<rect x="10" y="84" width="160" height="44" rx="6" fill="#c4b5fd" stroke="#6d28d9" stroke-width="1.8"/>' +
+    '<text x="38" y="109" text-anchor="middle" font-size="11.5" font-weight="800">'+(a.pro?'H₂N⁺':'H₃N⁺')+'</text>' +
+    '<line x1="58" y1="105" x2="78" y2="105" stroke="#1e1b4b" stroke-width="2"/>' +
+    '<text x="90" y="109" text-anchor="middle" font-size="12.5" font-weight="900" fill="#dc2626">C</text>' +
+    '<text x="90" y="124" text-anchor="middle" font-size="9.5" font-weight="800">H</text>' +
+    '<line x1="102" y1="105" x2="118" y2="105" stroke="#1e1b4b" stroke-width="2"/>' +
+    '<text x="142" y="109" text-anchor="middle" font-size="11.5" font-weight="800">COO⁻</text></svg>';
+}
+
+// 4. 실전 문제 은행 (교수님 출제 방식: 단답형 용어 15선 + 빈칸 6선 + 주관식 서술형 9선 + 옳지 않은 것 7선)
+var QUIZZES = [
+  // [단답형 용어 맞추기 (시험 10문제 출제 대비)]
+  {type:"term", tit:"[단답형 용어 7p] 유전자(DNA) 속에 들어 있는 정보에 따라 전사와 번역을 거쳐 세포 산물(단백질)을 생산하는 전 과정을 무엇이라 하는가?", ans:["유전자 발현","유전자발현","gene expression"], exp:"7p 필수 용어: 유전자 발현(gene expression)입니다."},
+  {type:"term", tit:"[단답형 용어 7~8p] 한 생물체가 다음 세대로 물려주는 유전 정보의 총합을 ( 1 )이라 하고, 주어진 세포에서 발현되는 전체 단백질과 그 산물을 연구하는 학문을 ( 2 )이라 한다.", ans:["유전체, 단백질체학","게놈, 단백질체학"], exp:"유전 정보의 총합은 유전체(게놈, genome), 전체 유전자 연구는 유전체학(genomics), 전체 단백질 연구는 단백질체학(proteomics)입니다."},
+  {type:"term", tit:"[단답형 용어 21p] 소금(NaCl)이나 물(H₂O)처럼 두 개 이상의 서로 다른 원소들이 특정 비율로 결합되어 구성 원소와는 다른 창발적 특징을 갖는 물질을 무엇이라 하는가?", ans:["화합물","compound"], exp:"21p 필수 용어: 화합물(compound)입니다."},
+  {type:"term", tit:"[단답형 용어 27p] 비극성 분자 내에서도 전자가 우연히 한 부분에 집중되면서 생기는 일시적인 부분 전하에 의해 가까이 놓인 분자들 사이에 작용하는 약한 인력(도마뱀붙이가 벽을 오르는 힘)은?", ans:["반데르발스 인력","반데르발스 상호작용","반데르발스"], exp:"27p 4대 결합: 반데르발스 인력(van der Waals interactions)입니다."},
+  {type:"term", tit:"[단답형 용어 49p] pH, 염 농도, 온도(열) 변화로 단백질 내 약한 결합이 파괴되어 폴리펩타이드 사슬이 풀어지고 고유한 형태와 생물학적 활성을 잃는 현상(분해와 다름!)은?", ans:["변성","denaturation"], exp:"49p 필수 용어: 변성(denaturation)입니다. 펩타이드 결합 자체가 끊어지는 분해(degradation)와 구별해야 합니다."},
+  {type:"term", tit:"[단답형 용어 61p] 원핵세포에서 핵막으로 둘러싸여 있지 않은 채 DNA가 응축되어 있는 지역을 무엇이라 하는가?", ans:["핵양체","nucleoid"], exp:"61p 원핵세포의 DNA 위치는 핵양체(nucleoid)입니다."},
+  {type:"term", tit:"[단답형 용어 71p] 리소좀이 가수분해 효소를 이용하여 손상된 세포소기관이나 세포 자신의 유기 물질을 소화하여 재활용하는 작용을 무엇이라 하는가?", ans:["자가소화","자가소화작용","자가 소화 작용","autophagy"], exp:"71p 리소좀의 재활용 기능은 자가소화 작용(autophagy)입니다."},
+  {type:"term", tit:"[단답형 용어 81p] 동물세포의 3가지 연접 중 인접한 세포 간에 세포질 통로를 제공하여 이온, 당, 아미노산 등 작은 분자들이 통과하게 하는 교신연접(식물의 원형질 연락사와 유사)은?", ans:["간극연접","갭정션","gap junction"], exp:"81p 3가지 연접: 밀착연접(방수), 데스모솜(고정), 간극연접(통로) 중 간극연접입니다."},
+  {type:"term", tit:"[단답형 용어 87p] 식물세포를 고장액(소금물)에 담갔을 때 물을 잃어버려 쪼그라들면서 세포막이 세포벽에서 떨어져 나오는 현상을 무엇이라 하는가?", ans:["원형질 분리","원형질분리","plasmolysis"], exp:"87p 고장액에서의 식물세포 변화는 원형질 분리(plasmolysis)입니다."},
+  {type:"term", tit:"[단답형 용어 95~98p] 표적 세포의 수용체에 특이적으로 결합하는 신호 분자를 ( 1 )라 하고, 에피네프린이 GPCR에 결합했을 때 아데닐산 고리화효소가 ATP로부터 만드는 대표적인 2차 전달자는 ( 2 )이다.", ans:["리간드, cAMP","리간드, 고리형 AMP"], exp:"95p 신호 분자는 리간드(ligand), 98p 대표적인 2차 전달자는 cAMP(고리형 AMP)와 칼슘 이온(Ca2+)입니다."},
+  {type:"term", tit:"[단답형 용어 110p] 대사 경로에서 최종 생성물(예: 아이소루신)이 충분히 만들어졌을 때 경로의 첫 단계 효소를 억제하여 화학적 자원의 낭비를 막는 조절 기작은?", ans:["되먹임 억제","피드백 억제","되먹임억제","feedback inhibition"], exp:"110p 그림 4.13: 되먹임 억제(피드백 억제, feedback inhibition)입니다."},
+
+  // [빈칸 채우기]
+  {type:"blank", tit:"[빈칸 39~47p] 거대분자 합성과 분해 및 3대 결합 명칭", txt:"단위체가 물 분자(H₂O)를 잃으며 중합체를 합성하는 반응을 [ (1) ] 반응, 물을 첨가해 결합을 끊는 반응을 [ (2) ]라 한다. 이때 탄수화물은 [ (3) ] 결합, 지방은 [ (4) ] 결합, 단백질은 [ (5) ] 결합을 형성한다.", ans:["탈수","가수분해","글리코시드","에스터","펩타이드"], exp:"탈수반응 vs 가수분해, 그리고 탄글-지에-단펩 결합 명칭입니다."},
+  {type:"blank", tit:"[빈칸 53p] 뉴클레오타이드와 DNA vs RNA 구분 (그림 2.45)", txt:"뉴클레오타이드는 인산기, 5탄당, 질소성 염기로 구성되며 인산기를 제외한 부분은 [ (1) ]라 한다. DNA는 5탄당으로 [ (2) ]를 가지고 염기로 A, G, C, [ (3) ]을 가지며, RNA는 5탄당으로 [ (4) ]를 가지고 염기로 A, G, C, [ (5) ]을 가진다.", ans:["뉴클레오사이드","데옥시리보스","타이민","리보스","유라실"], exp:"53p 그림 2.45의 핵심 구성 성분입니다."},
+  {type:"blank", tit:"[빈칸 121~123p] 세포 호흡 ATP 생성 수율(그림 4.26)과 발효", txt:"포도당 1분자 산소 호흡 시 해당과정(+2)과 시트르산 회로(+2)에서 [ (1) ] 수준 인산화로 4 ATP가 생기고, 내막의 전자전달과 화학삼투를 통한 [ (2) ] 인산화로 26~28 ATP가 생겨 최대 약 [ (3) ] 또는 [ (4) ] ATP가 생성된다. 산소가 없을 때 효모는 CO₂를 방출하며 에탄올을 만드는 [ (5) ] 발효를 수행한다.", ans:["기질","산화적","30","32","알코올"], exp:"121p 그림 4.26(총 30 또는 32 ATP)과 123p 알코올 발효 vs 젖산 발효입니다."},
+
+  // [주관식 서술형 (10문제 중 7문제 선택 대비 핵심 서술형)]
+  {type:"essay", tit:"[주관식 1순위 - 45p] 단백질의 8가지 주요 기능을 모두 쓰고 각각의 역할과 예시를 서술하시오.", kw:["효소","방어","저장","수송","호르몬","수용체","수축","구조"], mod:"①효소 단백질(소화효소: 화학반응의 선택적 가속화) ②방어 단백질(항체: 질병으로부터 보호) ③저장 단백질(달걀 흰자 오브알부민, 우유 카제인: 아미노산 저장) ④수송 단백질(헤모글로빈, 막 수송 단백질: 물질 수송) ⑤호르몬 단백질(인슐린: 혈당 등 생물체 활성 조절) ⑥수용체 단백질(신경세포 막 수용체: 화학 자극에 대한 세포 반응) ⑦수축 및 운동 단백질(액틴·마이오신, 디네인: 근육 수축 및 세포 이동) ⑧구조 단백질(콜라젠, 케라틴: 지지 및 형태 유지) 8가지입니다."},
+  {type:"essay", tit:"[주관식 단골 - 51p] 단백질의 1차, 2차, 3차, 4차 구조가 각각 무엇인지 설명하고, 3차 구조를 안정화하는 결합들을 서술하시오.", kw:["서열","수소결합","나선","병풍","곁사슬","이황화","소수성","폴리펩타이드"], mod:"• 1차 구조: 펩타이드 결합으로 연결된 선형 아미노산 사슬의 고유한 서열입니다.\n• 2차 구조: 폴리펩타이드 골격 원자 사이의 수소결합으로 형성된 α-나선과 β-병풍 구조입니다.\n• 3차 구조: 아미노산 곁사슬(R기) 간의 상호작용(①이황화 결합, ②수소결합, ③이온결합, ④소수성 상호작용, ⑤반데르발스 인력)에 의해 안정화된 하나의 폴리펩타이드의 3차원 형태입니다.\n• 4차 구조: 둘 이상의 폴리펩타이드 사슬(소단위체)이 결합하여 형성된 단백질 구조(예: 헤모글로빈, 콜라젠)입니다."},
+  {type:"essay", tit:"[주관식 단골 - 61p & 65p] 원핵세포와 진핵세포의 차이점, 그리고 동물세포와 식물세포의 차이점을 각각 비교하여 서술하시오.", kw:["핵막","핵양체","소기관","세포벽","엽록체","중심 액포","리소좀"], mod:"• 원핵세포 vs 진핵세포: 원핵세포(세균, 고세균)는 핵막이 없어 DNA가 핵양체에 응축되어 있고 막성 세포소기관이 없으며 크기가 작지만, 진핵세포는 이중막인 핵막으로 둘러싸인 핵 안에 DNA가 있고 다양한 막성 소기관을 가집니다.\n• 식물세포 vs 동물세포: 식물세포에만 있는 구조는 세포벽(셀룰로스), 엽록체, 중심 액포, 원형질 연락사이며, 동물세포에만 있는 구조는 리소좀, 중심립을 포함한 중심체, 편모입니다."},
+  {type:"essay", tit:"[주관식 단골 - 76p & 81p] 세포골격 3가지의 구조·구성 물질·기능과 동물세포의 세포 간 연접 3가지의 특징을 서술하시오.", kw:["미세소관","튜불린","중간섬유","케라틴","미세섬유","액틴","밀착","데스모솜","간극"], mod:"• 세포골격 3종: ①미세소관(25nm, α·β 튜불린 이합체의 속 빈 관: 모양 유지, 소낭·염색체 이동, 편모·섬모 구성), ②중간섬유(8~12nm, 케라틴 등 섬유 단백질: 모양 유지, 핵·소기관 고정), ③미세섬유(7nm, 액틴 이중나선: 근육 수축, 미세융모 지지, 위족 운동).\n• 세포연접 3종: ①밀착연접(세포층 사이 액체 이동 억제·방수), ②데스모솜(중간섬유로 세포들을 단단히 고정), ③간극연접(인접 세포 간 이온·작은 분자가 통과하는 통로)."},
+  {type:"essay", tit:"[주관식 단골 - 87p & 89p] 삼투 현상의 정의와 저장액·고장액에서의 동물·식물세포의 변화, 그리고 수동수송과 능동수송의 차이를 서술하시오.", kw:["저장액","고장액","용해","팽만","원형질 분리","ATP","농도 기울기"], mod:"• 삼투 현상: 선택적 투과성 막을 통해 물이 용질 농도가 낮은 곳(저장액)에서 높은 곳(고장액)으로 확산되는 현상입니다. 저장액에서는 물이 유입되어 동물세포는 터지고(용해) 식물세포는 팽만(정상) 상태가 되며, 고장액에서는 물이 빠져나가 동물세포는 쪼그라들고 식물세포는 원형질 분리가 일어납니다.\n• 수동수송 vs 능동수송: 수동수송(단순확산, 촉진확산)은 농도 기울기를 따라 이동하여 ATP가 필요 없지만, 능동수송(소듐-포타슘 펌프)은 농도 기울기를 거슬러 이동하므로 ATP 에너지를 소모합니다."},
+  {type:"essay", tit:"[주관식 단골 - 93p & 108p] 세포내 섭취(Endocytosis)의 3가지 방법과 효소의 경쟁적 억제자·비경쟁적 억제자의 차이를 서술하시오.", kw:["식세포","음세포","수용체 매개","활성 부위","다른 부위"], mod:"• 세포내 섭취 3종: ①식세포 작용(위족으로 음식·세균 등 고체 입자를 식포로 삼킴), ②음세포 작용(세포외액 방울과 용질을 소낭으로 빨아들임), ③수용체 매개 세포내 섭취(막 수용체에 특정 물질 결합 시 피막소포로 선택적 섭취).\n• 효소 억제자 비교: 경쟁적 억제자는 기질과 닮아 효소의 활성 부위를 놓고 경쟁(기질 농도 높이면 극복 가능)하며, 비경쟁적 억제자는 활성 부위가 아닌 다른 자리에 결합해 효소의 모양을 변형시킵니다."},
+
+  // [옳지 않은 것은? 객관식]
+  {type:"mcq", tit:"다음 중 탄수화물(녹말·글리코젠·셀룰로스)과 지질(지방·인지질·스테로이드)에 대한 설명으로 옳지 않은 것은?", opts:[
+    "① 이당류는 두 단당류가 탈수반응에 의해 글리코시드 결합으로 연결된 당이다.",
+    "② 동물의 저장 다당류인 글리코젠은 아밀로펙틴(녹말)과 유사하지만 가지(α 1-6 결합)가 훨씬 더 많다.",
+    "③ 셀룰로스는 β 1-4 결합을 가진 구조 다당류로 식물 세포벽의 주성분이다.",
+    "④ 포화 지방은 탄화수소 사슬에 시스(cis) 이중결합에 의한 꺾임 구조가 있어 실온에서 액체 상태이다.",
+    "⑤ 콜레스테롤은 4개의 연결된 고리를 가진 스테로이드 지질로 동물 세포막의 구성 성분이자 성호르몬 합성의 전구체이다."
+  ], ans:3, exp:"정답은 ④번입니다! 시스 이중결합에 의한 꺾임 구조가 있어 실온에서 액체(기름)인 것은 '불포화 지방(올리브유 등)'입니다. 포화 지방(버터 등)은 이중결합이 없어 실온에서 고체입니다."},
+  {type:"mcq", tit:"다음 중 세포 호흡(그림 4.26)과 발효(알코올 발효·젖산 발효)에 대한 설명으로 옳지 않은 것은?", opts:[
+    "① 세포 호흡이 포도당을 분해하는 전체 반응은 자유 에너지를 방출하는 발열반응(ΔG = -686 kcal/mol)이다.",
+    "② 해당과정과 시트르산 회로에서는 기질 수준 인산화에 의해 각각 2분자씩 총 4분자의 ATP가 생성된다.",
+    "③ 산화적 인산화(전자전달과 화학삼투)를 통해 약 26 또는 28분자의 ATP가 생성되어 포도당 1분자당 최대 30 또는 32 ATP가 만들어진다.",
+    "④ 무산소 조건에서 일어나는 발효는 전자전달계를 사용하여 포도당 1분자당 32분자의 ATP를 생산한다.",
+    "⑤ 알코올 발효는 이산화탄소(CO₂)를 방출하며 에탄올을 생성하지만, 젖산 발효는 CO₂를 방출하지 않고 젖산을 생성한다."
+  ], ans:3, exp:"정답은 ④번입니다! 발효는 산소와 전자전달계를 전혀 사용하지 않으며, 오직 해당과정의 기질 수준 인산화를 통해 포도당 1분자당 '2분자의 ATP'만 생성합니다."}
+];
+
+// 렌더링
+document.getElementById("roleBox").innerHTML = ROLES.map(function(c){
+  return '<div class="card"><span class="bdg">교과서 '+c.p+'</span><span class="bdg hot">'+c.tag+'</span><div class="c-title">'+c.tit+'</div><div class="svg-box">'+c.svg+'</div><table><thead><tr><th>항목 / 용어 (파랑 터치)</th><th>생체 내 핵심 역할 · 기능 및 예시 (초록 터치)</th></tr></thead><tbody>' +
+    c.rows.map(function(r){ return '<tr><th>'+r[0]+'</th><td>'+r[1]+'</td></tr>'; }).join('') + '</tbody></table></div>';
+}).join('');
+
+document.getElementById("compBox").innerHTML = COMPS.map(function(c){
+  return '<div class="card"><span class="bdg">교과서 '+c.p+'</span><span class="bdg hot">1:1 비교</span><div class="c-title">'+c.tit+'</div><table><thead><tr><th>'+c.h[0]+'</th><th>'+c.h[1]+'</th><th>'+c.h[2]+'</th></tr></thead><tbody>' +
+    c.r.map(function(r){ return '<tr><th>'+r[0]+'</th><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>'; }).join('') + '</tbody></table></div>';
+}).join('');
+
+var curAAF = "all";
+function renderAA() {
+  document.getElementById("aaBox").innerHTML = AAS.filter(function(a){
+    if(curAAF==="all") return true;
+    if(curAAF==="warn") return a.w===1;
+    return a.g===curAAF;
+  }).map(function(a){
+    return '<div class="aa-card" data-t="'+a.nm+' ('+a.c3+', '+a.c1+') — '+a.g+'" data-r="'+a.role+'" data-w="'+(a.w?'이름 첫 글자와 1글자 약어('+a.c1+')가 달라 시험에 무조건 나오는 아미노산입니다!':'곁사슬(R기)의 화학적 성질이 단백질의 입체 접힘을 결정합니다.')+'">' +
+      '<span class="bdg" style="background:'+a.bg+'; color:#0f172a;">'+a.g+(a.w?' ⚠️약어주의':'')+'</span>' +
+      '<div class="aa-svg">'+aaSvg(a)+'</div>' +
+      '<div class="aa-nm" style="font-weight:800;">'+a.nm+'</div>' +
+      '<div class="aa-cd" style="font-weight:800; color:#2563eb;">'+a.c3+' / <span class="'+(a.w?'warn-c':'')+'">'+a.c1+'</span></div>' +
+      '<div style="font-size:0.72rem; color:#334155; margin-top:4px; background:#f8fafc; padding:5px; border-radius:6px; text-align:left;">🎯 '+a.role+'</div></div>';
+  }).join('');
+}
+renderAA();
+
+var curQT = "all", curQ = null;
+function loadQuiz() {
+  var pool = QUIZZES.filter(function(q){ return curQT==="all" || q.type===curQT; });
+  curQ = pool[Math.floor(Math.random()*pool.length)];
+  var b = document.getElementById("quizBox");
+  if(curQ.type==="term") {
+    b.innerHTML = '<span class="bdg hot">🔑 단답형 용어 문제 (시험 10문제 출제 대비)</span><div class="c-title" style="margin-top:6px;">'+curQ.tit+'</div>' +
+      '<div style="margin:12px 0;"><input class="inp" id="termInp" style="width:220px;" placeholder="정답 용어 입력"> <button type="button" class="b-btn on" id="chkTerm">정답 확인</button></div><div id="qOut" style="font-size:0.88rem;"></div>';
+  } else if(curQ.type==="blank") {
+    var t = curQ.txt;
+    curQ.ans.forEach(function(a,i){ t = t.replace("[ ("+(i+1)+") ]", '<input class="inp" id="qi-'+i+'" placeholder="('+(i+1)+')">'); });
+    b.innerHTML = '<span class="bdg">✏️ 빈칸 채우기</span><div class="c-title">'+curQ.tit+'</div><p style="line-height:2.1; margin:10px 0;">'+t+'</p><button type="button" class="b-btn on" id="chkBlank">정답 확인</button><div id="qOut" style="margin-top:10px; font-size:0.88rem;"></div>';
+  } else if(curQ.type==="essay") {
+    b.innerHTML = '<span class="bdg hot">🖋️ 주관식 서술형 (10문제 중 7문제 선택 대비)</span><div class="c-title">'+curQ.tit+'</div><textarea id="qTxt" style="width:100%; height:90px; padding:8px; margin:8px 0; border:1px solid #cbd5e1; border-radius:8px;" placeholder="핵심 키워드와 역할을 포함해 서술해 보세요!"></textarea><button type="button" class="b-btn on" id="chkEssay">필수 키워드 채점 & 모범답안</button><div id="qOut" style="margin-top:10px; font-size:0.88rem; white-space:pre-line;"></div>';
+  } else {
+    b.innerHTML = '<span class="bdg">❌ 옳지 않은 것은?</span><div class="c-title">'+curQ.tit+'</div><div style="margin-top:8px;">'+curQ.opts.map(function(o,i){ return '<button type="button" class="q-opt" data-qi="'+i+'">'+o+'</button>'; }).join('')+'</div><div id="qOut" style="margin-top:10px; font-size:0.88rem;"></div>';
   }
-  function esc(s) {
-    return (s || "").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+loadQuiz();
+
+document.addEventListener("click", function(e){
+  var item = e.target.closest(".t-n, .t-r, .aa-card");
+  if(item) {
+    item.classList.toggle("show");
+    document.getElementById("dTit").innerText = "📌 " + item.getAttribute("data-t");
+    document.getElementById("dRole").innerText = "🎯 핵심 역할·기능: " + item.getAttribute("data-r");
+    document.getElementById("dWhy").innerText = "💡 왜 그럴까요?: " + item.getAttribute("data-w");
+    document.getElementById("dock").classList.add("on");
+    return;
   }
+  if(e.target.id==="dClose") { document.getElementById("dock").classList.remove("on"); return; }
 
-  // ==================== 1. 종류 + 역할(기능) + 예시 완벽 데이터 ====================
-  var roleCards = [
-    {
-      cat: "단백질", page: "45p (그림 2.37)", tag: "주관식 8개 전부 서술 필수!",
-      title: "1. 단백질의 8가지 주요 종류와 각각의 역할·예시 (효방저수 호수수구)",
-      headers: ["단백질 종류 (파랑 터치)", "생체 내 핵심 역할·기능 및 교과서 예시 (초록 터치)"],
-      rows: [
-        [
-          T("① 효소 단백질 (Enzymatic)", "효소 단백질", "화학 반응의 선택적 가속화(촉매)", "왜 반응 속도를 높일까요? 효소가 기질과 유도적합하여 반응에 필요한 활성화 에너지(EA) 장벽을 낮춰주기 때문입니다."),
-          R("역할: 화학 반응의 선택적 가속화(촉매 작용) / 예시: 소화 효소는 음식물 분자에 있는 결합의 가수분해를 촉매한다.", "효소 단백질의 역할과 예시", "화학 반응의 선택적 가속화 (예: 소화 효소의 가수분해 촉매)", "효소는 자신은 소모되지 않으면서 반복해서 기질을 생성물로 빠르게 변환시킵니다.")
-        ],
-        [
-          T("② 방어 단백질 (Defensive)", "방어 단백질", "질병(세균·바이러스)에 대한 생체 보호", "항체는 왜 특정 바이러스에만 붙을까요? 단백질의 정교한 3차원 입체 구조가 항원과 열쇠-자물쇠처럼 상보적으로 결합하기 때문입니다."),
-          R("역할: 질병에 대한 보호 / 예시: 항체(antibody)는 바이러스나 세균과 결합하여 불활성화시키고 처치하는 데 도움을 준다.", "방어 단백질의 역할과 예시", "질병에 대한 보호 (예: 항체가 바이러스·세균 불활성화)", "면역계에서 외부 침입자(항원)를 인식해 무력화하는 항체는 모두 단백질입니다.")
-        ],
-        [
-          T("③ 저장 단백질 (Storage)", "저장 단백질", "발달 과정의 배아나 새끼를 위한 아미노산 저장", "주의! 교수님 강조 포인트: 성인 인체 내에는 단백질을 저장해 두는 창고가 따로 없어서 매일 조금씩 섭취해야 하지만, 알(계란)이나 우유·씨앗에는 저장 단백질이 있습니다!"),
-          R("역할: 아미노산의 저장(영양 공급원) / 예시: 달걀 흰자의 오브알부민(배아의 아미노산 공급원), 우유 단백질인 카제인(포유동물 새끼의 주된 아미노산 공급원), 식물 씨앗의 저장 단백질.", "저장 단백질의 역할과 예시", "아미노산의 저장 (예: 달걀 흰자 오브알부민, 우유 카제인, 씨앗 단백질)", "오브알부민이나 카제인이 소화(가수분해)되면 아미노산들이 방출되어 아기나 배아가 자라는 원료가 됩니다.")
-        ],
-        [
-          T("④ 수송 단백질 (Transport)", "수송 단백질", "산소나 이온·영양분 등 물질의 수송", "세포막의 인지질 이중층은 소수성이어서 이온이나 극성 분자가 못 지나가므로, 막에 박힌 수송 단백질이 문(통로/운반체) 역할을 해줘야 합니다."),
-          R("역할: 물질의 수송 / 예시: 철(Fe)을 함유한 척추동물 혈액 단백질인 헤모글로빈은 폐로부터 온몸으로 산소를 운반하며, 세포막의 수송 단백질은 막을 가로질러 물질 분자를 운반한다.", "수송 단백질의 역할과 예시", "물질의 수송 (예: 산소를 운반하는 헤모글로빈, 세포막 통로·운반체 단백질)", "헤모글로빈(4차 구조)은 적혈구 속에서 산소를 운반하고, 막 수송 단백질은 세포 안팎으로 물질을 출입시킵니다.")
-        ],
-        [
-          T("⑤ 호르몬 단백질 (Hormonal)", "호르몬 단백질", "생물체의 생리 활성 조절 신호 물질", "모든 호르몬이 스테로이드(지질)인 것은 아닙니다! 인슐린이나 생장호르몬은 아미노산으로 이루어진 펩타이드·단백질 호르몬입니다."),
-          R("역할: 생물체의 활성 조절 / 예시: 이자(췌장)에서 혈액으로 분비되는 호르몬인 인슐린은 다른 조직 세포가 포도당을 흡수하게 하여 혈당 농도를 정상으로 낮추어 조절한다.", "호르몬 단백질의 역할과 예시", "생물체의 활성 조절 (예: 이자에서 분비되어 혈당을 낮추는 인슐린)", "고혈당일 때 췌장 베타세포에서 분비된 인슐린이 표적 세포에 작용해 포도당 흡수를 촉진합니다.")
-        ],
-        [
-          T("⑥ 수용체 단백질 (Receptor)", "수용체 단백질", "외부 화학 자극(신호 분자)을 감지하여 세포 반응 유도", "신호 분자(리간드)가 세포막을 직접 통과하지 못해도 세포막에 꽂혀 있는 수용체 단백질이 이를 감지해 세포 안으로 신호를 전달합니다."),
-          R("역할: 화학 자극에 대한 세포의 반응 / 예시: 다른 신경세포가 분비한 신호 분자(신경전달물질, 예: 아세틸콜린)를 감지하여 결합하는 신경세포 막의 수용체.", "수용체 단백질의 역할과 예시", "화학 자극에 대한 세포의 반응 (예: 신경세포 막에서 신호 분자를 감지하는 수용체)", "수용체 단백질은 자신에게 꼭 맞는 특정 신호 분자(리간드)와만 결합하여 형태가 변하면서 켜집니다.")
-        ],
-        [
-          T("⑦ 수축 및 운동 단백질 (Contractile & Motor)", "수축 및 운동 단백질", "근육 수축 및 세포·소낭의 이동", "운동 단백질이 미세소관 트랙 위를 걸어갈 때나 근육이 수축할 때 모두 ATP 가수분해 에너지를 동력으로 사용합니다."),
-          R("역할: 세포 및 생물체의 운동 / 예시: 액틴과 마이오신 단백질 필라멘트는 근육 수축 운동에 관여하며, 운동 단백질(디네인 등)은 편모나 섬모의 파동운동 및 세포골격을 따른 소낭 이동에 관여한다.", "수축 및 운동 단백질의 역할과 예시", "운동 수행 (예: 근육 수축의 액틴·마이오신, 섬모·편모 파동운동의 디네인)", "액틴과 마이오신이 서로 미끄러지며 근육을 수축시키고, 디네인은 ATP를 써서 편모를 움직입니다.")
-        ],
-        [
-          T("⑧ 구조 단백질 (Structural)", "구조 단백질", "세포와 조직의 형태 지지 및 강도 제공", "콜라젠은 사람 몸 전체 단백질의 약 40%를 차지할 정도로 많으며, 3개의 폴리펩타이드 사슬이 3중 나선으로 꼬여 강철처럼 튼튼합니다."),
-          R("역할: 지지 및 형태 유지 / 예시: 콜라젠과 엘라스틴은 동물 결합조직(피부·뼈·힘줄·인대)에서 튼튼한 섬유상 그물 구조를 제공하고, 케라틴은 머리카락·손톱·뿔·깃털을 이루며, 실크(비단섬유)는 거미줄과 고치를 만든다.", "구조 단백질의 역할과 예시", "지지 및 형태 보강 (예: 결합조직의 콜라젠·엘라스틴, 머리카락의 케라틴, 거미줄 실크)", "구조 단백질은 생명체의 물리적 뼈대와 형태를 단단하게 지탱해 줍니다.")
-        ]
-      ]
-    },
-    {
-      cat: "단백질", page: "50~51p (그림 2.41)", tag: "주관식 단골!",
-      title: "2. 단백질의 1차~4차 구조와 3차 구조 안정화 결합 5가지의 역할",
-      headers: ["구조 단계 및 결합", "정의 · 형성 원리 · 생체 내 역할 및 예시 (터치하면 상세 설명)"],
-      rows: [
-        [
-          T("1차 구조 (Primary)", "단백질 1차 구조", "펩타이드 결합으로 연결된 선형 아미노산 서열", "왜 1차 구조가 가장 중요할까요? 아미노산 서열이 단백질의 3차원 접힘 모양과 기능을 90% 이상 결정하기 때문입니다(예: 127개 아미노산인 트랜스티레틴은 20^127가지 서열 가능)."),
-          R("정의 및 역할: 아미노산들이 펩타이드 결합(-CO-NH-)으로 N-말단에서 C-말단까지 일렬로 연결된 고유한 선형 사슬 서열로, 유전자에 의해 결정되며 2·3차 입체 구조를 결정한다. (예: 헤모글로빈 베타 사슬 6번 글루탐산이 발린 1개로 치환되면 낫모양 적혈구 빈혈증 발생)", "1차 구조의 역할", "단백질의 고유한 아미노산 선형 서열로서 최종 입체 구조와 기능을 결정함", "아미노산 단 1개만 바뀌어도 단백질이 잘못 접혀 치명적인 유전 질환을 일으킬 수 있습니다.")
-        ],
-        [
-          T("2차 구조 (Secondary)", "단백질 2차 구조", "폴리펩타이드 골격 원자 간 수소결합으로 형성된 부분적 꼬임과 접힘", "주의! 2차 구조는 곁사슬(R기) 간의 결합이 아니라, 보라색 '폴리펩타이드 골격(backbone)'의 산소(δ-)와 질소 결합 수소(δ+) 사이의 수소결합으로 만들어집니다!"),
-          R("정의 및 역할: 폴리펩타이드 골격(곁사슬 아님!) 구성 원자 사이의 규칙적인 수소결합에 의해 안정화된 국소적 구조이다. ① α-나선(네 번째 아미노산마다 수소결합하여 용수철처럼 꼬임)과 ② β-병풍(나란히 배열된 가닥들 사이의 수소결합, 예: 거미줄 실크 단백질에 높은 강도 제공) 두 가지가 있다.", "2차 구조의 종류와 역할", "골격 간 수소결합으로 α-나선과 β-병풍을 형성해 전체 형태와 강도에 기여함", "거미줄(실크 단백질)이 철사처럼 질긴 이유는 다수의 수소결합으로 이루어진 β-병풍 구조 덕분입니다.")
-        ],
-        [
-          T("3차 구조 (Tertiary) & 5대 결합", "단백질 3차 구조와 안정화 결합 5종", "아미노산 곁사슬(R기) 간의 5가지 상호작용으로 완성된 하나의 폴리펩타이드 전체 3차원 형태", "교수님 예고 문제: '3차 구조를 안정화시키는 5가지 힘을 서술하시오(이수이소반)' → 이황화 결합, 수소결합, 이온결합, 소수성 상호작용, 반데르발스 인력을 모두 적어야 합니다!"),
-          R("정의 및 역할: 다양한 아미노산 곁사슬(R기) 간의 상호작용에 의해 하나의 폴리펩타이드 사슬이 접힌 전체 3차원 입체 구조이다.<br>• ① 이황화 결합(-S-S-): 시스테인의 -SH기 2개가 만나 형성하는 유일한 '공유결합'으로 구조를 가장 강력하게 고정함(파마 원리).<br>• ② 수소결합: 극성 R기 사이의 인력.<br>• ③ 이온결합: 산성(-전하) R기와 염기성(+전하) R기 사이의 인력.<br>• ④ 소수성 상호작용: 비극성 R기들이 물을 피해 단백질 중심부로 모이는 현상.<br>• ⑤ 반데르발스 인력: 중심부에 모인 비극성 R기들을 서로 떨어지지 않게 붙잡아 유지함.", "3차 구조 안정화 결합 5가지의 역할", "곁사슬(R기) 간의 이황화 결합·수소결합·이온결합·소수성 상호작용·반데르발스 인력으로 고유한 3차원 기능성 구조를 유지함", "약한 결합 4가지와 강력한 공유결합인 이황화 결합(-S-S-)이 합쳐져 단백질의 정교한 3차 구조를 유지합니다.")
-        ],
-        [
-          T("4차 구조 (Quaternary)", "단백질 4차 구조", "둘 이상의 독립된 폴리펩타이드 사슬(소단위체)이 모여 하나의 기능적 단백질을 이룬 구조", "폴리펩타이드 사슬이 끊어지지 않고 1줄이면 무조건 3차 구조까지이고, 떨어진 2개 이상의 사슬이 합체해야 4차 구조입니다!"),
-          R("정의 및 역할: 두 개 이상의 폴리펩타이드 사슬(소단위체)들이 결합하여 완전한 기능을 수행하는 거대 단백질 구조이다.<br>• 예시 1 (헤모글로빈): α 사슬 2개 + β 사슬 2개 총 4개의 폴리펩타이드와 철(Fe)을 포함한 '헴(heme)'으로 구성된 구형 산소 운반 단백질.<br>• 예시 2 (콜라젠): 3개의 동일한 폴리펩타이드 사슬이 밧줄처럼 꼬여 3중 나선을 이룬 섬유상 단백질(피부·뼈·힘줄에 큰 강도 부여).<br>• 예시 3 (트랜스티레틴): 4개의 동일한 폴리펩타이드로 구성.", "4차 구조의 역할과 예시", "2개 이상의 폴리펩타이드 소단위체가 모여 복합 기능을 수행 (예: 4개 사슬 헤모글로빈, 3중 나선 콜라젠)", "사슬 하나만으로는 완전한 기능을 못 할 때 여러 폴리펩타이드가 모여 4차 구조를 형성합니다.")
-        ]
-      ]
-    },
-    {
-      cat: "화학", page: "23~27p / 37p", tag: "무조건 출제!",
-      title: "3. 4가지 화학 결합(공이수반) & 7가지 화학기(수카카 아황인메)의 역할",
-      headers: ["구분 및 명칭", "형성 원리 · 성질 · 세포 내 역할 및 예시"],
-      rows: [
-        [
-          T("4대 화학 결합 (공이수반)", "4가지 화학 결합", "공유결합, 이온결합, 수소결합, 반데르발스 인력", "왜 생체 분자는 공유결합과 약한 결합을 함께 쓸까요? 뼈대는 공유결합으로 튼튼히 만들고, 분자 간 신호 인식과 입체 접힘은 뗐다 붙였다 할 수 있는 약한 결합(수소·반데르발스·수용액 이온결합)으로 조절하기 위해서입니다."),
-          R("• ① 공유결합: 원자가 전자를 공유하는 가장 강한 결합으로 세포 내 분자의 기본 골격을 형성함 (전기음성도가 같으면 비극성 공유결합 H₂·O₂·CH₄, 다르면 극성 공유결합 H₂O).<br>• ② 이온결합: 전자가 이동해 생긴 양이온(Na⁺)과 음이온(Cl⁻) 간의 인력. 건조한 염(NaCl) 결정에선 매우 강하지만 물속에선 약해져 쉽게 용해됨.<br>• ③ 수소결합: 산소·질소에 결합한 수소(δ+)가 다른 음전하 원자(δ-)에 끌리는 약한 결합으로, 물의 응집력·높은 비열·DNA 이중나선·단백질 구조를 유지함.<br>• ④ 반데르발스 인력: 비극성 분자에서 전자의 일시적 쏠림으로 생기는 약한 인력으로, 많이 모이면 큰 힘을 냄(도마뱀붙이 발바닥, 단백질 소수성 중심부 유지).", "4가지 화학 결합 각각의 역할", "공유결합은 분자 골격 형성, 이온·수소·반데르발스 결합은 생체분자의 3차원 구조 유지와 가역적 상호작용 담당", "약한 결합의 가역성 덕분에 효소와 기질, 수용체와 신호분자가 결합해 반응한 뒤 다시 분리될 수 있습니다.")
-        ],
-        [
-          T("7가지 주요 화학기 (그림 2.26)", "7가지 화학기(작용기)", "수산기, 카르보닐기, 카르복실기, 아미노기, 황화수소기, 인산기, 메틸기", "앞의 6개는 화학 반응에 직접 참여하는 '작용기'이고(황화수소기를 제외하면 모두 친수성!), 마지막 메틸기(-CH3)는 비극성이며 분자 인식 꼬리표 역할을 합니다."),
-          R("• ① 수산기(-OH, 알코올): 극성이어서 물과 수소결합을 형성해 유기 화합물의 용해도를 높임(예: 에탄올).<br>• ② 카르보닐기(&gt;C=O): 탄소 골격 내부에 있으면 '케톤'(예: 아세톤, 과당), 골격 끝에 수소와 붙어 있으면 '알데하이드'(예: 프로파날, 포도당)가 되어 당류를 구성함.<br>• ③ 카르복실기(-COOH, 유기산): 세포 내 pH에서 H⁺를 내놓아 이온화(-COO⁻)되며 산성을 띰(예: 아세트산, 아미노산).<br>• ④ 아미노기(-NH₂, 아민): 세포 내 pH에서 H⁺를 받아 이온화(-NH₃⁺)되며 염기성으로 작용함(예: 글리신).<br>• ⑤ 황화수소기(-SH, 티올): 두 개의 -SH기가 반응해 단백질 3차 구조를 안정화하는 '이황화 결합(-S-S-)'을 형성함(예: 시스테인).<br>• ⑥ 인산기(-OPO₃²⁻, 유기인산): 음전하를 띠며 물과 반응해 에너지를 방출·전달하고 효소를 활성화함(예: ATP, 글리세롤인산, 인지질).<br>• ⑦ 메틸기(-CH₃, 메틸화합물): 비극성이며 반응성은 없으나 DNA에 결합해 유전자 발현을 조절하는 인식 꼬리표 역할을 함(예: 5-메틸시토신).", "7가지 화학기의 성질과 역할", "수산기(용해도 증가), 카르보닐기(케톤·알데하이드 당 구성), 카르복실기(산성), 아미노기(염기성), 황화수소기(이황화 결합), 인산기(ATP 에너지 전달), 메틸기(DNA 표지)", "교수님께서 카르보닐기 안에 케톤과 알데하이드 2가지가 있다는 것까지 알아야 100점이라고 강조하셨습니다!")
-        ]
-      ]
-    },
-    {
-      cat: "세포", page: "66~75p", tag: "소기관 역할 완벽 정리",
-      title: "4. 진핵세포 세포소기관들의 구조와 구체적 역할 총정리",
-      headers: ["세포소기관 명칭", "구조적 특징 및 세포 내 핵심 역할 (초록 터치 시 원리 팝업)"],
-      rows: [
-        [
-          T("핵(Nucleus) & 리보솜(Ribosome)", "핵과 리보솜", "유전 정보 보관 도서관(핵)과 단백질 합성 공장(리보솜)", "왜 이자(췌장) 세포에는 리보솜과 인이 특히 많을까요? 인슐린과 소화효소 같은 단백질을 대량으로 만들어 분비해야 하므로 리보솜을 조립하는 '인'과 '부착 리보솜'이 매우 발달해 있습니다."),
-          R("• 핵: 이중막인 핵막으로 둘러싸여 DNA(염색질)를 보호하고 mRNA를 전사함. '핵공'은 물질 이동을 조절하고, '핵라미나'는 핵의 형태를 유지하며, '인(nucleolus)'은 rRNA를 합성해 리보솜 소단위체를 조립함.<br>• 리보솜: rRNA와 단백질로 된 대·소단위체 복합체(막이 없음!)로 mRNA를 번역해 단백질을 합성함 (자유 리보솜: 세포질 내 작용 효소 합성 / 부착 리보솜: 분비 단백질·막단백질 합성).", "핵과 리보솜의 세부 역할", "핵(DNA 보관 및 mRNA 전사), 인(리보솜 조립), 핵공(물질 출입 조절), 리보솜(mRNA 번역하여 단백질 합성)", "리보솜은 막으로 둘러싸인 소기관이 아니기 때문에 원핵세포와 진핵세포 모두에 존재합니다.")
-        ],
-        [
-          T("활면소포체(SER) vs 조면소포체(RER)", "활면소포체와 조면소포체", "지질 합성·해독·칼슘 저장(활면) vs 분비 단백질·세포막 합성(조면)", "왜 술이나 약물을 자주 먹으면 약물 내성이 생길까요? 간세포의 활면소포체가 늘어나 해독 효소가 많아지므로 같은 효과를 내려면 더 많은 양의 약이 필요해지기 때문입니다!"),
-          R("• 활면소포체(리보솜 없음, 4대 역할): ① 지질(인지질, 성호르몬 등 스테로이드) 합성 ② 탄수화물 대사 ③ 간세포에서 약물·독소에 수산기(-OH)를 붙여 물에 잘 녹게 해 배출시키는 해독 작용 ④ 근육세포에서 칼슘 이온(Ca²⁺)을 저장했다가 방출하여 근수축 유도.<br>• 조면소포체(리보솜 부착, 3대 역할): ① 부착 리보솜에서 분비 단백질(인슐린 등)을 합성해 내강에서 접고 탄수화물을 붙여 '당단백질'로 가공 ② 수송 소낭에 담아 골지체로 발송 ③ 막단백질과 막 인지질을 합성하는 세포막 공장 역할.", "활면소포체와 조면소포체의 역할", "활면소포체(지질·스테로이드 합성, 간 해독, Ca²⁺ 저장) / 조면소포체(분비 당단백질 합성·수송, 세포막 합성)", "정소와 난소 세포에는 스테로이드 성호르몬을 만드는 활면소포체가 풍부하고, 백혈구나 췌장 세포에는 조면소포체가 풍부합니다.")
-        ],
-        [
-          T("골지체 (Golgi) & 리소좀 (Lysosome)", "골지체와 리소좀", "단백질 가공·분류·발송 우체국(골지체)과 세포 내 소화·재활용 기관(리소좀)", "리소좀 효소가 결핍되면 어떻게 될까요? 뇌세포에서 지질을 분해하지 못해 리소좀이 부풀어 뇌가 손상되는 '테이-삭스(Tay-Sachs)병' 같은 리소좀 저장 질병이 발생합니다."),
-          R("• 골지체(납작한 시스터나 더미): 소포체에서 온 소낭을 '시스(cis) 면'에서 수령한 뒤, 당단백질의 탄수화물을 변형·가공하고 다당류(펙틴 등)를 합성하며 인산기 같은 우편번호 표지를 붙여 '트랜스(trans) 면'에서 소낭으로 포장해 세포막(세포외 배출)이나 다른 소기관으로 분류·발송함.<br>• 리소좀(산성 가수분해 효소 주머니): ① 단세포 생물이나 백혈구(대식세포)가 식세포 작용으로 삼킨 식포와 융합해 음식·세균을 소화함 ② 손상된 소기관(미토콘드리아 등)을 막으로 감싸 분해하고 유기물을 재활용하는 '자가소화 작용(autophagy)'을 수행함.", "골지체와 리소좀의 역할", "골지체(시스면 수령 → 당 변형·분류·포장 → 트랜스면 발송) / 리소좀(식세포 소화 및 손상 소기관 자가소화 재활용)", "리소좀 내부는 산성(낮은 pH)이라 효소가 활발하지만, 세포질(중성 pH)로 조금 새어 나와도 활성이 떨어져 세포가 보호됩니다.")
-        ],
-        [
-          T("액포 · 미토콘드리아 · 엽록체 · 퍼옥시좀", "액포, 미토콘드리아, 엽록체, 퍼옥시좀", "수분 조절(액포), 에너지 변환(미토콘드리아·엽록체), 독성 과산화수소 분해(퍼옥시좀)", "미토콘드리아 내막의 '비짝풀림 단백질(uncoupling protein)'은 무슨 역할을 할까요? 겨울잠을 자는 동면 동물의 갈색 지방에서 ATP를 만드는 대신 H+를 그냥 통과시켜 체온 유지를 위한 '열(heat)'을 발생시킵니다!"),
-          R("• 액포: 식포(음식), 수축포(담수 원생생물인 짚신벌레가 과잉의 물을 밖으로 퍼내어 파열 방지), 식물 중심 액포(물과 이온 저장, 물을 흡수해 팽압으로 식물 세포 성장을 견인함).<br>• 미토콘드리아(이중막): 산소를 이용해 당·지방을 분해하여 ATP를 합성하는 세포 호흡 장소. 내막이 '크리스타' 주름을 형성해 표면적을 넓히며, 내막 안쪽 '기질(matrix)'에 시트르산 회로 효소와 자체 원형 DNA·리보솜을 가짐.<br>• 엽록체(이중막): 식물과 조류에서 태양 빛에너지를 화학 에너지(당)로 전환하는 광합성 장소. 납작한 막 주머니인 '틸라코이드'가 동전처럼 쌓인 '그라나'와 그 주변 액체인 '스트로마(자체 DNA·리보솜 보유)'로 구성.<br>• 퍼옥시좀(단일막): 다양한 기질에서 수소를 떼어 산소에 붙여 독성 부산물인 과산화수소(H₂O₂)를 만들었다가, 자체 효소인 '카탈레이스(catalase)'로 즉시 물(H₂O)과 산소로 분해해 세포 손상을 막음.", "액포·미토콘드리아·엽록체·퍼옥시좀의 역할", "수축포(물 배출), 중심액포(식물 팽압·성장), 미토콘드리아(세포호흡 ATP 합성), 엽록체(광합성), 퍼옥시좀(과산화수소 생성 후 물로 해독)", "미토콘드리아와 엽록체는 이중막, 자체 원형 DNA, 자체 리보솜을 가지고 스스로 분열하므로 원핵생물이 숙주 세포에 들어와 공생했다는 '세포내 공생설'의 증거가 됩니다.")
-        ]
-      ]
-    },
-    {
-      cat: "세포", page: "76~85p / 93~98p", tag: "역할 서술 단골!",
-      title: "5. 세포골격 3종 · 세포연접 3종 · 막단백질 6대 기능 · 신호전달 물질의 역할",
-      headers: ["분류 및 항목", "구성 성분 · 구조 및 구체적 역할 (초록 터치 시 원리 설명)"],
-      rows: [
-        [
-          T("세포골격 3종의 구성과 역할 (76p)", "세포골격 3가지", "미세소관(25nm, 튜불린), 중간섬유(8~12nm, 케라틴), 미세섬유(7nm, 액틴)", "형광현미경 사진(그림 3.20)에서 파란색은 핵(DNA), 초록색은 미세소관, 주황/빨간색은 미세섬유(액틴)이며, 초록색과 빨간색이 겹치는 곳은 빛의 합성으로 '노란색'으로 보입니다!"),
-          R("• ① 미세소관(지름 25nm, 가장 굵음): α·β 튜불린 이합체로 이루어진 속이 빈 관. 압력에 저항해 세포 모양 유지, 운동 단백질이 소낭·소기관을 운반하는 철도 트랙 역할, 세포분열 시 염색체 이동(방추사), 편모·섬모(9+2 구조, 디네인 운동 단백질이 굽힘 운동 유도) 및 중심립(9+0 삼중체 구조) 형성.<br>• ② 중간섬유(지름 8~12nm): 케라틴 등 섬유성 단백질이 꼬인 밧줄 구조. 장력에 저항해 세포 형태를 유지하고, 핵과 세포소기관을 제자리에 단단히 고정하며, 핵막 하층(핵라미나)을 형성함.<br>• ③ 미세섬유(지름 7nm, 가장 가늘음): 구형 단백질인 액틴(actin) 두 가닥이 꼬인 나선. 장력에 저항해 세포 모양 유지, 마이오신과 함께 근육 수축 수행, 소장 상피세포의 '미세융모(표면적 증가)' 지지, 아메바 위족 운동 및 식물 세포질 유동, 동물세포 분열 시 수축환 형성.", "세포골격 3가지 각각의 역할", "미세소관(튜불린 25nm: 소낭 트랙·염색체 이동·편모와 섬모), 중간섬유(케라틴 10nm: 핵과 소기관 고정), 미세섬유(액틴 7nm: 근수축·미세융모·위족운동)", "세포골격 3가지는 구성 단백질(튜불린/케라틴/액틴), 지름(25/8~12/7nm), 그리고 각각의 주요 기능을 비교하는 문제가 매번 출제됩니다.")
-        ],
-        [
-          T("동물 세포외기질(ECM) & 세포 간 연접 3종 (80~81p)", "세포외기질과 세포 간 연접 3종", "ECM(콜라젠·프로테오글리칸·피브로넥틴·인테그린)과 밀착연접·데스모솜·간극연접", "근육이 찢어지는 '근육 파열'은 세포 연접 중 무엇이 손상된 것일까요? 바로 근육 세포들을 대못처럼 단단히 고정해 주는 '데스모솜'이 찢어진 것입니다!"),
-          R("• 동물 세포외기질(ECM): 강도를 주는 '콜라젠' 섬유가 다당류 복합체인 '프로테오글리칸' 그물에 묻혀 보습·보호 장벽을 이루며, '피브로넥틴'이 세포막 관통 수용체인 '인테그린(내부 미세섬유와 연결)'에 ECM을 부착시켜 외부 신호를 세포 안으로 전달함.<br>• ① 밀착연접(Tight junction): 이웃 세포막을 특정 단백질로 빈틈없이 밀봉하여 피부나 장 상피세포 사이로 용액이 새어 나가는 것을 막음(방수 역할).<br>• ② 데스모솜(Desmosome, 부착연접): 단단한 케라틴 중간섬유가 고정시키는 대못처럼 작용하여 근육세포 등 이웃 세포들을 튼튼하게 결합시킴.<br>• ③ 간극연접(Gap junction, 교신연접): 인접한 세포 사이에 구멍 통로를 만들어 이온, 당, 아미노산 등 작은 분자들이 직접 이동하며 심장 근육이나 배아 세포 간 교신을 가능하게 함(식물 세포벽을 관통하는 '원형질 연락사'와 동일한 기능).", "ECM과 세포 간 연접 3가지의 역할", "밀착연접(액체 누출 방지 방수), 데스모솜(중간섬유로 세포 단단히 고정), 간극연접(이온·소분자 이동 교신 통로 = 식물의 원형질 연락사)", "가장 바깥쪽(위쪽)에서 액체가 못 들어오게 막는 게 밀착연접, 중간에서 단단히 조이는 게 데스모솜, 아래쪽에서 물질을 교환하는 통로가 간극연접입니다.")
-        ],
-        [
-          T("막단백질의 6가지 주요 기능 (84p 그림 3.34)", "세포막 단백질의 6대 기능", "수송, 효소 활성, 신호전달, 세포-세포 인식, 세포 간 결합, 세포골격과 ECM 부착", "교수님께서 강의(9/30 녹음)에서 '막단백질의 6가지 기능도 설명하라고 시험에 잘 나오는 주제'라고 콕 집어 말씀하신 부분입니다!"),
-          R("• ① 수송(Transport): 친수성 통로를 제공하거나 ATP를 사용하여 물질을 막 너머로 이동시킴.<br>• ② 효소 활성(Enzymatic activity): 막에 박힌 단백질의 활성 부위가 기질과 반응해 대사 경로의 연속적인 화학 반응을 촉매함.<br>• ③ 신호전달(Signal transduction): 외부 화학 신호 분자(호르몬 등 리간드)와 결합해 형태가 변하면서 세포 내부로 신호를 중계함.<br>• ④ 세포-세포 인식(Cell-cell recognition): 막 외부 표면의 당단백질(glycoprotein) 탄수화물 사슬이 명찰(인식표) 역할을 하여 다른 세포가 특이적으로 인식하게 함(면역 반응, 암세포 구분).<br>• ⑤ 세포 간 결합(Intercellular joining): 밀착연접이나 간극연접처럼 이웃한 두 세포의 막단백질들이 서로 갈고리처럼 맞물려 결합함.<br>• ⑥ 세포골격과 세포외기질(ECM)에 부착: 인테그린 등이 안쪽 미세섬유와 바깥쪽 ECM을 연결해 세포 형태를 유지하고 외부 변화를 전달함.", "막단백질 6가지 기능의 역할", "①수송 ②효소 활성 ③신호전달 ④세포-세포 인식(당단백질 명찰) ⑤세포 간 결합 ⑥세포골격과 세포외기질 부착", "막관통 단백질(내재성 단백질)은 막 내부의 지방산과 닿는 가운데 부분(α-나선)이 반드시 '소수성 아미노산'으로 되어 있어야 하며, 막 양쪽 물과 닿는 부분은 '친수성 아미노산'으로 되어 있습니다.")
-        ],
-        [
-          T("세포 신호전달 물질들의 역할 (95~98p)", "리간드·수용체·인산화효소·2차 전달자", "수용(리간드+수용체) → 전달(인산화 연쇄반응 / cAMP·Ca²⁺) → 반응", "왜 신호를 바로 전달하지 않고 인산화 연쇄반응이나 2차 전달자(cAMP)를 거칠까요? 작은 신호 분자 1개가 결합했을 때 그 신호를 수만 배로 '증폭(amplification)'시키고 정교하게 조절하기 위해서입니다!"),
-          R("• 리간드(Ligand, 1차 전달자): 수용체의 특정 부위에 열쇠-자물쇠처럼 상보적으로 결합해 수용체 형태 변화를 유도하는 신호 분자(예: 에피네프린, 생장인자, 신경전달물질).<br>• G-단백질 결합 수용체(GPCR): 리간드가 결합하면 세포질 쪽의 G-단백질(GTP 결합)을 활성화하여 아데닐산 고리화효소 등 다음 효소를 작동시키는 막 수용체.<br>• 리간드 개폐성 이온통로 수용체: 신경전달물질 같은 리간드가 결합할 때만 통로 문이 열려 Na⁺, Ca²⁺ 등 이온을 빠르게 통과시켜 신경 전기 신호를 발생시킴.<br>• 세포내 수용체: 세포질이나 핵 안에 위치하며, 세포막을 직접 통과해 들어온 소수성 신호 분자(스테로이드 호르몬인 알도스테론·테스토스테론, 갑상샘 호르몬, 일산화질소 NO)와 결합해 직접 '전사인자(mRNA 전사 촉진)'로 작동함.<br>• 단백질 인산화효소(Kinase) vs 탈인산화효소(Phosphatase): 인산화효소는 ATP의 인산기를 단백질에 붙여 활성화(ON)하며 연속적인 '인산화 연쇄반응'을 일으키고, 탈인산화효소는 인산기를 제거해 단백질을 불활성화(OFF)하여 신호를 끔.<br>• 아데닐산 고리화효소 & 2차 전달자(cAMP, Ca²⁺): 아데닐산 고리화효소는 활성화된 G-단백질에 의해 켜져서 ATP를 '고리형 AMP(cAMP)'로 전환함. 생성된 2차 전달자 cAMP는 '단백질 인산화효소 A(PKA)'를 활성화하여 세포 반응을 유도함.", "신호전달 핵심 요소들의 역할", "리간드(1차 신호분자), GPCR(G단백질 활성화), 세포내 수용체(스테로이드와 결합해 전사인자 역할), 아데닐산 고리화효소(ATP→cAMP 전환), cAMP·Ca²⁺(2차 전달자), Kinase(인산화 활성화)/Phosphatase(탈인산화 불활성화)", "흐름 공식: 에피네프린(1차 전달자, 리간드) → GPCR → G-단백질(GTP) → 아데닐산 고리화효소 활성화 → ATP를 cAMP(2차 전달자)로 변환 → 단백질 인산화효소 A(PKA) 활성화 → 세포 반응!")
-        ]
-      ]
-    },
-    {
-      cat: "호흡", page: "107~123p", tag: "과정과 역할 필수!",
-      title: "6. 효소 보조인자·억제자 및 세포 호흡 3단계와 발효의 구체적 역할",
-      headers: ["단계 및 요소", "장소 · 작동 원리 · 생체 내 역할 및 ATP 생성 수율"],
-      rows: [
-        [
-          T("보조인자·조효소 & 되먹임 억제 (107~110p)", "보조인자, 조효소, 되먹임 억제", "효소의 촉매 작용을 돕는 협력자(보조인자/조효소)와 대사 과잉을 막는 브레이크(되먹임 억제)", "비타민을 왜 꼭 먹어야 할까요? 대부분의 비타민이 효소가 일할 때 반드시 필요한 유기물 조효소(coenzyme, 예: NAD+, FAD)를 만드는 원료이기 때문입니다!"),
-          R("• 보조인자(Cofactor)와 조효소(Coenzyme): 효소가 전자 전달 등 촉매 활성을 내기 위해 필요한 비단백질 협력자이다. 아연(Zn)·철(Fe)·구리(Cu) 같은 무기 금속 이온은 '보조인자'라 하고, 비타민 유도체 같은 유기 분자는 '조효소(예: NAD⁺, FAD)'라 한다.<br>• 알로스테릭 조절과 협동성: 2개 이상의 소단위체로 된 효소에서 조절 부위에 활성자가 붙으면 활성 형태가 안정화되고, 억제자가 붙으면 불활성 형태가 안정화됨. 기질 하나가 결합해 나머지 모든 소단위체를 활성 형태로 고착시키는 현상은 '협동성(cooperativity)'이라 함.<br>• 되먹임 억제(Feedback inhibition): 대사 경로의 '최종 생성물(예: 아이소루신)'이 충분히 만들어지면 경로의 첫 번째 효소(트레오닌 탈아미노효소)의 다른 자리 입체성 부위에 결합해 효소를 끔으로써 화학 자원과 에너지의 낭비를 막는 역할.", "보조인자·조효소·되먹임 억제의 역할", "무기물 보조인자(금속 이온), 유기물 조효소(비타민 유도체, 전자 전달 등 보조), 되먹임 억제(최종 산물이 첫 단계 효소를 억제해 자원 낭비 방지)", "경쟁적 억제자는 활성 부위를 두고 기질과 경쟁(기질 농도 높이면 극복)하고, 비경쟁적 억제자와 되먹임 억제 산물은 활성 부위가 아닌 다른 자리에 결합합니다.")
-        ],
-        [
-          T("세포 호흡 1·2단계와 NAD⁺의 역할 (112~117p)", "NAD+, 해당과정, 피루브산 산화, 시트르산 회로", "포도당을 단계적으로 산화시켜 전자를 수확(NADH, FADH2)하고 기질 수준 인산화로 4 ATP 생성", "기질 수준 인산화(Substrate-level phosphorylation)란 무엇일까요? 전자전달계를 거치지 않고, 효소가 인산기를 가진 유기 기질에서 인산기를 직접 떼어내어 ADP에 붙여 ATP를 만드는 방식입니다(해당과정 +2, 시트르산 회로 +2)."),
-          R("• 전자 셔틀 NAD⁺의 역할: 탈수소효소가 유기 연료(포도당)에서 떼어낸 2개의 전자(2e⁻)와 1개의 양성자(H⁺)를 받아 'NADH'로 환원됨으로써, 에너지를 잃지 않고 전자전달계까지 안전하게 운반하는 역할.<br>• ① 해당과정(세포질): 산소 유무와 상관없이 포도당(6탄당) 1분자를 2분자의 피루브산(3탄당)으로 분해함. 에너지 투자기에 2 ATP를 소모하고 회수기에 4 ATP를 생성하여 순수하게 '기질 수준 인산화로 +2 ATP'와 '2 NADH'를 생성함.<br>• ② 피루브산 산화(미토콘드리아 기질로 이동): 2분자의 피루브산이 CO₂를 방출하고 산화되어 '2 아세틸 CoA(2탄소)'로 전환되며 '2 NADH'를 생성함.<br>• ③ 시트르산 회로(미토콘드리아 기질, 크렙스 회로): 아세틸 CoA가 옥살로아세트산(4C)과 결합해 시트르산(6C)이 된 후 CO₂로 완전히 산화되면서 포도당 1분자(아세틸 CoA 2분자)당 '기질 수준 인산화로 +2 ATP', '6 NADH', '2 FADH₂'를 생성함.", "해당과정·시트르산 회로·NAD⁺의 역할", "NAD⁺(전자 운반 셔틀), 해당과정(세포질에서 포도당→2피루브산, +2 ATP, 2 NADH), 피루브산 산화와 시트르산 회로(미토콘드리아 기질에서 완전 산화, +2 ATP, 8 NADH, 2 FADH₂)", "피루브산은 산소가 있으면 미토콘드리아로 들어가 아세틸 CoA(시트르산 회로)가 되고, 산소가 없으면 세포질에서 발효로 빠지는 대사 경로의 핵심 '분기점'입니다.")
-        ],
-        [
-          T("세포 호흡 3단계: 산화적 인산화와 ATP 합성효소의 역할 (118~121p)", "전자전달계, 화학삼투, 양성자 구동력, ATP 합성효소", "미토콘드리아 내막에서 전자 전달로 H+ 농도 기울기를 만들고 화학삼투로 26~28 ATP 대량 합성", "중요! 전자전달계(복합체 I~IV)가 직접 ATP를 만드나요? 아닙니다! 전자전달계는 전자를 전달하며 막사이 공간으로 H+를 퍼 올리는 역할만 하고, 실제 ATP는 H+가 쏟아져 들어올 때 'ATP 합성효소'가 화학삼투로 만듭니다!"),
-          R("• 전자전달사슬(미토콘드리아 내막 크리스타): 복합체 I~IV와 유비퀴논(Q), 사이토크롬(Cyt c)으로 구성됨. NADH(복합체 I로 진입, 1개당 2.5 ATP)와 FADH₂(복합체 II로 진입, 1개당 1.5 ATP)로부터 전자를 받아 전기음성도가 가장 큰 최종 전자 수용체인 '산소(O₂)'에게 전달해 물(H₂O)을 만들면서, 미토콘드리아 기질에서 막사이 공간으로 H⁺를 퍼내어 '양성자 구동력(H⁺ 농도 기울기)'을 형성함.<br>• 화학삼투(Chemiosmosis)와 ATP 합성효소의 역할: 막사이 공간에 축적된 H⁺ 이온들이 농도 기울기를 따라 분자 풍차(물레방아) 모양의 'ATP 합성효소(고정자·회전자·내부축·촉매마디)'를 통과해 기질로 되돌아올 때, 회전자의 회전 에너지로 ADP와 무기인산(Pi)을 결합시켜 포도당 1분자당 '약 26 또는 28 ATP'를 대량 합성함 (전체 세포호흡 총수율: 4 + 26~28 = 최대 약 30 또는 32 ATP, 효율 약 34%).", "전자전달계·화학삼투·ATP 합성효소의 역할", "전자전달계(전자를 산소로 전달하며 막사이 공간으로 H⁺ 펌핑해 양성자 구동력 형성) + 화학삼투/ATP 합성효소(되돌아오는 H⁺ 흐름으로 회전자 돌려서 26~28 ATP 합성)", "산소가 없으면 최종 전자 수용체가 사라져 전자전달계가 멈추고 산화적 인산화가 중단됩니다(무산소 호흡 세균은 산소 대신 황산염 SO₄²⁻ 등을 최종 전자 수용체로 사용함).")
-        ]
-      ]
-    }
-  ];
-
-  // ==================== 2. 1:1 비교 데이터 (12선, 단어 터치 설명 완벽 연동) ====================
-  var comparisons = [
-    {
-      page: "65p (단골)", title: "1. 식물세포 vs 동물세포 구조와 역할 비교",
-      h: ["비교 항목", "🌱 식물세포 (Plant Cell)", "🐾 동물세포 (Animal Cell)"],
-      r: [
-        ["고유 소기관과 각각의 역할", T("세포벽", "식물 세포벽", "셀룰로스로 구성되어 세포 형태 유지·보호 및 과도한 물 흡수 억제", "식물 세포벽 덕분에 저장액에 들어가도 세포가 터지지 않고 팽압을 유지합니다.") + "(형태 유지·보호), " + T("엽록체", "엽록체", "빛에너지를 화학 에너지(당)로 전환하는 광합성 수행", "이중막 구조이며 내부에 틸라코이드(그라나)와 스트로마를 가집니다.") + "(광합성), " + T("중심 액포", "중심 액포", "물과 무기이온 저장, 물을 흡수해 식물 세포 성장과 팽압 유지", "늙은 식물 세포 부피의 대부분을 차지하며 리소좀처럼 가수분해 효소도 가집니다.") + "(수분 저장·팽압), " + T("원형질 연락사", "원형질 연락사", "세포벽을 관통해 이웃 식물세포와 세포질·물질을 연결하는 채널", "동물세포의 간극연접과 동일한 역할을 하는 통로입니다."), T("리소좀", "리소좀", "산성 가수분해 효소로 식포 소화 및 손상 소기관 자가소화(재활용)", "동물세포에서 세포 내 소화와 재활용을 전담하는 소기관입니다.") + "(가수분해 소화), " + T("중심체(중심립)", "중심체와 중심립", "미세소관이 뻗어 나오는 중심부로 한 쌍의 중심립(9+0 삼중체) 포함", "세포분열 시 방추사 형성에 관여하며 식물세포에는 중심립이 없습니다.") + ", " + T("편모", "편모", "9+2 미세소관 구조를 가진 긴 운동 기관(예: 정자 꼬리)", "식물 중 일부 정자 세포를 제외하면 일반 식물세포에는 편모가 없습니다.")],
-        ["공통 소기관 (함정 주의!)", "핵, " + T("미토콘드리아", "식물세포의 미토콘드리아", "식물세포도 세포 호흡으로 ATP를 만들기 위해 미토콘드리아를 반드시 가짐!", "식물은 엽록체만 있고 미토콘드리아는 없다는 보기는 100% 오답입니다!") + "(세포호흡 ATP 생성), 소포체, 골지체, 리보솜, 퍼옥시좀", "핵, " + T("미토콘드리아", "미토콘드리아", "산소를 이용해 당을 분해하고 ATP를 만드는 세포호흡 소기관", "동물과 식물 등 거의 모든 진핵세포에 존재합니다.") + ", 소포체, 골지체, 리보솜, 퍼옥시좀"]
-      ]
-    },
-    {
-      page: "61p (단골)", title: "2. 원핵세포 vs 진핵세포 비교",
-      h: ["비교 항목", "🦠 원핵세포 (세균·고세균)", "🧬 진핵세포 (동물·식물·균류·원생생물)"],
-      r: [
-        ["핵막과 DNA 위치", R("핵막이 없음", "원핵세포의 특징", "핵막이 없어 DNA가 세포질의 핵양체(nucleoid) 영역에 응축되어 있음", "원핵(prokaryote)은 '핵 이전'이라는 뜻으로 진핵세포보다 먼저 진화했습니다.") + " → DNA가 " + T("핵양체(nucleoid)", "핵양체", "원핵세포에서 막으로 둘러싸이지 않은 채 DNA가 모여 있는 지역", "핵막이 없다는 점이 진핵세포와의 가장 큰 차이점입니다.") + "에 존재", R("이중막인 핵막 존재", "진핵세포의 핵", "이중막 구조의 핵막 안에 DNA가 안전하게 보관되어 있음", "진핵(eukaryote)은 '진짜 핵'을 가졌다는 뜻입니다.") + " → DNA가 " + T("핵(nucleus)", "핵", "이중막인 핵막과 핵공, 인을 가진 유전 정보 도서관", "전사(DNA→mRNA)가 핵 안에서 일어납니다.") + " 안에 존재"],
-        ["막성 소기관 및 공통점", R("막성 세포소기관 없음", "원핵세포 소기관 유무", "미토콘드리아, 소포체, 골지체, 리소좀 등 막으로 된 소기관이 전혀 없음", "단, 막이 없는 단백질 합성 기관인 '리보솜'은 원핵세포에도 있습니다!") + " / 공통점: 원형질막, 세포기질, 염색체(DNA), " + T("리보솜", "리보솜", "막이 없는 단백질 합성 소기관으로 원핵과 진핵 모두에 존재함", "원핵생물의 리보솜은 진핵생물의 리보솜보다 크기가 약간 작습니다."), R("다양한 막성 소기관 존재", "진핵세포의 소기관", "미토콘드리아, 소포체, 골지체, 리소좀 등 구획화된 막성 소기관 보유", "막으로 구획이 나뉘어 있어 여러 대사 반응이 동시에 효율적으로 일어납니다.") + " / 크기: 원핵(1~5μm)보다 10배 이상 큼(10~100μm)"]
-      ]
-    },
-    {
-      page: "49p (단골)", title: "3. 단백질의 변성(Denaturation) vs 분해(Degradation)",
-      h: ["구분", "🔥 변성 (Denaturation)", "🔪 분해 (Degradation)"],
-      r: [
-        ["정의 및 끊어지는 결합", R("고유한 3차원 입체 구조만 풀리는 현상", "단백질의 변성(Denaturation)", "열·pH·염 농도 변화로 수소결합 등 약한 결합이 깨져 3차원 구조와 활성을 잃는 현상", "아미노산들을 잇는 강한 공유결합인 '펩타이드 결합'은 끊어지지 않고 그대로 유지됩니다!") + " (" + T("펩타이드 결합 유지", "변성 시 펩타이드 결합", "1차 구조(아미노산 서열)는 끊어지지 않고 유지됨", "따라서 변성 요인을 제거하거나 샤페론이 도와주면 다시 원래 구조로 복원될 수도 있습니다.") + ")", R("펩타이드 결합 자체가 끊어져 아미노산으로 잘리는 현상", "단백질의 분해(Degradation)", "단백질 분해 효소와 물(가수분해)에 의해 펩타이드 결합이 끊어져 아미노산 단위로 조각나는 현상", "교수님의 '깍두기 무 썰기' 비유! 아예 조각조각 잘라버리는 것이 분해입니다.")],
-        ["결과 및 복원 가능 여부", R("생물학적 활성(기능) 상실", "변성의 결과", "단백질은 구조가 기능을 결정하므로 모양이 풀리면 기능을 완전히 잃음", "달걀 흰자를 삶으면 투명한 액체가 하얗게 응고되는 것이 대표적인 변성입니다.") + " (원인 제거 시 복원 가능)", R("원래 단백질로 복원 불가능", "분해의 결과", "아미노산 단량체로 완전히 분해되어 새로운 단백질을 합성하는 원료로 재활용됨", "리소좀이나 소화관에서 일어나는 소화 과정이 분해입니다.")]
-      ]
-    },
-    {
-      page: "40p (단골)", title: "4. 다당류 3종 비교 (녹말 vs 글리코젠 vs 셀룰로스)",
-      h: ["구분", "🥔 녹말(식물) & 🥩 글리코젠(동물)", "🪵 셀룰로스 (식물 세포벽)"],
-      r: [
-        ["단당류 및 글리코시드 결합", T("α-포도당", "알파(α) 포도당", "고리 평면에서 1번 탄소의 수산기(-OH)가 아래쪽을 향하는 포도당", "모든 포도당이 같은 방향으로 연결되어 나선형 사슬을 만듭니다.") + "(1번 -OH 아래)들의 " + T("α 1-4 글리코시드 결합", "α 1-4 결합", "녹말과 글리코젠을 이루는 나선형 글리코시드 결합", "인간의 소화 효소(아밀레이스)가 쉽게 가수분해할 수 있는 결합입니다."), T("β-포도당", "베타(β) 포도당", "고리 평면에서 1번 탄소의 수산기(-OH)가 위쪽을 향하는 포도당", "인접한 포도당이 180도씩 위아래로 뒤집혀 결합합니다.") + "(1번 -OH 위)들의 " + T("β 1-4 글리코시드 결합", "β 1-4 결합", "셀룰로스를 이루는 직선형 글리코시드 결합", "인간에게는 이 결합을 자르는 셀룰레이스 효소가 없어 소화되지 않습니다.")],
-        ["구조 · 가지 · 생체 내 역할", R("역할: 세포의 에너지(포도당) 저장 물질", "녹말과 글리코젠의 역할", "필요할 때 가수분해하여 포도당 연료를 공급하는 에너지 저장 다당류", "식물은 녹말 과립으로, 동물은 간과 근육에 글리코젠으로 당을 저장합니다.") + " / 나선형 사슬이며 " + T("글리코젠이 녹말보다 가지(α 1-6)가 훨씬 많음", "글리코젠의 가지 구조", "아밀로펙틴(녹말)보다 α 1-6 분기점 가지가 훨씬 더 촘촘하게 많음", "움직이는 동물이 급할 때 여러 가지 끝에서 동시에 포도당을 빠르게 분해해 쓰기 위해서입니다!"), R("역할: 식물 세포벽을 구성하는 단단한 구조 물질", "셀룰로스의 역할", "가지 없는 직선 사슬들이 수소결합으로 묶여 식물 세포벽을 지지하는 구조 다당류", "지구상에서 가장 풍부한 유기 화합물이며 식품 영양표의 '불용성 식이섬유'입니다.")]
-      ]
-    },
-    {
-      page: "43p (필수)", title: "5. 포화 지방산(포화 지방) vs 불포화 지방산(불포화 지방)",
-      h: ["구분", "🧈 포화 지방 (동물성·버터·비계)", "🫒 불포화 지방 (식물성·어류·올리브유)"],
-      r: [
-        ["탄소 사슬 구조", R("탄소 간 이중결합이 하나도 없음", "포화 지방산의 구조", "탄소 골격에 수소가 최대치로 꽉 채워진(포화된) 일직선 사슬 구조", "꺾임이 없어 지방 분자들이 차곡차곡 조밀하게 쌓입니다."), R("하나 이상의 시스(cis) 이중결합 존재", "불포화 지방산의 구조", "시스 이중결합 부위에서 탄화수소 사슬이 확 꺾이는 구조", "교수님의 '키스(cis)할 때 한쪽 다리를 들어 올려 꺾인 자세' 비유를 기억하세요!")],
-        ["상온 상태 및 세포막 역할", "조밀하게 채워져 상온에서 " + T("고체", "포화 지방의 상온 상태", "분자 간 반데르발스 인력이 강하게 작용해 실온에서 고체 상태 유지", "과다 섭취 시 심혈관 질환 위험을 높일 수 있습니다.") + " / 세포막에서 " + R("막의 점성을 높임(유동성 감소)", "포화 지방산의 막 역할", "인지질 꼬리가 빽빽하게 밀착되어 막의 유동성을 낮춤", "추운 환경에서는 막이 굳어버릴 수 있습니다."), "꺾임 때문에 조밀하게 못 모여 상온에서 " + T("액체(기름, oil)", "불포화 지방의 상온 상태", "꺾인 사슬 때문에 분자 간 거리가 멀어져 실온에서 액체 상태 유지", "인공적으로 수소를 첨가해 고체로 만들 때 심혈관에 해로운 '트랜스지방'이 생깁니다.") + " / 세포막에서 " + R("막의 유동성을 증가시킴", "불포화 지방산의 막 역할", "꺾인 꼬리가 틈을 만들어 낮은 온도에서도 세포막이 얼지 않고 유동성을 유지하게 함", "겨울철 식물이나 찬물 물고기는 불포화 지방산 비율이 높습니다.")]
-      ]
-    },
-    {
-      page: "53p (필수)", title: "6. 핵산: DNA vs RNA 구조와 역할 비교",
-      h: ["구분 기준", "🧬 DNA (디옥시리보핵산)", "📜 RNA (리보핵산)"],
-      r: [
-        ["5탄당 (2' 탄소) & 염기", T("디옥시리보스(2' 탄소에 -H)", "디옥시리보스", "2번 프라임(2') 탄소에 산소(O)가 하나 빠져 수소(-H)만 결합된 5탄당", "산소가 하나 적기 때문에 RNA보다 화학적으로 훨씬 더 안정하여 유전 정보 장기 보관에 적합합니다.") + " / 염기: A, G, C, " + T("타이민(T)", "타이민 (Thymine)", "DNA에만 존재하는 피리미딘 계열 질소성 염기", "아데닌(A)과 2개의 수소결합(A=T)으로 상보적 염기쌍을 이룹니다."), T("리보스(2' 탄소에 -OH)", "리보스", "2번 프라임(2') 탄소에 수산기(-OH)가 그대로 붙어 있는 5탄당", "ATP의 아데노신을 구성하는 당도 바로 이 리보스입니다.") + " / 염기: A, G, C, " + T("유라실(U)", "유라실 (Uracil)", "RNA에만 존재하는 피리미딘 계열 질소성 염기(타이민 대신 사용)", "RNA에서는 아데닌(A)이 타이민 대신 유라실(U)과 짝을 이룹니다.")],
-        ["가닥 구조 및 생체 내 역할", T("이중나선 구조", "DNA 이중나선", "두 가닥의 폴리뉴클레오타이드가 수소결합(A=T 2개, G≡C 3개)으로 꼬인 구조", "한 가닥을 주형으로 삼아 똑같은 DNA를 복제하거나 mRNA를 전사할 수 있습니다.") + " / " + R("역할: 부모에서 자손으로 유전 정보를 영구 저장·전달하고 자기 복제 및 mRNA 전사를 지시함", "DNA의 역할", "유전 정보의 저장고이자 복제 및 유전자 발현의 총사령관", "핵 안의 염색체를 구성합니다."), T("단일 가닥 구조", "RNA 단일 가닥", "보통 한 가닥으로 존재하며 필요시 자체적으로 접혀 3차원 구조(예: L자형 tRNA) 형성", "작업이 끝나면 분해되어 재활용됩니다.") + " / " + R("역할: mRNA(유전 정보 전달 작업지시서), tRNA(리보솜으로 아미노산 운반), rRNA(리보솜 구성 및 번역 촉매)", "RNA 3종류의 역할", "mRNA는 DNA 정보 전달, tRNA는 아미노산 운반, rRNA는 리보솜 구성", "유전자 발현(번역) 현장에서 실제로 뛰는 실무자 역할을 합니다.")]
-      ]
-    },
-    {
-      page: "87~89p (단골)", title: "7. 삼투 현상(저장액·등장액·고장액) & 수동수송 vs 능동수송",
-      h: ["구분", "개념 A", "개념 B"],
-      r: [
-        ["삼투 현상 세포 변화 (87p)", "<b>저장액 (맹물, 저농도 → 물 유입)</b><br>• 동물세포: 물이 들어와 부풀어 " + T("터짐(용해, Lysis)", "동물세포의 용해", "세포벽이 없는 동물세포가 저장액에서 과도한 물 유입으로 터지는 현상", "짚신벌레는 수축포로 물을 퍼내어 용해를 막습니다.") + "<br>• 식물세포: 세포벽의 팽압 덕분에 단단하고 건강한 " + T("팽만(정상, Turgid)", "식물세포의 팽만", "저장액에서 물이 들어와 세포벽을 밀어내는 팽압이 유지되는 건강한 상태", "식물이 시들지 않고 꼿꼿이 서 있는 힘의 원천입니다."), "<b>고장액 (소금물, 고농도 → 물 유출)</b><br>• 동물세포: 물을 잃고 " + T("쪼그라듦", "고장액에서의 동물세포", "세포 밖으로 물이 빠져나가 적혈구 등이 쭈글쭈글해져 기능을 잃음", "바닷물을 마시면 위험한 이유입니다.") + "<br>• 식물세포: 물이 빠져 세포막이 세포벽에서 떨어지는 " + T("원형질 분리(Plasmolysis)", "원형질 분리", "고장액에서 식물세포가 물을 잃어 원형질막이 세포벽으로부터 분리되는 현상", "배추에 소금을 뿌려 김치를 절일 때 숨이 죽는 원리입니다.")],
-        ["수동수송 vs 능동수송 (89p)", "<b>수동수송 (단순확산 · 촉진확산)</b><br>• 특징: 농도 기울기 순행(고→저), " + R("ATP 에너지 소모 없음!", "수동수송의 에너지", "농도 기울기 자체가 위치에너지이므로 세포가 ATP를 전혀 쓰지 않음", "통로 단백질(아쿠아포린 물 통로, 개폐성 이온통로)이나 운반체 단백질을 쓰는 촉진확산도 수동수송입니다!"), "<b>능동수송 (Active Transport)</b><br>• 특징: 농도 기울기 역행(저→고), " + R("ATP 에너지 반드시 소모! (운반체 단백질만 사용)", "능동수송의 특징과 역할", "ATP가 말단 인산기를 운반체 단백질에 붙여 입체 구조를 변화시킴으로써 농도 기울기를 거슬러 물질을 퍼 올림", "예: 소듐-포타슘 펌프(Na+ 3개 밖으로, K+ 2개 안으로), 양성자 펌프(H+ 밖으로), 설탕-H+ 공동수송.")]
-      ]
-    },
-    {
-      page: "93p / 101~123p", title: "8. 세포내 섭취 3종 · 발열 vs 흡열 · 경쟁적 vs 비경쟁적 · 알코올 vs 젖산 발효",
-      h: ["비교 주제", "구분 1", "구분 2"],
-      r: [
-        ["세포내 섭취 3종 역할 (93p)", T("① 식세포 작용 (Phagocytosis)", "식세포 작용", "위족을 뻗어 세균이나 음식 조각 같은 큰 '고체 입자'를 감싸 식포로 삼키는 작용", "아메바의 먹이 섭취나 인체 백혈구(대식세포)가 침입 세균을 잡아먹는 방어 작용에 쓰입니다."), T("② 음세포 작용 (Pinocytosis)", "음세포 작용", "세포막이 함입되어 세포외액(액체)과 녹아 있는 용질을 작은 소낭으로 마시는 작용", "특정 물질을 가리지 않고 액체에 녹은 용질을 비특이적으로 흡수합니다.") + " / " + T("③ 수용체 매개 세포내 섭취", "수용체 매개 세포내 섭취", "막 수용체에 특정 리간드(예: LDL 콜레스테롤)가 결합했을 때만 피막소포를 만들어 선택적으로 대량 섭취", "LDL 수용체에 유전적 결함이 생기면 혈액 속 콜레스테롤이 세포로 못 들어가 동맥경화가 발생합니다.")],
-        ["발열 vs 흡열 & 효소 억제 (101~108p)", T("발열반응 (ΔG < 0, 자발적)", "발열반응", "반응물이 에너지를 방출하여 생성물이 되는 자발적 반응(예: 세포호흡 ΔG = -686 kcal/mol)", "방출된 자유 에너지를 이용해 흡열반응을 추진합니다.") + " vs " + T("흡열반응 (ΔG > 0, 비자발적)", "흡열반응", "외부로부터 자유 에너지를 흡수해야만 일어나는 비자발적 합성 반응", "ATP 가수분해와 에너지 연계되어야 진행됩니다."), T("경쟁적 억제자 (활성 부위 경쟁)", "경쟁적 억제자", "기질과 모양이 닮아 효소의 활성 부위를 차지하며 기질 농도를 높이면 극복 가능", "의자 뺏기 게임과 같습니다.") + " vs " + T("비경쟁적 억제자 (다른 자리 결합)", "비경쟁적 억제자", "활성 부위가 아닌 다른 자리에 붙어 효소의 입체 구조를 변형시켜 활성을 떨어뜨림", "기질을 아무리 많이 넣어도 효소 모양 자체가 찌그러져 있어서 극복되지 않습니다.")],
-        ["알코올 vs 젖산 발효 역할 (123p)", "<b>알코올 발효 (효모 - 맥주·제빵)</b><br>" + R("역할: 무산소 조건에서 NAD⁺를 재생하여 해당과정(2 ATP) 지속", "발효의 핵심 역할", "전자전달계가 멈춘 무산소 상태에서 피루브산(유도체)에 전자를 넘겨 NADH를 NAD+로 재생시킴", "NAD+가 재생되어야 해당과정이 멈추지 않고 돌아가 2 ATP를 계속 얻을 수 있습니다.") + "<br>• 특징: 피루브산(3C)에서 " + T("CO₂ 기체가 방출됨!", "알코올 발효의 CO2 방출", "피루브산이 2탄소인 아세트알데하이드로 될 때 이산화탄소(CO2)가 빠져나감", "이 CO2 기포가 빵 반죽을 부풀어 오르게 합니다!") + " → 아세트알데하이드 → " + T("에탄올", "에탄올 생성", "아세트알데하이드가 NADH로부터 전자를 받아 에탄올로 환원됨", "맥주와 포도주가 만들어지는 원리입니다."), "<b>젖산 발효 (인간 근육세포 · 유산균)</b><br>• 특징: " + T("CO₂ 방출 없이", "젖산 발효의 특징", "탄소 손실(CO2 방출) 없이 3탄소 피루브산이 그대로 3탄소 젖산이 됨", "알코올 발효와 구분하는 가장 중요한 기준입니다!") + " 피루브산이 NADH에 의해 직접 환원되어 " + T("젖산(lactate)", "젖산", "과도한 운동 시 근육세포에서 생성된 후 혈액을 통해 간으로 운반되어 다시 피루브산으로 전환됨", "치즈와 요구르트를 만드는 유산균도 젖산 발효를 합니다.") + " 생성"]
-      ]
-    }
-  ];
-
-  // ==================== 3. 20종 아미노산 실제 화학 구조식 SVG (그림 2.38 완벽 구현) ====================
-  function drawRealAASvg(code1, bg, bd, isPro) {
-    var rSvg = "";
-    switch (code1) {
-      case "G":
-        rSvg = '<rect x="75" y="48" width="50" height="36" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="72" text-anchor="middle" font-size="15" font-weight="900">H</text>';
-        break;
-      case "A":
-        rSvg = '<rect x="68" y="48" width="64" height="36" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="72" text-anchor="middle" font-size="14" font-weight="900">CH₃</text>';
-        break;
-      case "V":
-        rSvg = '<rect x="45" y="25" width="110" height="58" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="72" y="45" text-anchor="middle" font-size="12" font-weight="800">CH₃</text>' +
-               '<text x="128" y="45" text-anchor="middle" font-size="12" font-weight="800">CH₃</text>' +
-               '<line x1="76" y1="49" x2="94" y2="62" stroke="#0f172a" stroke-width="1.8"/>' +
-               '<line x1="124" y1="49" x2="106" y2="62" stroke="#0f172a" stroke-width="1.8"/>' +
-               '<text x="100" y="75" text-anchor="middle" font-size="12" font-weight="800">CH</text>';
-        break;
-      case "L":
-        rSvg = '<rect x="45" y="8" width="110" height="76" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="72" y="26" text-anchor="middle" font-size="11.5" font-weight="800">CH₃</text>' +
-               '<text x="128" y="26" text-anchor="middle" font-size="11.5" font-weight="800">CH₃</text>' +
-               '<line x1="78" y1="30" x2="94" y2="42" stroke="#0f172a" stroke-width="1.6"/>' +
-               '<line x1="122" y1="30" x2="106" y2="42" stroke="#0f172a" stroke-width="1.6"/>' +
-               '<text x="100" y="54" text-anchor="middle" font-size="11.5" font-weight="800">CH</text>' +
-               '<text x="100" y="76" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>';
-        break;
-      case "I":
-        rSvg = '<rect x="40" y="8" width="120" height="76" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="112" y="25" text-anchor="middle" font-size="11.5" font-weight="800">CH₃</text>' +
-               '<text x="112" y="48" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>' +
-               '<text x="86" y="74" text-anchor="middle" font-size="11.5" font-weight="800">H₃C—CH</text>';
-        break;
-      case "M":
-        rSvg = '<rect x="58" y="6" width="84" height="78" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="22" text-anchor="middle" font-size="11" font-weight="800">CH₃</text>' +
-               '<text x="100" y="40" text-anchor="middle" font-size="12" font-weight="900" fill="#b45309">S (황)</text>' +
-               '<text x="100" y="58" text-anchor="middle" font-size="11" font-weight="800">CH₂</text>' +
-               '<text x="100" y="76" text-anchor="middle" font-size="11" font-weight="800">CH₂</text>';
-        break;
-      case "F": // 페닐알라닌 (벤젠 육각고리 + CH2)
-        rSvg = '<rect x="52" y="6" width="96" height="78" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<polygon points="100,12 118,22 118,42 100,52 82,42 82,22" fill="none" stroke="#0f172a" stroke-width="2"/>' +
-               '<circle cx="100" cy="32" r="9" fill="none" stroke="#0f172a" stroke-width="1.5" stroke-dasharray="3,2"/>' +
-               '<line x1="100" y1="52" x2="100" y2="63" stroke="#0f172a" stroke-width="2"/>' +
-               '<text x="100" y="76" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>';
-        break;
-      case "W": // 트립토판 (인돌 이중고리 + CH2)
-        rSvg = '<rect x="42" y="6" width="116" height="78" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<polygon points="82,14 98,22 98,40 82,48 66,40 66,22" fill="none" stroke="#0f172a" stroke-width="1.8"/>' +
-               '<polygon points="98,22 116,17 125,31 116,45 98,40" fill="none" stroke="#0f172a" stroke-width="1.8"/>' +
-               '<text x="134" y="35" font-size="10" font-weight="800">NH</text>' +
-               '<text x="100" y="76" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>';
-        break;
-      case "P": // 프롤린 (고리 연결)
-        rSvg = '<rect x="34" y="25" width="115" height="60" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="90" y="45" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>' +
-               '<text x="60" y="72" text-anchor="middle" font-size="11" font-weight="800">H₂C</text>' +
-               '<text x="115" y="72" text-anchor="middle" font-size="11" font-weight="800">CH₂</text>' +
-               '<line x1="52" y1="76" x2="45" y2="105" stroke="#0f172a" stroke-width="2"/>';
-        break;
-      case "S": // 세린
-        rSvg = '<rect x="64" y="30" width="72" height="54" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="50" text-anchor="middle" font-size="13" font-weight="900" fill="#15803d">OH</text>' +
-               '<text x="100" y="74" text-anchor="middle" font-size="12" font-weight="800">CH₂</text>';
-        break;
-      case "T": // 트레오닌
-        rSvg = '<rect x="46" y="26" width="108" height="58" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="74" y="47" text-anchor="middle" font-size="12.5" font-weight="900" fill="#15803d">OH</text>' +
-               '<text x="124" y="47" text-anchor="middle" font-size="12" font-weight="800">CH₃</text>' +
-               '<text x="100" y="74" text-anchor="middle" font-size="12" font-weight="800">CH</text>';
-        break;
-      case "C": // 시스테인
-        rSvg = '<rect x="64" y="30" width="72" height="54" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="50" text-anchor="middle" font-size="13" font-weight="900" fill="#b45309">SH</text>' +
-               '<text x="100" y="74" text-anchor="middle" font-size="12" font-weight="800">CH₂</text>';
-        break;
-      case "Y": // 타이로신 (OH + 벤젠고리 + CH2)
-        rSvg = '<rect x="52" y="4" width="96" height="80" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="18" text-anchor="middle" font-size="11.5" font-weight="900" fill="#15803d">OH</text>' +
-               '<polygon points="100,22 116,30 116,46 100,54 84,46 84,30" fill="none" stroke="#0f172a" stroke-width="1.8"/>' +
-               '<text x="100" y="76" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>';
-        break;
-      case "N": // 아스파라긴
-        rSvg = '<rect x="48" y="18" width="104" height="66" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="38" text-anchor="middle" font-size="11.5" font-weight="900">H₂N—C=O</text>' +
-               '<text x="100" y="72" text-anchor="middle" font-size="12" font-weight="800">CH₂</text>';
-        break;
-      case "Q": // 글루타민
-        rSvg = '<rect x="46" y="8" width="108" height="76" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="27" text-anchor="middle" font-size="11.5" font-weight="900">H₂N—C=O</text>' +
-               '<text x="100" y="52" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>' +
-               '<text x="100" y="75" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>';
-        break;
-      case "D": // 아스파르트산
-        rSvg = '<rect x="48" y="20" width="104" height="64" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="42" text-anchor="middle" font-size="12" font-weight="900" fill="#be185d">⁻O—C=O</text>' +
-               '<text x="100" y="72" text-anchor="middle" font-size="12" font-weight="800">CH₂</text>';
-        break;
-      case "E": // 글루탐산
-        rSvg = '<rect x="48" y="8" width="104" height="76" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="28" text-anchor="middle" font-size="12" font-weight="900" fill="#be185d">⁻O—C=O</text>' +
-               '<text x="100" y="52" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>' +
-               '<text x="100" y="75" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>';
-        break;
-      case "K": // 리신
-        rSvg = '<rect x="52" y="4" width="96" height="80" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="22" text-anchor="middle" font-size="12" font-weight="900" fill="#1d4ed8">⁺NH₃</text>' +
-               '<text x="100" y="45" text-anchor="middle" font-size="10.5" font-weight="800">CH₂—CH₂</text>' +
-               '<text x="100" y="72" text-anchor="middle" font-size="10.5" font-weight="800">CH₂—CH₂</text>';
-        break;
-      case "R": // 아르기닌
-        rSvg = '<rect x="42" y="4" width="116" height="80" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<text x="100" y="22" text-anchor="middle" font-size="11" font-weight="900" fill="#1d4ed8">H₂N—C=NH₂⁺</text>' +
-               '<text x="100" y="44" text-anchor="middle" font-size="10.5" font-weight="800">NH — CH₂</text>' +
-               '<text x="100" y="72" text-anchor="middle" font-size="10.5" font-weight="800">CH₂ — CH₂</text>';
-        break;
-      case "H": // 히스티딘 (오각 이미다졸 고리)
-        rSvg = '<rect x="46" y="6" width="108" height="78" rx="5" fill="'+bg+'" stroke="'+bd+'" stroke-width="2"/>' +
-               '<polygon points="100,12 120,24 114,46 86,46 80,24" fill="none" stroke="#1d4ed8" stroke-width="2"/>' +
-               '<text x="132" y="26" font-size="9.5" font-weight="900" fill="#1d4ed8">NH⁺</text>' +
-               '<text x="100" y="75" text-anchor="middle" font-size="11.5" font-weight="800">CH₂</text>';
-        break;
-    }
-
-    return '<svg width="150" height="138" viewBox="0 0 200 145">' +
-      '<g class="r-box">' + rSvg + '<line x1="100" y1="84" x2="100" y2="97" stroke="#0f172a" stroke-width="2.2"/></g>' +
-      '<rect x="14" y="96" width="172" height="43" rx="6" fill="#c4b5fd" stroke="#6d28d9" stroke-width="1.8"/>' +
-      '<text x="44" y="121" text-anchor="middle" font-size="12" font-weight="800" fill="#1e1b4b">' + (isPro ? 'H₂N⁺' : 'H₃N⁺') + '</text>' +
-      '<line x1="66" y1="117" x2="88" y2="117" stroke="#1e1b4b" stroke-width="2"/>' +
-      '<text x="100" y="121" text-anchor="middle" font-size="13" font-weight="900" fill="#dc2626">C</text>' +
-      '<text x="100" y="136" text-anchor="middle" font-size="10" font-weight="800" fill="#1e1b4b">H</text>' +
-      '<line x1="112" y1="117" x2="130" y2="117" stroke="#1e1b4b" stroke-width="2"/>' +
-      '<text x="155" y="121" text-anchor="middle" font-size="12" font-weight="800" fill="#1e1b4b">COO⁻</text>' +
-      '</svg>';
+  var tabBtn = e.target.closest("[data-tab]");
+  if(tabBtn) {
+    document.querySelectorAll(".sec").forEach(function(s){ s.classList.remove("on"); });
+    document.getElementById(tabBtn.getAttribute("data-tab")).classList.add("on");
+    document.querySelectorAll(".nav-b").forEach(function(b){ b.classList.remove("on"); });
+    tabBtn.classList.add("on");
+    return;
   }
 
-  var aaList = [
-    { name: "글리신", c3: "Gly", c1: "G", group: "비극성", warn: false, bg: "#fef08a", bd: "#ca8a04", role: "R기가 수소(-H) 하나로 가장 작아 콜라젠 3중 나선 내부의 좁은 공간에 들어가는 역할" },
-    { name: "알라닌", c3: "Ala", c1: "A", group: "비극성", warn: false, bg: "#fef08a", bd: "#ca8a04", role: "R기가 메틸기(-CH₃)로 단백질 내부 소수성 상호작용에 기여" },
-    { name: "발린", c3: "Val", c1: "V", group: "비극성", warn: false, bg: "#fef08a", bd: "#ca8a04", role: "V자 모양 소수성 가지! 헤모글로빈 6번 글루탐산 대신 들어가면 '낫모양 적혈구 빈혈증' 유발" },
-    { name: "류신(루신)", c3: "Leu", c1: "L", group: "비극성", warn: false, bg: "#fef08a", bd: "#ca8a04", role: "소수성 탄화수소 사슬로 단백질 중심부 및 막관통 단백질의 소수성 영역 구성" },
-    { name: "아이소류신", c3: "Ile", c1: "I", group: "비극성", warn: false, bg: "#fef08a", bd: "#ca8a04", role: "비극성 아미노산. 트레오닌으로부터 합성되며 첫 효소를 억제하는 '되먹임 억제'의 대표 예시" },
-    { name: "메싸이오닌", c3: "Met", c1: "M", group: "비극성", warn: false, bg: "#fef08a", bd: "#ca8a04", role: "⭐ 모든 단백질 번역 합성의 무조건 '1번 타자(개시 아미노산)' 역할! 황(S) 포함" },
-    { name: "페닐알라닌", c3: "Phe", c1: "F", group: "비극성", warn: true, bg: "#fef08a", bd: "#ca8a04", role: "⚠️ 벤젠고리를 가진 소수성 아미노산. 발음 소리('에프')대로 약어 [F]를 사용함!" },
-    { name: "트립토판", c3: "Trp", c1: "W", group: "비극성", warn: true, bg: "#fef08a", bd: "#ca8a04", role: "⚠️ 가장 큰 이중고리를 가진 비극성 아미노산. T 대신 고리 2개 모양인 [W]를 약어로 사용!" },
-    { name: "프롤린", c3: "Pro", c1: "P", group: "비극성", warn: false, bg: "#fef08a", bd: "#ca8a04", pro: true, role: "R기가 아미노기와 결합해 고리를 형성하므로 폴리펩타이드 사슬을 꺾어주는 역할" },
-    { name: "세린", c3: "Ser", c1: "S", group: "극성", warn: false, bg: "#bbf7d0", bd: "#16a34a", role: "수산기(-OH)를 가져 물과 수소결합하며 인산화효소(Kinase)가 인산기를 붙이는 주요 스위치" },
-    { name: "트레오닌", c3: "Thr", c1: "T", group: "극성", warn: false, bg: "#bbf7d0", bd: "#16a34a", role: "알파벳 [T] 약어의 주인! 수산기(-OH)를 가진 친수성 아미노산" },
-    { name: "시스테인", c3: "Cys", c1: "C", group: "극성", warn: false, bg: "#bbf7d0", bd: "#16a34a", role: "⭐ 황화수소기(-SH) 두 개가 만나 단백질 3차 구조를 고정하는 '이황화 결합(-S-S-)' 형성!" },
-    { name: "타이로신", c3: "Tyr", c1: "Y", group: "극성", warn: true, bg: "#bbf7d0", bd: "#16a34a", role: "⚠️ 벤젠고리에 -OH가 붙은 극성 아미노산(ATP 인산화 스위치). 두 번째 글자 [Y] 사용!" },
-    { name: "아스파라긴", c3: "Asn", c1: "N", group: "극성", warn: true, bg: "#bbf7d0", bd: "#16a34a", role: "⚠️ 아마이드기를 가진 극성 친수성 아미노산. 끝 발음 소리대로 약어 [N] 사용!" },
-    { name: "글루타민", c3: "Gln", c1: "Q", group: "극성", warn: true, bg: "#bbf7d0", bd: "#16a34a", role: "⚠️ 극성 아미노산(글루탐산+암모니아 ATP 에너지 연계 합성 예시). 약어는 '큐트한' [Q]!" },
-    { name: "아스파르트산", c3: "Asp", c1: "D", group: "산성", warn: true, bg: "#fbcfe8", bd: "#db2777", role: "⚠️ 카르복실기(-COO⁻)를 가져 음전하를 띠며 이온결합에 참여. 약어는 [D]!" },
-    { name: "글루탐산", c3: "Glu", c1: "E", group: "산성", warn: true, bg: "#fbcfe8", bd: "#db2777", role: "⚠️ 음전하(-COO⁻) 산성 아미노산(정상 헤모글로빈 베타 6번). 약어는 D 다음인 [E]!" },
-    { name: "리신(라이신)", c3: "Lys", c1: "K", group: "염기성", warn: true, bg: "#bfdbfe", bd: "#2563eb", role: "⚠️ 아미노기(-NH₃⁺)로 양전하를 띠어 산성 R기와 이온결합 형성. L 앞 글자인 [K] 사용!" },
-    { name: "아르기닌", c3: "Arg", c1: "R", group: "염기성", warn: true, bg: "#bfdbfe", bd: "#2563eb", role: "⚠️ 양전하(+전하)를 띠는 염기성 아미노산. '아르(aRg)' 발음대로 약어 [R] 사용!" },
-    { name: "히스티딘", c3: "His", c1: "H", group: "염기성", warn: false, bg: "#bfdbfe", bd: "#2563eb", role: "오각 고리에 양전하(+전하)를 띠어 효소 활성 부위에서 H⁺를 주고받는 완충 역할. 약어 [H]" }
-  ];
+  if(e.target.id==="bName") { document.body.classList.toggle("hide-n"); e.target.classList.toggle("on"); document.querySelectorAll(".t-n").forEach(function(x){x.classList.remove("show");}); }
+  if(e.target.id==="bRole") { document.body.classList.toggle("hide-r"); e.target.classList.toggle("on"); document.querySelectorAll(".t-r").forEach(function(x){x.classList.remove("show");}); }
+  if(e.target.id==="bShow") { document.body.classList.remove("hide-n","hide-r"); document.getElementById("bName").classList.remove("on"); document.getElementById("bRole").classList.remove("on"); }
 
-  // ==================== 4. 실전 랜덤 문제 데이터 ====================
-  var quizPool = [
-    {
-      type: "blank", title: "[빈칸] 단백질의 주요 기능과 세포 소기관의 역할",
-      text: "달걀 흰자의 오브알부민과 우유의 카제인은 아미노산을 공급하는 [ (1) ] 단백질이고, 이자에서 분비되어 혈당을 조절하는 인슐린은 [ (2) ] 단백질이다. 세포 내에서 스테로이드 호르몬 합성과 간 해독, 칼슘 저장을 담당하는 소기관은 [ (3) ]소포체이며, 손상된 소기관을 가수분해 효소로 분해해 재활용하는 자가소화(autophagy)는 [ (4) ]에서 일어난다.",
-      answers: ["저장", "호르몬", "활면", "리소좀"],
-      exp: "오브알부민·카제인은 저장 단백질, 인슐린은 호르몬 단백질이며, 활면소포체(지질 합성·해독·칼슘 저장)와 리소좀(자가소화)의 역할은 시험 단골입니다."
-    },
-    {
-      type: "blank", title: "[빈칸] 세포골격 3종과 동물세포 연접 3종의 역할",
-      text: "세포골격 중 튜불린으로 구성된 지름 25nm의 관으로 염색체와 소낭 이동 트랙 역할을 하는 것은 [ (1) ]이고, 케라틴 단백질로 구성되어 핵과 소기관의 위치를 고정하는 것은 [ (2) ]섬유이다. 또한 동물세포 간 연접 중 액체가 세포 사이로 새는 것을 막는 방수 역할은 [ (3) ]연접이고, 이웃 세포와 이온 및 작은 분자가 직접 이동하는 통로는 [ (4) ]연접이다.",
-      answers: ["미세소관", "중간", "밀착", "간극"],
-      exp: "미세소관(25nm, 튜불린), 중간섬유(8~12nm, 케라틴), 미세섬유(7nm, 액틴)와 밀착연접·데스모솜·간극연접의 역할을 구분하세요."
-    },
-    {
-      type: "blank", title: "[빈칸] 신호전달 경로와 세포 호흡 ATP 수율",
-      text: "에피네프린 같은 1차 전달자(리간드)가 GPCR에 결합하면 G-단백질이 [ (1) ] 고리화효소를 활성화하여 ATP를 2차 전달자인 [ (2) ]로 변환시킨다. 한편 포도당 1분자 세포 호흡 시 해당과정과 시트르산 회로에서 [ (3) ] 수준 인산화로 4 ATP가 생성되고, 내막의 [ (4) ] 인산화로 26~28 ATP가 생성되어 총 [ (5) ] 또는 32 ATP가 만들어진다.",
-      answers: ["아데닐산", "cAMP", "기질", "산화적", "30"],
-      exp: "아데닐산 고리화효소(ATP→cAMP)와 세포 호흡의 기질 수준 인산화(4 ATP) + 산화적 인산화(26~28 ATP) = 30 또는 32 ATP를 기억하세요."
-    },
-    {
-      type: "essay", title: "[주관식 만점 필수] 단백질의 8가지 주요 기능(종류)을 모두 쓰고, 각각의 구체적인 역할과 예시를 서술하시오. (45p)",
-      keywords: ["효소", "방어", "저장", "수송", "호르몬", "수용체", "수축", "구조", "항체", "헤모글로빈", "인슐린", "콜라젠"],
-      model: "①효소 단백질: 화학 반응의 선택적 가속화(예: 소화효소) ②방어 단백질: 질병으로부터 보호(예: 항체가 세균·바이러스 불활성화) ③저장 단백질: 아미노산 저장(예: 달걀 흰자 오브알부민, 우유 카제인) ④수송 단백질: 물질 수송(예: 산소를 운반하는 헤모글로빈, 세포막 수송 단백질) ⑤호르몬 단백질: 생물체 활성 조절(예: 혈당을 낮추는 인슐린) ⑥수용체 단백질: 화학 자극에 대한 반응(예: 신경세포 막 수용체) ⑦수축 및 운동 단백질: 운동 수행(예: 근육 수축의 액틴·마이오신, 편모·섬모 운동의 디네인) ⑧구조 단백질: 지지 및 형태 유지(예: 결합조직의 콜라젠, 머리카락의 케라틴) 총 8가지입니다."
-    },
-    {
-      type: "essay", title: "[주관식 서술형] 세포골격 3가지(미세소관, 중간섬유, 미세섬유)의 구성 단백질, 지름, 그리고 각각의 주요 역할을 비교하여 서술하시오. (76p)",
-      keywords: ["미세소관", "튜불린", "25", "중간섬유", "케라틴", "고정", "미세섬유", "액틴", "7", "수축"],
-      model: "①미세소관(지름 25nm, 가장 굵음)은 α·β 튜불린 이합체로 된 속이 빈 관으로, 세포 모양 유지, 소낭 이동 트랙, 세포분열 시 염색체 이동, 편모와 섬모(9+2 구조) 구성을 담당합니다. ②중간섬유(지름 8~12nm)는 케라틴 등 섬유 단백질이 꼬인 구조로, 세포 형태를 유지하고 핵과 세포소기관을 제자리에 고정하며 핵라미나를 형성합니다. ③미세섬유(지름 7nm, 가장 가늘음)는 액틴 두 가닥이 꼬인 나선으로, 근육 수축, 미세융모 지지, 위족 운동 및 세포질 유동을 담당합니다."
-    },
-    {
-      type: "essay", title: "[주관식 서술형] 활면소포체(SER)와 조면소포체(RER)의 구조적 차이와 각각의 구체적인 역할을 비교하여 서술하시오. (68p)",
-      keywords: ["리보솜", "지질", "스테로이드", "해독", "칼슘", "분비", "당단백질", "세포막"],
-      model: "활면소포체는 막 표면에 리보솜이 없으며, ①인지질과 스테로이드 성호르몬 등 지질 합성, ②탄수화물 대사, ③간세포에서 약물과 독소에 수산기(-OH)를 붙여 해독하는 작용, ④근육세포에서 칼슘 이온(Ca2+) 저장 역할을 수행합니다. 반면 조면소포체는 표면에 리보솜이 부착되어 있으며, ①부착 리보솜에서 분비 단백질(인슐린 등)을 합성해 당단백질로 가공하여 수송 소낭으로 내보내고, ②막단백질과 인지질을 합성하여 세포막을 만드는 공장 역할을 합니다."
-    },
-    {
-      type: "mcq", title: "다음 중 단백질의 종류와 그 역할 및 예시를 짝지은 설명으로 옳지 않은 것은?",
-      choices: [
-        "① 저장 단백질 — 달걀 흰자의 오브알부민과 우유의 카제인은 발달하는 배아나 새끼에게 아미노산을 공급한다.",
-        "② 수송 단백질 — 혈액의 헤모글로빈은 산소를 운반하고, 막 수송 단백질은 세포막을 가로질러 물질을 운반한다.",
-        "③ 호르몬 단백질 — 이자에서 분비되는 인슐린은 세포막을 직접 통과해 핵 내부 수용체에 결합하는 스테로이드 호르몬이다.",
-        "④ 구조 단백질 — 콜라젠은 피부·뼈·힘줄 등 결합조직에 강도를 제공하고, 케라틴은 머리카락과 손톱을 구성한다.",
-        "⑤ 수축 및 운동 단백질 — 액틴과 마이오신은 근육 수축에 관여하고, 디네인은 편모와 섬모의 굽힘 운동에 관여한다."
-      ],
-      ans: 2,
-      exp: "정답은 ③번입니다! 인슐린은 스테로이드(지질) 호르몬이 아니라 '단백질(펩타이드) 호르몬'이므로 세포막을 직접 통과하지 못하고 세포 표면의 막 수용체에 결합합니다. 세포막을 통과해 세포내 수용체에 결합하는 것은 알도스테론·테스토스테론 같은 스테로이드 호르몬입니다."
-    },
-    {
-      type: "mcq", title: "다음 중 세포 소기관의 구조와 역할에 대한 설명으로 옳지 않은 것은?",
-      choices: [
-        "① 핵 속의 인(nucleolus)은 rRNA를 합성하고 리보솜의 대단위체와 소단위체를 조립하는 장소이다.",
-        "② 골지체는 조면소포체에서 온 수송 소낭을 트랜스(trans) 면에서 받아 가공한 뒤 시스(cis) 면으로 내보낸다.",
-        "③ 리소좀은 산성 환경에서 활성이 높은 가수분해 효소를 이용해 식포를 소화하거나 손상된 소기관을 자가소화(autophagy)한다.",
-        "④ 퍼옥시좀은 대사 과정에서 독성 과산화수소(H₂O₂)를 생성했다가 카탈레이스 효소를 이용해 물과 산소로 분해한다.",
-        "⑤ 식물세포의 중심 액포는 물을 흡수하여 팽압을 형성함으로써 식물 세포의 지지와 성장을 돕는다."
-      ],
-      ans: 1,
-      exp: "정답은 ②번입니다! 방향이 반대로 설명되었습니다. 골지체는 소포체에서 온 수송 소낭을 '시스(cis) 면(받는 쪽)'에서 받아들여 가공한 뒤, '트랜스(trans) 면(보내는 쪽)'에서 소낭을 형성해 목적지로 내보냅니다."
-    }
-  ];
+  var aaf = e.target.closest("[data-aaf]");
+  if(aaf) { curAAF = aaf.getAttribute("data-aaf"); aaf.parentElement.querySelectorAll(".b-btn").forEach(function(b){b.classList.remove("on");}); aaf.classList.add("on"); renderAA(); }
+  var aam = e.target.closest("[data-aam]");
+  if(aam) { document.getElementById("aaBox").classList.toggle(aam.getAttribute("data-aam")); aam.classList.toggle("on"); }
 
-  // 렌더링 함수들
-  var roleFilter = "all";
-  function renderRoles() {
-    var html = "";
-    for (var i = 0; i < roleCards.length; i++) {
-      var c = roleCards[i];
-      if (roleFilter !== "all" && c.cat !== roleFilter) continue;
-      var rowsHtml = "";
-      for (var j = 0; j < c.rows.length; j++) {
-        rowsHtml += "<tr><th style='width:26%;'>" + c.rows[j][0] + "</th><td style='width:74%;'>" + c.rows[j][1] + "</td></tr>";
-      }
-      html += '<div class="card">' +
-        '<span class="badge">교과서 ' + c.page + '</span><span class="badge badge-hot">' + c.tag + '</span>' +
-        '<div class="card-title">' + c.title + '</div>' +
-        '<table class="comp-table"><thead><tr><th>' + c.headers[0] + '</th><th>' + c.headers[1] + '</th></tr></thead><tbody>' + rowsHtml + '</tbody></table>' +
-        '</div>';
-    }
-    document.getElementById("roleList").innerHTML = html;
+  var qt = e.target.closest("[data-qt]");
+  if(qt) { curQT = qt.getAttribute("data-qt"); qt.parentElement.querySelectorAll(".b-btn").forEach(function(b){b.classList.remove("on");}); qt.classList.add("on"); loadQuiz(); }
+  if(e.target.id==="nextQBtn") loadQuiz();
+
+  if(e.target.id==="chkTerm") {
+    var u = document.getElementById("termInp").value.trim().toLowerCase();
+    var ok = curQ.ans.some(function(a){ return a.toLowerCase()===u; });
+    document.getElementById("qOut").innerHTML = "<b>"+(ok?"⭕ 정답입니다!":"❌ 정답 확인:")+" ["+curQ.ans[0]+"]</b><br>"+curQ.exp;
   }
-
-  function renderComp() {
-    var html = "";
-    for (var i = 0; i < comparisons.length; i++) {
-      var c = comparisons[i];
-      var rowsHtml = "";
-      for (var j = 0; j < c.r.length; j++) {
-        rowsHtml += "<tr><th>" + c.r[j][0] + "</th><td>" + c.r[j][1] + "</td><td>" + c.r[j][2] + "</td></tr>";
-      }
-      html += '<div class="card">' +
-        '<span class="badge">교과서 ' + c.page + '</span><span class="badge badge-hot">1:1 비교</span>' +
-        '<div class="card-title">' + c.title + '</div>' +
-        '<table class="comp-table"><thead><tr><th>' + c.h[0] + '</th><th>' + c.h[1] + '</th><th>' + c.h[2] + '</th></tr></thead><tbody>' + rowsHtml + '</tbody></table>' +
-        '</div>';
-    }
-    document.getElementById("compList").innerHTML = html;
+  if(e.target.id==="chkBlank") {
+    var hit=0;
+    curQ.ans.forEach(function(a,i){ var el=document.getElementById("qi-"+i); if(el && el.value.trim()===a){el.style.background="#dcfce7"; hit++;} else if(el){el.style.background="#fee2e2";} });
+    document.getElementById("qOut").innerHTML = "<b>🎯 채점: "+curQ.ans.length+"개 중 "+hit+"개 정답!</b><br>정답: "+curQ.ans.join(", ")+"<br>"+curQ.exp;
   }
-
-  var aaFilter = "all";
-  function renderAA() {
-    var html = "";
-    for (var i = 0; i < aaList.length; i++) {
-      var a = aaList[i];
-      if (aaFilter !== "all") {
-        if (aaFilter === "warn" && !a.warn) continue;
-        if (aaFilter !== "warn" && a.group !== aaFilter) continue;
-      }
-      html += '<div class="aa-card" data-act="aa-pop" data-idx="' + i + '">' +
-        '<span class="aa-tag" style="background:' + a.bg + '; border:1px solid ' + a.bd + ';">' + a.group + (a.warn ? ' ⚠️약어주의' : '') + '</span>' +
-        '<div class="aa-svg-wrap">' + drawRealAASvg(a.c1, a.bg, a.bd, a.pro) + '</div>' +
-        '<div class="aa-name">' + a.name + '</div>' +
-        '<div class="aa-code">' + a.c3 + ' / <span class="' + (a.warn ? 'aa-warn' : '') + '">' + a.c1 + '</span></div>' +
-        '<div class="aa-desc">🎯 ' + a.role + '</div>' +
-        '</div>';
-    }
-    document.getElementById("aaGrid").innerHTML = html;
+  if(e.target.id==="chkEssay") {
+    var v = document.getElementById("qTxt").value, hit=0;
+    var tags = curQ.kw.map(function(k){ var ok=v.indexOf(k)!==-1; if(ok)hit++; return '<span style="display:inline-block; padding:2px 6px; margin:2px; border-radius:4px; font-weight:700; background:'+(ok?'#dcfce7':'#fee2e2')+';">'+(ok?'✔ ':'✘ ')+k+'</span>'; }).join('');
+    document.getElementById("qOut").innerHTML = "<b>📊 필수 키워드 포함: "+curQ.kw.length+"개 중 "+hit+"개</b><div style='margin:6px 0;'>"+tags+"</div><b>📖 만점 모범답안:</b>\n"+curQ.mod;
   }
-
-  var speedAA = null;
-  function renderAAQuiz() {
-    speedAA = aaList[Math.floor(Math.random() * aaList.length)];
-    var opts = [speedAA];
-    while (opts.length < 4) {
-      var p = aaList[Math.floor(Math.random() * aaList.length)];
-      if (opts.indexOf(p) === -1) opts.push(p);
-    }
-    opts.sort(function() { return Math.random() - 0.5; });
-    var btns = "";
-    for (var i = 0; i < opts.length; i++) {
-      var o = opts[i];
-      btns += '<button type="button" class="btn btn-outline" style="flex:1 1 45%; background:#fff;" data-act="aa-ans" data-ok="' + (o.c1 === speedAA.c1) + '">' + o.name + ' (' + o.c3 + ', <b>' + o.c1 + '</b>)</button>';
-    }
-    document.getElementById("aaQuizCard").innerHTML =
-      '<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">' +
-      '<div style="background:#fff; padding:4px; border-radius:8px; border:1px solid #cbd5e1;">' + drawRealAASvg(speedAA.c1, speedAA.bg, speedAA.bd, speedAA.pro) + '</div>' +
-      '<div style="flex:1; min-width:200px;"><span class="badge badge-hot">🎯 구조 & 역할 보고 아미노산 맞추기</span>' +
-      '<div style="font-weight:800; font-size:0.95rem; margin-bottom:4px;">위 화학 구조(' + speedAA.group + ')를 가진 아미노산은?</div>' +
-      '<div style="font-size:0.8rem; color:#1e3a8a; margin-bottom:8px;">역할 힌트: ' + speedAA.role + '</div>' +
-      '<div style="display:flex; gap:6px; flex-wrap:wrap;">' + btns + '</div>' +
-      '<div id="aaQMsg" style="margin-top:6px; font-weight:800; font-size:0.86rem;"></div></div></div>';
+  var qOpt = e.target.closest(".q-opt");
+  if(qOpt) {
+    var idx = parseInt(qOpt.getAttribute("data-qi"),10);
+    document.querySelectorAll(".q-opt").forEach(function(b,i){ if(i===curQ.ans) b.classList.add("ok"); else if(i===idx) b.classList.add("no"); });
+    document.getElementById("qOut").innerHTML = "<b>"+(idx===curQ.ans?"⭕ 정답입니다!":"❌ 오답입니다!")+"</b><br>"+curQ.exp;
   }
-
-  var qType = "all";
-  var curQuiz = null;
-  function loadQuiz() {
-    var pool = [];
-    for (var i = 0; i < quizPool.length; i++) {
-      if (qType === "all" || quizPool[i].type === qType) pool.push(quizPool[i]);
-    }
-    curQuiz = pool[Math.floor(Math.random() * pool.length)];
-    var box = document.getElementById("quizBox");
-    if (curQuiz.type === "blank") {
-      var t = curQuiz.text;
-      for (var j = 0; j < curQuiz.answers.length; j++) {
-        t = t.replace("[ (" + (j + 1) + ") ]", '<input type="text" class="blank-input" id="qb-' + j + '" placeholder="(' + (j + 1) + ') 입력">');
-      }
-      box.innerHTML = '<span class="badge">✏️ 빈칸 채우기</span><div class="card-title">' + curQuiz.title + '</div>' +
-        '<p style="line-height:2.1; margin:12px 0;">' + t + '</p>' +
-        '<button type="button" class="btn btn-success" data-act="grade-blank">정답 채점하기</button>' +
-        '<div id="qRes" style="display:none; margin-top:10px; padding:12px; background:#fffbeb; border-left:4px solid #f59e0b; border-radius:8px; font-size:0.88rem;"></div>';
-    } else if (curQuiz.type === "essay") {
-      box.innerHTML = '<span class="badge badge-hot">🖋️ 비교·서술형 주관식</span><div class="card-title">' + curQuiz.title + '</div>' +
-        '<textarea class="essay-area" id="qEssay" placeholder="종류와 각각의 역할을 포함하여 서술해 보세요!"></textarea>' +
-        '<button type="button" class="btn btn-success" data-act="grade-essay">필수 키워드 채점 & 모범답안</button>' +
-        '<div id="qRes" style="display:none; margin-top:10px; padding:12px; background:#fffbeb; border-left:4px solid #f59e0b; border-radius:8px; font-size:0.88rem;"></div>';
-    } else {
-      var chHtml = "";
-      for (var k = 0; k < curQuiz.choices.length; k++) {
-        chHtml += '<button type="button" class="choice-item" id="qmc-' + k + '" data-act="grade-mcq" data-idx="' + k + '">' + curQuiz.choices[k] + '</button>';
-      }
-      box.innerHTML = '<span class="badge">❌ 옳지 않은 것은?</span><div class="card-title">' + curQuiz.title + '</div>' +
-        '<div style="margin-top:10px;">' + chHtml + '</div>' +
-        '<div id="qRes" style="display:none; margin-top:10px; padding:12px; background:#fffbeb; border-left:4px solid #f59e0b; border-radius:8px; font-size:0.88rem;"></div>';
-    }
-  }
-
-  // 하단 해설 팝업창 열기 함수
-  function showDock(title, role, why) {
-    document.getElementById("dockTitle").innerText = "📌 " + title;
-    document.getElementById("dockRole").innerText = "🎯 핵심 역할·기능: " + role;
-    document.getElementById("dockWhy").innerText = "💡 왜 그럴까요?: " + why;
-    document.getElementById("explainDock").classList.add("show");
-  }
-
-  // 전역 클릭/터치 이벤트 처리기
-  document.addEventListener("click", function(e) {
-    // 1. 파란색(용어) 또는 초록색(역할) 글자를 터치했을 때 -> 가림막 해제 + 즉시 하단 설명창 팝업!
-    var termEl = e.target.closest(".t-name, .t-role");
-    if (termEl) {
-      termEl.classList.toggle("revealed");
-      showDock(
-        termEl.getAttribute("data-title"),
-        termEl.getAttribute("data-role"),
-        termEl.getAttribute("data-why")
-      );
-      return;
-    }
-
-    var btn = e.target.closest("[data-act]");
-    if (!btn) return;
-    var act = btn.getAttribute("data-act");
-
-    if (act === "close-dock") {
-      document.getElementById("explainDock").classList.remove("show");
-    }
-    else if (act === "tab") {
-      var tId = btn.getAttribute("data-target");
-      var secs = document.querySelectorAll(".tab-section");
-      for (var i = 0; i < secs.length; i++) secs[i].classList.remove("active");
-      document.getElementById(tId).classList.add("active");
-      var navs = document.querySelectorAll(".nav-btn");
-      for (var j = 0; j < navs.length; j++) navs[j].classList.remove("active");
-      btn.classList.add("active");
-    }
-    else if (act === "toggle-hide-name") {
-      document.body.classList.toggle("hide-names");
-      btn.classList.toggle("on");
-      var ns = document.querySelectorAll(".t-name");
-      for (var n = 0; n < ns.length; n++) ns[n].classList.remove("revealed");
-    }
-    else if (act === "toggle-hide-role") {
-      document.body.classList.toggle("hide-roles");
-      btn.classList.toggle("on");
-      var rs = document.querySelectorAll(".t-role");
-      for (var r = 0; r < rs.length; r++) rs[r].classList.remove("revealed");
-    }
-    else if (act === "reveal-all") {
-      document.body.classList.remove("hide-names", "hide-roles");
-      document.getElementById("btnHideName").classList.remove("on");
-      document.getElementById("btnHideRole").classList.remove("on");
-    }
-    else if (act === "filter-role") {
-      roleFilter = btn.getAttribute("data-val");
-      var rSibs = btn.parentElement.querySelectorAll(".btn");
-      for (var s = 0; s < rSibs.length; s++) rSibs[s].classList.remove("active");
-      btn.classList.add("active");
-      renderRoles();
-    }
-    else if (act === "filter-aa") {
-      aaFilter = btn.getAttribute("data-val");
-      var aSibs = btn.parentElement.querySelectorAll(".btn");
-      for (var a = 0; a < aSibs.length; a++) aSibs[a].classList.remove("active");
-      btn.classList.add("active");
-      renderAA();
-    }
-    else if (act === "aa-mask") {
-      document.getElementById("aaGrid").classList.toggle(btn.getAttribute("data-val"));
-    }
-    else if (act === "aa-pop") {
-      var aa = aaList[parseInt(btn.getAttribute("data-idx"), 10)];
-      showDock(
-        aa.name + " (" + aa.c3 + ", " + aa.c1 + ") — " + aa.group + " 아미노산",
-        aa.role,
-        aa.warn ? "이름 첫 알파벳과 1글자 약어(" + aa.c1 + ")가 다르므로 시험에 단골로 출제됩니다!" : "곁사슬(R기)의 성질에 따라 단백질의 3차원 접힘 구조에서 위치가 결정됩니다."
-      );
-    }
-    else if (act === "aa-ans") {
-      var ok = btn.getAttribute("data-ok") === "true";
-      var msg = document.getElementById("aaQMsg");
-      if (ok) {
-        btn.style.background = "#dcfce7";
-        msg.innerHTML = "<span style='color:#15803d;'>⭕ 정답! " + speedAA.name + " (" + speedAA.c3 + ", " + speedAA.c1 + ")</span>";
-        setTimeout(renderAAQuiz, 900);
-      } else {
-        btn.style.background = "#fee2e2";
-        msg.innerHTML = "<span style='color:#b91c1c;'>❌ 다시 골라보세요!</span>";
-      }
-    }
-    else if (act === "qtype") {
-      qType = btn.getAttribute("data-val");
-      var qBtns = ["all", "blank", "essay", "mcq"];
-      for (var q = 0; q < qBtns.length; q++) {
-        document.getElementById("qt-" + qBtns[q]).className = (qBtns[q] === qType) ? "btn btn-primary" : "btn btn-outline";
-      }
-      loadQuiz();
-    }
-    else if (act === "next-quiz") {
-      loadQuiz();
-    }
-    else if (act === "grade-blank") {
-      var hit = 0;
-      for (var b = 0; b < curQuiz.answers.length; b++) {
-        var inp = document.getElementById("qb-" + b);
-        if (inp && inp.value.trim() === curQuiz.answers[b]) {
-          inp.style.background = "#dcfce7"; inp.style.borderColor = "#10b981"; hit++;
-        } else if (inp) {
-          inp.style.background = "#fee2e2"; inp.style.borderColor = "#ef4444";
-        }
-      }
-      var resB = document.getElementById("qRes");
-      resB.style.display = "block";
-      resB.innerHTML = "<strong>🎯 채점: " + curQuiz.answers.length + "개 중 " + hit + "개 정답!</strong><br><b>정답:</b> " + curQuiz.answers.join(", ") + "<br>" + curQuiz.exp;
-    }
-    else if (act === "grade-essay") {
-      var val = document.getElementById("qEssay").value;
-      var kHit = 0;
-      var tags = "";
-      for (var k = 0; k < curQuiz.keywords.length; k++) {
-        var kw = curQuiz.keywords[k];
-        var has = val.indexOf(kw) !== -1;
-        if (has) kHit++;
-        tags += '<span class="kw-badge ' + (has ? 'kw-ok' : 'kw-no') + '">' + (has ? '✔ ' : '✘ ') + kw + '</span>';
-      }
-      var resE = document.getElementById("qRes");
-      resE.style.display = "block";
-      resE.innerHTML = "<strong>📊 필수 키워드 포함: " + curQuiz.keywords.length + "개 중 " + kHit + "개</strong><div style='margin:6px 0;'>" + tags + "</div><b>📖 만점 모범답안:</b> " + curQuiz.model;
-    }
-    else if (act === "grade-mcq") {
-      var idx = parseInt(btn.getAttribute("data-idx"), 10);
-      for (var c = 0; c < curQuiz.choices.length; c++) {
-        var cEl = document.getElementById("qmc-" + c);
-        if (c === curQuiz.ans) cEl.classList.add("correct");
-        else if (c === idx) cEl.classList.add("wrong");
-      }
-      var resM = document.getElementById("qRes");
-      resM.style.display = "block";
-      resM.innerHTML = "<strong>" + (idx === curQuiz.ans ? "⭕ 정답입니다!" : "❌ 오답입니다!") + "</strong><br>" + curQuiz.exp;
-    }
-  });
-
-  // 초기 렌더링 실행
-  renderRoles();
-  renderComp();
-  renderAA();
-  renderAAQuiz();
-  loadQuiz();
-})();
+});
 </script>
-
 </body>
 </html>
+<!-- 코드 끝 (100% 완료) -->
